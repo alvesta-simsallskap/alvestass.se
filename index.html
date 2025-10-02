@@ -11,7 +11,7 @@
 </head>
 
 <body x-data="{ atTop: true, open: false }" x-on:scroll.window="atTop = (window.pageYOffset > 100) ? false : true; ">
-  <nav x-scroll-to-header class="navbar is-fixed-top" role="navigation" aria-label="main navigation" x-bind:class="{ 'scrolled-down': !atTop }">
+  <nav x-scroll-to-header class="navbar is-fixed-top has-shadow" role="navigation" aria-label="main navigation" x-bind:class="{ 'scrolled-down': !atTop }">
     <div class="container is-max-desktop">
       <div class="navbar-brand">
         <a class="navbar-item" href="#start" @click="$refs.start.scrollIntoView()">
@@ -48,42 +48,146 @@
   <section id="simskola" class="section content" x-ref="simskola">
     <div class="container is-max-desktop">
       <h1 class="title">Simskola</h1>
-      <p class="subtitle">My first website with <strong>Bulma</strong>!</p>
-      <h4>This text is here just to create a tall page for scrolling.</h4>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus ab, dolor minima odit sit voluptate porro labore alias enim, explicabo vel reprehenderit maiores nemo? Perferendis exercitationem totam possimus odio! Porro.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus ab, dolor minima odit sit voluptate porro labore alias enim, explicabo vel reprehenderit maiores nemo? Perferendis exercitationem totam possimus odio! Porro.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus ab, dolor minima odit sit voluptate porro labore alias enim, explicabo vel reprehenderit maiores nemo? Perferendis exercitationem totam possimus odio! Porro.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus ab, dolor minima odit sit voluptate porro labore alias enim, explicabo vel reprehenderit maiores nemo? Perferendis exercitationem totam possimus odio! Porro.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus ab, dolor minima odit sit voluptate porro labore alias enim, explicabo vel reprehenderit maiores nemo? Perferendis exercitationem totam possimus odio! Porro.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus ab, dolor minima odit sit voluptate porro labore alias enim, explicabo vel reprehenderit maiores nemo? Perferendis exercitationem totam possimus odio! Porro.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus ab, dolor minima odit sit voluptate porro labore alias enim, explicabo vel reprehenderit maiores nemo? Perferendis exercitationem totam possimus odio! Porro.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus ab, dolor minima odit sit voluptate porro labore alias enim, explicabo vel reprehenderit maiores nemo? Perferendis exercitationem totam possimus odio! Porro.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus ab, dolor minima odit sit voluptate porro labore alias enim, explicabo vel reprehenderit maiores nemo? Perferendis exercitationem totam possimus odio! Porro.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus ab, dolor minima odit sit voluptate porro labore alias enim, explicabo vel reprehenderit maiores nemo? Perferendis exercitationem totam possimus odio! Porro.</p>
+      <p>
+        Föreningen bedriver simskola enligt <a href="https://svensksimidrott.se/simkunnighet/simmarken/simmarken-" target="_blank" rel="noopener">Svenk Simidrotts riktlinjer och nivåer</a> i följande grupper.
+      </p>
+      <div class="fixed-grid">
+        <div class="grid">
+          <div class="cell">
+            <div class="card">
+              <div class="card-image">
+                <figure class="image is-16by9">
+                  <img src="https://placehold.co/1920x1080?text=16:9" alt="Baddaren">
+                </figure>
+              </div>
+              <div class="card-content">
+                <div class="content">
+                  Märken: Baddaren Grön, Baddaren Blå och Baddaren Gul.
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="cell">
+            <div class="card">
+              <div class="card-image">
+                <figure class="image is-16by9">
+                  <img src="https://placehold.co/1920x1080?text=16:9" alt="Silverpingvinen">
+                </figure>
+              </div>
+              <div class="card-content">
+                <div class="content">
+                  Märken: Silverpingvinen.
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="cell">
+            <div class="card">
+              <div class="card-image">
+                <figure class="image is-16by9">
+                  <img src="https://placehold.co/1920x1080?text=16:9" alt="Guldpingvinen">
+                </figure>
+              </div>
+              <div class="card-content">
+                <div class="content">
+                  Märken: Guldpingvinen.
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="cell">
+            <div class="card">
+              <div class="card-image">
+                <figure class="image is-16by9">
+                  <img src="https://placehold.co/1920x1080?text=16:9" alt="Fisken">
+                </figure>
+              </div>
+              <div class="card-content">
+                <div class="content">
+                  Märken: Fisken.
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="cell">
+            <div class="card">
+              <div class="card-image">
+                <figure class="image is-16by9">
+                  <img src="https://placehold.co/1920x1080?text=16:9" alt="Hajen">
+                </figure>
+              </div>
+              <div class="card-content">
+                <div class="content">
+                  Märken: Hajen.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
   <section id="grupper" class="section content" x-ref="grupper">
     <div class="container is-max-desktop">
-      <h1 class="title">Grupper</h1>
+      <h1 class="title">Simgrupper</h1>
       <p class="subtitle">My first website with <strong>Bulma</strong>!</p>
-      <h4>This text is here just to create a tall page for scrolling.</h4>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus ab, dolor minima odit sit voluptate porro labore alias enim, explicabo vel reprehenderit maiores nemo? Perferendis exercitationem totam possimus odio! Porro.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus ab, dolor minima odit sit voluptate porro labore alias enim, explicabo vel reprehenderit maiores nemo? Perferendis exercitationem totam possimus odio! Porro.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus ab, dolor minima odit sit voluptate porro labore alias enim, explicabo vel reprehenderit maiores nemo? Perferendis exercitationem totam possimus odio! Porro.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus ab, dolor minima odit sit voluptate porro labore alias enim, explicabo vel reprehenderit maiores nemo? Perferendis exercitationem totam possimus odio! Porro.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus ab, dolor minima odit sit voluptate porro labore alias enim, explicabo vel reprehenderit maiores nemo? Perferendis exercitationem totam possimus odio! Porro.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus ab, dolor minima odit sit voluptate porro labore alias enim, explicabo vel reprehenderit maiores nemo? Perferendis exercitationem totam possimus odio! Porro.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus ab, dolor minima odit sit voluptate porro labore alias enim, explicabo vel reprehenderit maiores nemo? Perferendis exercitationem totam possimus odio! Porro.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus ab, dolor minima odit sit voluptate porro labore alias enim, explicabo vel reprehenderit maiores nemo? Perferendis exercitationem totam possimus odio! Porro.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus ab, dolor minima odit sit voluptate porro labore alias enim, explicabo vel reprehenderit maiores nemo? Perferendis exercitationem totam possimus odio! Porro.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus ab, dolor minima odit sit voluptate porro labore alias enim, explicabo vel reprehenderit maiores nemo? Perferendis exercitationem totam possimus odio! Porro.</p>
+      <div class="fixed-grid">
+        <div class="grid">
+          <div class="cell">
+            <div class="card">
+              <div class="card-image">
+                <figure class="image is-16by9">
+                  <img src="https://placehold.co/1920x1080?text=16:9" alt="Teknik">
+                </figure>
+              </div>
+              <div class="card-content">
+                <div class="content">
+                  Teknikgruppen
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="cell">
+            <div class="card">
+              <div class="card-image">
+                <figure class="image is-16by9">
+                  <img src="https://placehold.co/1920x1080?text=16:9" alt="Tävling">
+                </figure>
+              </div>
+              <div class="card-content">
+                <div class="content">
+                  Tävlingsgruppen. Planerade tävlingar finns här.
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="cell">
+            <div class="card">
+              <div class="card-image">
+                <figure class="image is-16by9">
+                  <img src="https://placehold.co/1920x1080?text=16:9" alt="Masters">
+                </figure>
+              </div>
+              <div class="card-content">
+                <div class="content">
+                  Mastersgruppen
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
   <section id="foreningen" class="section content" x-ref="foreningen">
     <div class="container is-max-desktop">
       <h1 class="title">Föreningen</h1>
       <p class="subtitle">My first website with <strong>Bulma</strong>!</p>
-      <h4>This text is here just to create a tall page for scrolling.</h4>
+      <h2>Styrelse</h2>
+      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus ab, dolor minima odit sit voluptate porro labore alias enim, explicabo vel reprehenderit maiores nemo? Perferendis exercitationem totam possimus odio! Porro.</p>
+      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus ab, dolor minima odit sit voluptate porro labore alias enim, explicabo vel reprehenderit maiores nemo? Perferendis exercitationem totam possimus odio! Porro.</p>
+
+      <h2>Historia</h2>
       <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus ab, dolor minima odit sit voluptate porro labore alias enim, explicabo vel reprehenderit maiores nemo? Perferendis exercitationem totam possimus odio! Porro.</p>
       <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus ab, dolor minima odit sit voluptate porro labore alias enim, explicabo vel reprehenderit maiores nemo? Perferendis exercitationem totam possimus odio! Porro.</p>
       <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus ab, dolor minima odit sit voluptate porro labore alias enim, explicabo vel reprehenderit maiores nemo? Perferendis exercitationem totam possimus odio! Porro.</p>
@@ -96,11 +200,6 @@
       <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus ab, dolor minima odit sit voluptate porro labore alias enim, explicabo vel reprehenderit maiores nemo? Perferendis exercitationem totam possimus odio! Porro.</p>
     </div>
   </section>
-  <!--
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollToPlugin.min.js"></script>
-  -->
-  <script src="site.js"></script>
 </body>
 
 </html>
