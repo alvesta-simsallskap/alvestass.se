@@ -1,8 +1,8 @@
 # build output
-dist/
+_site/
 
 # Bulma source files
-styles/bulma-main
+src/styles/bulma-main
 
 # dependencies
 node_modules/

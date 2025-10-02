@@ -1,0 +1,53 @@
+media:
+  input: src/media
+  output: /media
+content:
+  - name: swim-school-groups
+    label: Simskola
+    type: collection
+    path: 'src/swim-school-groups'
+    view:
+      fields: [ title, published ]
+    fields:
+      - name: published
+        label: Publicerad
+        type: boolean
+        default: true
+      - name: title
+        label: Gruppnamn
+        type: string
+      - name: body
+        label: Beskrivning
+        type: rich-text
+  - name: training-groups
+    label: Träningsgrupper
+    type: collection
+    path: 'src/training-groups'
+    view:
+      fields: [ title, published ]
+    fields:
+      - name: published
+        label: Publicerad
+        type: boolean
+        default: true
+      - name: title
+        label: Gruppnamn
+        type: string
+      - name: body
+        label: Beskrivning
+        type: rich-text
+  - name: site
+    label: Site settings
+    path: src/_data/site.json
+    type: file
+    fields:
+      - name: title
+        label: Titel
+        type: string
+      - name: description
+        label: Hemsidans beskrivning
+        type: string
+      - name: url
+        label: Hemsidans URL
+        type: string
+        pattern: ^(https?:\/\/)?(www\.)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(\/[^\s]*)?$

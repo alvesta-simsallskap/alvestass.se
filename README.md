@@ -8,6 +8,8 @@
 
 ## Compile styles (Sass)
 
+https://helloyes.dev/blog/2021/minimal-sass-and-eleventy-setup/
+
 ```
 sass --load-path=styles/bulma-main styles/site.scss site.css
 ```
