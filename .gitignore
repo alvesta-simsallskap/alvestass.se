@@ -2,7 +2,7 @@
 _site/
 
 # Bulma source files
-src/styles/bulma-main
+src/_scss/bulma-main
 
 # dependencies
 node_modules/

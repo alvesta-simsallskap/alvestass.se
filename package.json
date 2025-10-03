@@ -6,10 +6,9 @@
   "scripts": {
     "eleventy:serve": "eleventy --serve",
     "eleventy:build": "eleventy",
-    "sass:watch": "sass src/_scss:_site/css --watch --update --color",
-    "sass:build": "sass src/_scss:_site/css --no-source-map --style=compressed",
-    "clean": "del _site",
-    "start": "run-p -l clean sass:build sass:watch eleventy:serve",
+    "sass:watch": "sass src/_scss/site.scss:_site/css/site.css --watch --update --color",
+    "sass:build": "sass src/_scss/site.scss:_site/css/site.css --no-source-map --style=compressed",
+    "start": "run-p -l sass:build sass:watch eleventy:serve",
     "build": "run-s -l eleventy:build sass:build"
   },
   "repository": {
