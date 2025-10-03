@@ -5,37 +5,33 @@ content:
   - name: swim-school-groups
     label: Simskola
     type: collection
-    path: 'src/swim-school-groups'
+    path: src/swim-school-groups
+    filename: "{primary}.md"
     view:
-      fields: [ title, published ]
+      fields: [ title, order ]
+      primary: title
+      sort: [ order, title ]
+      default: { sort: order, order: asc }
     fields:
-      - name: published
-        label: Publicerad
-        type: boolean
-        default: true
-      - name: title
-        label: Gruppnamn
-        type: string
-      - name: body
-        label: Beskrivning
-        type: rich-text
+      - { name: title, label: Namn, type: string, required: true }
+      - { name: description, label: Kort beskrivning, type: string, options: { maxlength: 180 }}
+      - { name: order, label: Order, type: number }
+      - { name: body, label: Beskrivning, type: rich-text }
   - name: training-groups
     label: Träningsgrupper
     type: collection
-    path: 'src/training-groups'
+    path: src/training-groups
+    filename: "{primary}.md"
     view:
-      fields: [ title, published ]
+      fields: [ title, order ]
+      primary: title
+      sort: [ order, title ]
+      default: { sort: order, order: asc }
     fields:
-      - name: published
-        label: Publicerad
-        type: boolean
-        default: true
-      - name: title
-        label: Gruppnamn
-        type: string
-      - name: body
-        label: Beskrivning
-        type: rich-text
+      - { name: title, label: Namn, type: string, required: true }
+      - { name: description, label: Kort beskrivning, type: string, options: { maxlength: 180 }}
+      - { name: order, label: Order, type: number }
+      - { name: body, label: Beskrivning, type: rich-text }
   - name: site
     label: Site settings
     path: src/_data/site.json
@@ -51,3 +47,7 @@ content:
         label: Hemsidans URL
         type: string
         pattern: ^(https?:\/\/)?(www\.)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(\/[^\s]*)?$
+  - name: club
+    label: Föreningen
+    path: src/foreningen.md
+    type: file
