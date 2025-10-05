@@ -6,8 +6,8 @@
   "scripts": {
     "eleventy:serve": "eleventy --serve",
     "eleventy:build": "eleventy",
-    "sass:watch": "sass src/_scss/site.scss:_site/css/site.css --watch --update --color",
-    "sass:build": "sass src/_scss/site.scss:_site/css/site.css --no-source-map --style=compressed",
+    "sass:watch": "sass src/_scss/site.scss:_site/css/site.css --load-path=node_modules --watch --update --color",
+    "sass:build": "sass src/_scss/site.scss:_site/css/site.css --load-path=node_modules --no-source-map --style=compressed",
     "start": "run-p -l sass:build sass:watch eleventy:serve",
     "build": "run-s -l eleventy:build sass:build"
   },
@@ -25,6 +25,8 @@
   "homepage": "https://github.com/leafcode-se/alvestass.se#readme",
   "dependencies": {
     "@11ty/eleventy": "^3.1.2",
+    "@11ty/eleventy-img": "^6.0.4",
+    "bulma": "^1.0.4",
     "sass": "^1.93.2"
   }
 }

@@ -1,8 +1,13 @@
+import { eleventyImageTransformPlugin } from "@11ty/eleventy-img";
+
 export default async function(eleventyConfig) {
-    eleventyConfig.setBrowserSyncConfig({
-        files: './_site/**/*.css'
+    eleventyConfig.addPlugin(eleventyImageTransformPlugin);
+    eleventyConfig.setBrowserSyncConfig({ files: './_site/**/*.css' });
+    eleventyConfig.addPassthroughCopy({
+        'src/css': 'css',
+        'src/media': '/media',
+        'src/assets': '/',
     });
-    eleventyConfig.addPassthroughCopy('src/css');
 };
 
 export const config = {

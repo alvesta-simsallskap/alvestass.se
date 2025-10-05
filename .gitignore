@@ -1,8 +1,6 @@
 # build output
 _site/
-
-# Bulma source files
-src/_scss/bulma-main
+.cache
 
 # dependencies
 node_modules/

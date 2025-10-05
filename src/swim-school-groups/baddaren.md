@@ -1,6 +1,8 @@
 ---
 title: Baddaren
 order: 1
+image: 'jess-zoerb-wXnYUrdRwKs-unsplash.jpg'
+imageAttribution: 'Jess Zoerb, Unsplash'
 tags: swimschoolgroups
 ---
 

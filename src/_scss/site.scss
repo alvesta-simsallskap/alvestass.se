@@ -2,9 +2,9 @@
 $purple: #8a4d76;
 
 // Path to Bulma's sass folder
-@use "bulma-main/sass" with (
+@use "bulma/sass" with (
   $navbar-breakpoint: 320px, // Do not hide menu items too soon
-
+  $card-shadow: 0 0.2em 0.8em -0.125em hsla(221deg, 14%, 4%, 0.2),
 );
 
 html {
