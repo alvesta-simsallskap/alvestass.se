@@ -1,0 +1,23 @@
+  <nav x-scroll-to-header class="navbar is-fixed-top has-shadow" role="navigation" aria-label="main navigation" x-bind:class="{ 'scrolled-down': !atTop }">
+    <div class="container is-max-desktop">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="#start" @click="$refs.start.scrollIntoView()">
+          <svg width="100%" height="100%" viewBox="0 0 41.105 14.129" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+            <path fill="currentColor" d="M8.424,0.000 C10.469,0.000 11.958,0.296 14.064,1.566 C16.141,2.775 17.429,5.083 19.723,5.455 C25.082,6.322 26.022,5.205 26.642,5.205 C29.400,5.205 36.628,6.838 37.620,7.519 C38.735,8.295 40.326,9.212 41.105,11.004 L41.105,11.886 C37.452,9.647 33.242,7.436 29.369,7.436 C28.750,7.436 25.668,8.178 23.972,8.414 C23.756,8.639 23.793,8.427 23.793,9.047 C23.793,10.781 31.726,12.150 32.714,12.497 C31.917,13.116 30.485,14.129 29.865,14.129 C29.245,14.129 25.940,12.298 23.895,11.957 C20.767,11.431 18.440,11.492 15.218,10.904 C12.058,10.316 11.468,11.140 10.918,10.841 C11.059,9.528 12.367,8.213 13.630,7.049 C12.161,4.712 9.218,2.725 6.557,2.478 L0.000,2.132 C0.962,1.532 6.968,0.000 8.424,0.000 Z"/>
+          </svg>
+        </a>
+      </div>
+      <div class="navbar-menu">
+        <div class="navbar-start">
+          <a class="navbar-item" href="#swimschool" @click="$refs.swimschool.scrollIntoView()">Simskola</a>
+          <a class="navbar-item" href="#training" @click="$refs.training.scrollIntoView()">Träningsgrupper</a>
+          <a class="navbar-item" href="#club" @click="$refs.club.scrollIntoView()">Föreningen</a>
+        </div>
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <a class="navbar-item material-symbols-rounded is-size-4">account_circle</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>

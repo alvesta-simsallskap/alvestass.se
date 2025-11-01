@@ -1,0 +1,10 @@
+---
+const { id, title } = Astro.props;
+---
+
+<section id={id} class="section content" x-ref={id}>
+    <div class="container is-max-desktop">
+      <h1 class="title">{title}</h1>
+      <slot></slot>     
+  </div>
+</section>

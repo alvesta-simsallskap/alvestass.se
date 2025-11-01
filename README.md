@@ -1,18 +1,18 @@
 # Alvesta simsällskap homepage
 
+## Website
+
+Pages CMS.
+
+
 ## Dependencies
 
-- Bulma. Source git repo in `styles/bulma-main` for sass compilation
-- Sass (installed using homebrew to avoid npm)
+- Bulma (pnpm installed)
 - Alpine js for minor javascript
 
-## Compile styles (Sass)
+## References
 
-https://helloyes.dev/blog/2021/minimal-sass-and-eleventy-setup/
-
-```
-sass --load-path=styles/bulma-main styles/site.scss site.css
-```
+https://css-tricks.com/using-pages-cms-for-static-site-content-management/
 
 ## Shared calendars
 

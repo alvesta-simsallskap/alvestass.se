@@ -1,0 +1,73 @@
+---
+import { type CollectionEntry, getCollection } from 'astro:content';
+import { chunk } from 'es-toolkit';
+import Nav from '../components/Nav.astro';
+import Hero from '../components/Hero.astro';
+import Footer from '../components/Footer.astro';
+import Section from '../components/Section.astro';
+import SwimSchoolGroup from '../components/SwimSchoolGroup.astro';
+import TrainingGroup from '../components/TrainingGroup.astro'
+import ClubInfo from '../components/ClubInfo.astro'
+
+const swimsSchoolGroups = (await getCollection('swimSchool')).sort(
+  (a, b) => a.data.order - b.data.order
+);
+
+const trainingGroups = await getCollection('trainingGroups');
+const clubInfo = await getCollection('clubInfo');
+
+import '../styles/_global.scss';
+import '@fontsource/inter';
+import '@fontsource/geist';
+---
+
+<html class="has-navbar-fixed-top">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Alvesta Simsällskap</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <script defer src="https://unpkg.com/alpinejs-scroll-to@latest/dist/scroll-to.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+
+<body x-data="{ atTop: true, open: false }" x-on:scroll.window="atTop = (window.pageYOffset > 100) ? false : true; ">
+  <Nav></Nav>
+  <Hero></Hero>
+  <Section id="swimschool" title="Simskola">
+    {chunk(swimsSchoolGroups, 3).map(chunk => 
+      <div class="columns">
+        {chunk.map(entry => (
+          <div class="column is-4">
+            <SwimSchoolGroup id={entry.id} ></SwimSchoolGroup>            
+          </div>
+        ))}
+      </div>
+    )}
+  </Section>
+  <Section id="training" title="Träningsgrupper">
+    {chunk(trainingGroups, 3).map(chunk => 
+      <div class="columns">
+        {chunk.map(entry => (
+          <div class="column is-4">
+            <TrainingGroup id={entry.id} ></TrainingGroup>      
+          </div>
+        ))}
+      </div>
+    )}
+  </Section>
+  <Section id="club" title="Föreningen">
+    {chunk(clubInfo, 3).map(chunk => 
+      <div class="columns">
+        {chunk.map(entry => (
+          <div class="column is-4">
+            <ClubInfo id={entry.id} ></ClubInfo>      
+          </div>
+        ))}
+      </div>
+    )}
+  </Section>
+  <Footer></Footer>
+</body>
+
+</html>

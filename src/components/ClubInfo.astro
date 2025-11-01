@@ -1,0 +1,12 @@
+---
+import { getEntry, render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import Card from './Card.astro';
+const { id } = Astro.props;
+const entry = await getEntry('clubInfo', id) as CollectionEntry<'clubInfo'>;
+const { Content } = await render(entry);
+---
+
+<Card title={entry?.data.title} image={entry?.data.image} imageAttribution={entry?.data.imageAttribution}>
+  <Content />
+</Card>
