@@ -1,9 +1,14 @@
 # Alvesta simsällskap homepage
 
+## Development
+
+```
+pnpm dev
+```
+
 ## Website
 
 Pages CMS.
-
 
 ## Dependencies
 
