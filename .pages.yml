@@ -5,7 +5,21 @@ content:
   - name: swim-school-groups
     label: Simskola
     type: collection
-    path: src/swim-school-groups
+    path: src/content/swim-school
+    filename: "{primary}.md"
+    view:
+      fields: [ title, order ]
+      primary: title
+      sort: [ order, title ]
+      default: { sort: order, order: asc }
+    fields:
+      - { name: title, label: Namn, type: string, required: true }
+      - { name: order, label: Order, type: number }
+      - { name: body, label: Beskrivning, type: rich-text }
+  - name: training-groups
+    label: Träningsgrupper
+    type: collection
+    path: src/content/training-groups
     filename: "{primary}.md"
     view:
       fields: [ title, order ]
@@ -17,10 +31,10 @@ content:
       - { name: description, label: Kort beskrivning, type: string, options: { maxlength: 180 }}
       - { name: order, label: Order, type: number }
       - { name: body, label: Beskrivning, type: rich-text }
-  - name: training-groups
-    label: Träningsgrupper
+  - name: club-info
+    label: Föreningsinformation
     type: collection
-    path: src/training-groups
+    path: src/content/club
     filename: "{primary}.md"
     view:
       fields: [ title, order ]

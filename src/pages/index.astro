@@ -1,10 +1,11 @@
 ---
 import { type CollectionEntry, getCollection } from 'astro:content';
-import { chunk } from 'es-toolkit';
 import Nav from '../components/Nav.astro';
 import Hero from '../components/Hero.astro';
 import Footer from '../components/Footer.astro';
 import Section from '../components/Section.astro';
+import Grid from '../components/Grid.astro';
+import MemberModal from '../components/MemberModal.astro';
 import SwimSchoolGroup from '../components/SwimSchoolGroup.astro';
 import TrainingGroup from '../components/TrainingGroup.astro'
 import ClubInfo from '../components/ClubInfo.astro'
@@ -17,8 +18,7 @@ const trainingGroups = await getCollection('trainingGroups');
 const clubInfo = await getCollection('clubInfo');
 
 import '../styles/_global.scss';
-import '@fontsource/inter';
-import '@fontsource/geist';
+import '@fontsource-variable/figtree';
 ---
 
 <html class="has-navbar-fixed-top">
@@ -31,43 +31,38 @@ import '@fontsource/geist';
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 
-<body x-data="{ atTop: true, open: false }" x-on:scroll.window="atTop = (window.pageYOffset > 100) ? false : true; ">
+<body x-data="{ atTop: true, open: false, modal: false }" x-on:scroll.window="atTop = (window.pageYOffset > 100) ? false : true; ">
   <Nav></Nav>
   <Hero></Hero>
   <Section id="swimschool" title="Simskola">
-    {chunk(swimsSchoolGroups, 3).map(chunk => 
-      <div class="columns">
-        {chunk.map(entry => (
-          <div class="column is-4">
+    <Grid>
+        {swimsSchoolGroups.map(entry => (
+          <div class="cell">
             <SwimSchoolGroup id={entry.id} ></SwimSchoolGroup>            
           </div>
         ))}
-      </div>
-    )}
+    </Grid>
   </Section>
   <Section id="training" title="Träningsgrupper">
-    {chunk(trainingGroups, 3).map(chunk => 
-      <div class="columns">
-        {chunk.map(entry => (
-          <div class="column is-4">
+    <Grid>
+        {trainingGroups.map(entry => (
+          <div class="cell">
             <TrainingGroup id={entry.id} ></TrainingGroup>      
           </div>
         ))}
-      </div>
-    )}
+    </Grid>
   </Section>
   <Section id="club" title="Föreningen">
-    {chunk(clubInfo, 3).map(chunk => 
-      <div class="columns">
-        {chunk.map(entry => (
-          <div class="column is-4">
-            <ClubInfo id={entry.id} ></ClubInfo>      
-          </div>
-        ))}
-      </div>
-    )}
-  </Section>
+    <Grid>
+      {clubInfo.map(entry => 
+        <div class="cell">
+          <ClubInfo id={entry.id} ></ClubInfo>      
+        </div>
+      )}
+    </Grid>
+  </Section>  
   <Footer></Footer>
+  <MemberModal :class="{ 'is-active': modal }"></MemberModal>
 </body>
 
 </html>

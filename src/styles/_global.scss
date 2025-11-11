@@ -1,24 +1,41 @@
 $azure: #357eb2;
-$darkSky: #0b2d5c;
+$darkSky: #104084;
+$assBlue: hsl(204 62% 34% / 1);
 
 @use "bulma/versions/bulma-no-dark-mode.scss" with (
-  $family-primary: '"Inter", sans-serif',
+  $family-primary: '"Figtree Variable", sans-serif',
   $navbar-breakpoint: 320px, // Do not hide menu items too soon
-  $navbar-box-shadow-color: rgba(117, 117, 117, 0.2),
-  $navbar-box-shadow-size: 0 1px 0 0,
+  $navbar-item-img-max-height: 4.5rem,
   $card-shadow: 0 0.2em 0.8em -0.125em hsla(221deg, 14%, 4%, 0.2),
-  $primary: $azure,
+  $primary: $assBlue,
   $title-color: $darkSky,
   $content-heading-color: $darkSky
 );
 
-.navbar .navbar-item svg { 
-  width: 100px; 
-  height: auto; 
-  display: block;
-  /* Flip horizontally */
-  transform: scaleX(-1);  
-  transform-origin: 50% 50%;
+.cell {
+  display: grid;
+  height: 100%;
+}
+
+.navbar .navbar-item .logo { 
+  width: 100px;
+}
+
+.navbar {
+  transition: background-color 300ms linear;
+  -webkit-transition: background-color 300ms linear;
+  -ms-transition: background-color 300ms linear;
+  -o-transition: background-color 300ms linear;
+  -ms-transition: background-color 300ms linear;
+}
+
+.navbar.scrolled-down {
+  background-color: hsl(204 62% 34% / 0.9);
+  transition: background-color 300ms linear;
+  -webkit-transition: background-color 300ms linear;
+  -ms-transition: background-color 300ms linear;
+  -o-transition: background-color 300ms linear;
+  -ms-transition: background-color 300ms linear;
 }
 
 .hero {
@@ -43,11 +60,11 @@ html {
 };
 
 section {
-  scroll-margin-top: 40px;
+  scroll-margin-top: 60px;
 };
 
 h1, h2, h3, h4, h5, .title, .subtitle {
-  font-family: "Geist", sans-serif;
+  font-family: "Figtree Variable", sans-serif;
 }
 
 .content h5 {

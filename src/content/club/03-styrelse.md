@@ -1,11 +1,11 @@
 ---
-title: Styrelsen
+title: Styrelse
 image: 'media/jess-zoerb-wXnYUrdRwKs-unsplash.jpg'
 imageAttribution: 'Jess Zoerb, Unsplash'
 ---
 
-- Ordförande: Johan Marand
-- Kassör: Kristoffer Georgsson
-- Sekreterare: Malena Valtersson
-- Ledamot: Fredrik Sund
-- Ledamot: Fredrik Erazim
+Ordförande: Johan Marand<br>
+Kassör: Kristoffer Georgsson<br>
+Sekreterare: Malena Valtersson<br>
+Ledamot: Fredrik Sund<br>
+Ledamot: Fredrik Erazim

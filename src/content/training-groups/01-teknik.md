@@ -1,7 +1,11 @@
 ---
 title: Teknik
+image: 'media/teknik.jpg'
+imageAttribution: 'Alvesta Simsällskap'
 ---
 
-To configure Pages CMS you just need to add a `.pages.yml` file to the repository (and branch) that hosts your content and media. If this file isn't there when you open your repository/branch in Pages CMS, you will be presented with a link to add one via the Pages CMS interface.
+Förkunskaper: Att man har klarat Guldhajen
 
-You can have different configuration files on separate branches. The Pages CMS interface allows you to navigate between them (click on the name of repository at the top of the sidebar and then select the branch in the dropdown menu).
+Mål: Att ha en grundteknik i de fyra simsätten samt att kunna göra starter och vändningar
+
+Delmoment: Övningar och repetitioner för att bättra på tekniken i de fyra simsätten och träning på starter och vändningar. Teknik tränar 2 gång/vecka. 

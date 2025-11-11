@@ -9,6 +9,9 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@fontsource-variable/figtree": "^5.2.10",
+    "@fontsource-variable/montserrat": "^5.2.8",
+    "@fontsource-variable/roboto": "^5.2.8",
     "@fontsource/geist": "^5.2.8",
     "@fontsource/inter": "^5.2.8",
     "@fontsource/material-symbols-rounded": "^5.2.27",
