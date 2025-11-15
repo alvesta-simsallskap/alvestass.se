@@ -1,9 +1,6 @@
 ---
 order: 5
 title: Kontakt
-tags: club
-image: 'media/thomas-park-QGdRrty4054-unsplash.jpg'
-imageAttribution: 'Jess Zoerb, Unsplash'
 ---
 
 [kansli@alvestass.se](mailto:kansli@alvestass.se)<br>

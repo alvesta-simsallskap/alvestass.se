@@ -14,8 +14,13 @@ const swimsSchoolGroups = (await getCollection('swimSchool')).sort(
   (a, b) => a.data.order - b.data.order
 );
 
-const trainingGroups = await getCollection('trainingGroups');
-const clubInfo = await getCollection('clubInfo');
+const trainingGroups = (await getCollection('trainingGroups')).sort(
+  (a, b) => a.data.order - b.data.order
+);
+
+const clubInfo = (await getCollection('clubInfo')).sort(
+  (a, b) => a.data.order - b.data.order
+);
 
 import '../styles/_global.scss';
 import '@fontsource-variable/figtree';

@@ -1,0 +1,66 @@
+---
+import { Picture } from 'astro:assets';
+import imgBaddaren from '../media/simskola-01-baddaren.jpg';
+import imgSilverpingvinen from '../media/simskola-02-silverpingvinen.jpg';
+import imgGuldpingvinen from '../media/simskola-03-guldpingvinen.jpg';
+import imgSilverfisken from '../media/simskola-04-silverfisken.jpg';
+import imgGuldfisken from '../media/simskola-05-guldfisken.jpg';
+import imgSilverhajen from '../media/simskola-06-silverhajen.jpg';
+import imgGuldhajen from '../media/simskola-07-guldhajen.jpg';
+
+import imgTeknik from '../media/grupp-teknik.jpg';
+import imgTavling from '../media/grupp-tavling.jpg';
+import imgMasters from '../media/grupp-masters.jpg';
+
+import imgHistoria from '../media/forening-historia.jpg';
+import imgKontakt from '../media/forening-kontakt.jpg';
+import imgEngagera from '../media/forening-engagera.jpg';
+import imgStyrelse from '../media/forening-styrelse.jpg';
+import imgHandbok from '../media/forening-handbok.jpg';
+
+const { id, title } = Astro.props;
+let imgSrc;
+
+switch (id) {
+  case '01-baddaren': imgSrc = imgBaddaren; break;
+  case '02-silverpingvinen': imgSrc = imgSilverpingvinen; break;
+  case '03-guldpingvinen': imgSrc = imgGuldpingvinen; break;
+  case '04-silverfisken': imgSrc = imgSilverfisken; break;
+  case '05-guldfisken': imgSrc = imgGuldfisken; break;
+  case '06-silverhajen': imgSrc = imgSilverhajen; break;
+  case '07-guldhajen': imgSrc = imgGuldhajen; break;
+
+  case '01-teknik': imgSrc = imgTeknik; break;
+  case '02-tavling': imgSrc = imgTavling; break;
+  case '03-masters': imgSrc = imgMasters; break;
+
+  case '01-handbok': imgSrc = imgHandbok; break;
+  case '02-engagera': imgSrc = imgEngagera; break;
+  case '03-historia': imgSrc = imgHistoria; break;
+  case '04-styrelse': imgSrc = imgStyrelse; break;
+  case '05-kontakt': imgSrc = imgKontakt; break;
+
+  default: imgSrc = imgKontakt; break;
+}
+
+---
+<div class="card">
+  <div class="card-image">
+      <figure class="image is-16by9">
+        <Picture 
+          src={imgSrc} 
+          formats={['avif', 'webp']} 
+          alt={title}
+          layout='constrained' 
+          width={1020}
+          height={510} 
+        />
+      </figure>
+  </div>
+  <div class="card-content">
+    <div class="content">
+      <h3>{title}</h3>
+      <slot />
+    </div>
+  </div>
+</div>

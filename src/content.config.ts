@@ -5,9 +5,7 @@ const swimSchool = defineCollection({
   loader: glob({ base: './src/content/swim-school', pattern: '**/*.md' }),
   schema: z.object({
     title: z.string(),
-    order: z.number(),
-    image: z.string().optional(),
-    imageAttribution: z.string().optional(),
+    order: z.number()
   }),
 });
 
@@ -15,8 +13,7 @@ const trainingGroups = defineCollection({
   loader: glob({ base: './src/content/training-groups', pattern: '**/*.md' }),
   schema: z.object({
     title: z.string(),
-    image: z.string().optional(),
-    imageAttribution: z.string().optional(),
+    order: z.number()
   }),
 });
 
@@ -24,8 +21,7 @@ const clubInfo = defineCollection({
   loader: glob({ base: './src/content/club', pattern: '**/*.md' }),
   schema: z.object({
     title: z.string(),
-    image: z.string().optional(),
-    imageAttribution: z.string().optional(),
+    order: z.number()
   }),
 });
 

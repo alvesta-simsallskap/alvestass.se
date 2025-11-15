@@ -1,7 +1,7 @@
 ---
 title: Baddaren
 order: 1
-image: 'media/Simskola.001.jpeg'
+image: '../media/Simskola.001.jpeg'
 imageAttribution: 'Svensk Simidrott'
 ---
 

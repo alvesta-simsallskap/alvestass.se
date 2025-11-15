@@ -1,7 +1,6 @@
 ---
 title: Teknik
-image: 'media/teknik.jpg'
-imageAttribution: 'Alvesta Simsällskap'
+order: 1
 ---
 
 Förkunskaper: Att man har klarat Guldhajen
