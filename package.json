@@ -15,7 +15,7 @@
     "@fontsource/geist": "^5.2.8",
     "@fontsource/inter": "^5.2.8",
     "@fontsource/material-symbols-rounded": "^5.2.27",
-    "astro": "^5.15.1",
+    "astro": "^5.15.7",
     "bulma": "^1.0.4",
     "es-toolkit": "^1.41.0",
     "sass": "^1.93.2"
