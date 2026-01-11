@@ -1,5 +1,5 @@
 ---
-title: Silverfisken
+title: Silverfisken (4)
 order: 4
 image: 'media/Simskola.004.jpeg'
 imageAttribution: 'Svensk Simidrott'

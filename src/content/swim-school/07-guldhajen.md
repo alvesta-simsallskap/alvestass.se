@@ -1,5 +1,5 @@
 ---
-title: Guldhajen
+title: Guldhajen (7)
 order: 7
 image: 'media/Simskola.007.jpeg'
 imageAttribution: 'Svensk Simidrott'
