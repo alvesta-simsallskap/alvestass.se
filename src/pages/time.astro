@@ -1,0 +1,175 @@
+---
+export const prerender = true;
+---
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Time Entries</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <!-- Alpine is auto-injected by @astrojs/alpinejs integration -->
+        <style>
+            body {
+                font-family: system-ui, sans-serif;
+                margin: 2rem;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 1rem;
+            }
+            th,
+            td {
+                padding: 0.5rem;
+                border-bottom: 1px solid #ddd;
+            }
+            form {
+                display: grid;
+                grid-template-columns: 1fr 1fr 2fr auto;
+                gap: 0.5rem;
+                align-items: end;
+            }
+            input,
+            textarea {
+                padding: 0.4rem;
+            }
+            button {
+                padding: 0.5rem 0.8rem;
+            }
+        </style>
+    </head>
+    <body x-data="timeEntries()" x-init="load()">
+        <h1>Time Entries</h1>
+        <!-- Add / Edit form -->
+        <form @submit.prevent="isEditing ? update() : add()">
+            <div>
+                <label>Date</label>
+                <input type="date" x-model="form.date" required />
+            </div>
+            <div>
+                <label>Hours</label>
+                <input
+                    type="number"
+                    step="0.25"
+                    min="0"
+                    x-model.number="form.hours"
+                    required
+                />
+            </div>
+            <div>
+                <label>Description</label>
+                <textarea
+                    rows="1"
+                    x-model="form.description"
+                    placeholder="What did you do?"></textarea>
+            </div>
+            <div>
+                <button type="submit" x-text="isEditing ? 'Update' : 'Add'"
+                ></button>
+                <button type="button" @click="reset()" x-show="isEditing"
+                    >Cancel</button
+                >
+            </div>
+        </form>
+        <!-- List -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Hours</th>
+                    <th>Description</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <template x-for="item in entries" :key="item.id">
+                    <tr>
+                        <td x-text="item.date"></td>
+                        <td x-text="item.hours"></td>
+                        <td x-text="item.description"></td>
+                        <td>
+                            <button @click="edit(item)">Edit</button>
+                            <button @click="remove(item)">Delete</button>
+                        </td>
+                    </tr>
+                </template>
+                <tr x-show="entries.length === 0">
+                    <td colspan="4" style="opacity:.7">No entries yet</td>
+                </tr>
+            </tbody>
+        </table>
+        <script type="module">
+            function app() {
+                return {
+                    auth: { user: "", pass: "" },
+                    entries: [],
+                    isEditing: false,
+                    editingId: null,
+                    form: { date: "", hours: 0, description: "" },
+
+                    async init() {},
+                    async load() {
+                        this.entries = await this.request("/api/entries");
+                    },
+                    async add() {
+                        const created = await this.request("/api/entries", {
+                            method: "POST",
+                            body: this.form,
+                        });
+                        this.entries = [created, ...this.entries];
+                        this.reset();
+                    },
+                    edit(item) {
+                        this.isEditing = true;
+                        this.editingId = item.id;
+                        this.form = {
+                            date: item.date,
+                            hours: item.hours,
+                            description: item.description ?? "",
+                        };
+                    },
+                    async update() {
+                        const updated = await this.request(
+                            `/api/entries/${this.editingId}`,
+                            { method: "PUT", body: this.form },
+                        );
+                        this.entries = this.entries.map((e) =>
+                            e.id === this.editingId ? updated : e,
+                        );
+                        this.reset();
+                    },
+                    async remove(item) {
+                        if (!confirm("Delete this entry?")) return;
+                        await this.request(`/api/entries/${item.id}`, {
+                            method: "DELETE",
+                        });
+                        this.entries = this.entries.filter(
+                            (e) => e.id !== item.id,
+                        );
+                    },
+
+                    async request(path, { method = "GET", body } = {}) {
+                        const headers = { "content-type": "application/json" };
+                        if (this.auth.user && this.auth.pass)
+                            headers["Authorization"] =
+                                "Basic " +
+                                btoa(`${this.auth.user}:${this.auth.pass}`);
+                        const res = await fetch(path, {
+                            method,
+                            headers,
+                            body: body ? JSON.stringify(body) : undefined,
+                        });
+                        if (res.status === 401) throw new Error("Unauthorized");
+                        if (res.status === 204) return null;
+                        return res.json();
+                    },
+                    reset() {
+                        this.isEditing = false;
+                        this.editingId = null;
+                        this.form = { date: "", hours: 0, description: "" };
+                    },
+                };
+            }
+        </script>
+    </body>
+</html>
