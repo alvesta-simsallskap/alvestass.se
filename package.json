@@ -19,8 +19,7 @@
     "astro": "^5.15.7",
     "bulma": "^1.0.4",
     "es-toolkit": "^1.41.0",
-    "sass": "^1.93.2",
-    "sharp": "^0.34.5"
+    "sass": "^1.93.2"
   },
   "devDependencies": {
     "wrangler": "^4.58.0"
