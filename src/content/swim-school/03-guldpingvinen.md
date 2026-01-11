@@ -1,5 +1,5 @@
 ---
-title: Guldpingvinen
+title: Guldpingvinen (3)
 order: 3
 image: 'media/Simskola.003.jpeg'
 imageAttribution: 'Svensk Simidrott'

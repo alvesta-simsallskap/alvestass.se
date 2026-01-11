@@ -1,5 +1,5 @@
 ---
-title: Silverpingvinen
+title: Silverpingvinen (2)
 order: 2
 image: 'media/Simskola.002.jpeg'
 imageAttribution: 'Svensk Simidrott'
