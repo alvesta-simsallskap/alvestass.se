@@ -1,16 +1,22 @@
 {
 	"main": "dist/_worker.js/index.js",
 	"name": "alvestass-se",
-  "compatibility_date": "2026-01-08",
-  "compatibility_flags": [
-    "nodejs_compat",
-    "global_fetch_strictly_public"
-  ],
+	"compatibility_date": "2026-01-08",
+	"compatibility_flags": [
+		"nodejs_compat",
+		"global_fetch_strictly_public"
+	],
 	"assets": {
 		"binding": "ASSETS",
 		"directory": "./dist"
 	},
 	"observability": {
-    "enabled": true
-  }
+		"enabled": true
+	},
+	"kv_namespaces": [
+		{
+			"binding": "TIME",
+			"id": "83278bf16b4a4b98acec0f5dec506b52"
+		}
+	]
 }
