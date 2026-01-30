@@ -267,7 +267,7 @@ import '../styles/_global.scss';
         </form>
       </div>
     </section>
-    <script>
+    <script is:inline>
       document.addEventListener('alpine:init', () => {
         Alpine.data('formHandler', () => ({
           async handleSubmit(e) {
@@ -283,6 +283,6 @@ import '../styles/_global.scss';
         }));
       });
     </script>
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   </body>
 </html>
