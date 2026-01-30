@@ -1,36 +1,68 @@
+export const prerender = false;
+
 import type { APIRoute } from 'astro';
 
 export const POST: APIRoute = async ({ request }) => {
   const formData = await request.formData();
 
+  const token = formData.get('cf-turnstile-response');
+  const secretKey = import.meta.env.TURNSTILE_SECRET_KEY;
+
+  const verifyRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `secret=${secretKey}&response=${token}`,
+  });
+
+  const verifyData = await verifyRes.json() as { success: boolean };
+  
+  if (!verifyData.success) {
+    return new Response('Turnstile verification failed', { status: 400 });
+  }
+
   // Extract fields
-  const name = formData.get('Namn') || '';
-  const email = formData.get('E-post') || '';
+  const name = formData.get('namn') || '';
+  const email = formData.get('email') || '';
   const milersattning = formData.get('milersattning') || '';
   const kommentarer = formData.get('kommentarer') || '';
 
   // Collect checked dates for each section
   const simskola = formData.getAll('simskola_checked_dates[]');
-  const tavling = formData.getAll('tävling_checked_dates[]');
+  const tavling = formData.getAll('tavling_checked_dates[]');
   const teknik = formData.getAll('teknik_checked_dates[]');
   const masters = formData.getAll('masters_checked_dates[]');
   const vuxencrawl = formData.getAll('vuxencrawl_checked_dates[]');
-  const ovrigt = formData.getAll('övrigt_checked_dates[]');
+  const ovrigt = formData.getAll('ovrigt_checked_dates[]');
 
   // Compose email content
-  const text = `
-    Namn: ${name}
-    E-post: ${email}
-    Milersättning: ${milersattning}
-    Kommentarer: ${kommentarer}
+  let text = `Namn: ${name}.\n E-post: ${email}\n\n`;
 
-    Simskola: ${simskola.join(', ')}
-    Tävlingsgrupp: ${tavling.join(', ')}
-    Teknik: ${teknik.join(', ')}
-    Masters: ${masters.join(', ')}
-    Vuxencrawl: ${vuxencrawl.join(', ')}
-    Övrigt: ${ovrigt.join(', ')}
-  `;
+  if (simskola.length > 0) {
+    text += `Simskola:\n${simskola.map(date => `  ${date}`).join('\n')}\n\n`;
+  }
+  if (tavling.length > 0) {
+    text += `Tävlingsgrupp:\n${tavling.map(date => `  ${date}`).join('\n')}\n\n`;
+  }
+  if (teknik.length > 0) {
+    text += `Teknik:\n${teknik.map(date => `  ${date}`).join('\n')}\n\n`;
+  }
+  if (masters.length > 0) {
+    text += `Masters:\n${masters.map(date => `  ${date}`).join('\n')}\n\n`;
+  }
+  if (vuxencrawl.length > 0) {
+    text += `Vuxencrawl:\n${vuxencrawl.map(date => `  ${date}`).join('\n')}\n\n`;
+  }
+  if (ovrigt.length > 0) {
+    text += `Övrigt:\n${ovrigt.map(date => `  ${date}`).join('\n')}\n\n`;
+  }
+
+  if (milersattning) {
+    text += `\nMilersättning: ${milersattning} km\n\n`;
+  }
+
+  if (kommentarer) {
+    text += `\nKommentarer: ${kommentarer}\n`;
+  }
 
   // Mailjet API credentials from environment variables
   const MJ_APIKEY_PUBLIC = import.meta.env.MJ_APIKEY_PUBLIC;

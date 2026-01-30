@@ -11,20 +11,34 @@ import '../styles/_global.scss';
   <body>
     <section class="section">
       <div class="container is-max-desktop">
-        <h1 class="title">Arbetad tid</h1>
-        <h2 class="subtitle">Januari 2026</h2>
-        <form method="POST" action="/api/send-time-report">
+        <h1 class="title">Arbetad tid i Alvesta Simsällskap</h1>
+        <h2 class="subtitle">Månadsrapport januari 2026</h2>
+        <form method="POST" action="/api/send-time-report" x-data="formHandler" x-on:submit.prevent="handleSubmit">
           <div class="box mt-5">
             <div class="field">
               <label class="label">Namn</label>
               <div class="control">
-                <input class="input" type="text" placeholder="Namn" required />
+              <input
+                class="input"
+                type="text"
+                placeholder="Namn"
+                name="namn"
+                required
+                autocomplete="name"
+              />
               </div>
             </div>
             <div class="field">
               <label class="label">E-post (kopia skickas hit)</label>
               <div class="control">
-                <input class="input" type="email" placeholder="E-postadress" required />
+              <input
+                class="input"
+                type="email"
+                placeholder="E-postadress"
+                name="email"
+                required
+                autocomplete="email"
+              />
               </div>
             </div>
           </div>
@@ -32,13 +46,12 @@ import '../styles/_global.scss';
           <div class="box mt-5" x-data="{ open: false, section: 'simskola', rows: [
             { date: '2026-01-25', checked: false },
           ] }">
-            <h2 class="title is-4" @click="open = !open" style="cursor:pointer;">
+            <h2 class="title is-5 my-0" @click="open = !open" style="cursor:pointer;">
               Simskola
               <span x-text="open ? '▲' : '▼'" class="ml-2 is-size-6"></span>
             </h2>
-            <div x-show="open" x-transition>
+            <div class="mt-4" x-show="open" x-transition>
               <div class="field">
-                <label class="label">Tillfällen</label>
                 <div>
                   <template x-for="(row, idx) in rows" :key="row.date">
                     <div class="field is-grouped mb-2">
@@ -62,16 +75,16 @@ import '../styles/_global.scss';
           </div>
 
           <div class="box mt-5" x-data="{ open: false }">
-            <h2 class="title is-4" @click="open = !open" style="cursor:pointer;">
+            <h2 class="title is-5 my-0" @click="open = !open" style="cursor:pointer;">
               Träningar
               <span x-text="open ? '▲' : '▼'" class="ml-2 is-size-6"></span>
             </h2>
             <div x-show="open" x-transition>
-              <div class="columns">
+              <div class="columns mt-2">
                 <div class="column">
                   <div class="field">
                     <label class="label">Tävlingsgrupp</label>
-                    <div x-data="{ section: 'tävling', rows: [
+                    <div x-data="{ section: 'tavling', rows: [
                         { date: '2026-01-05', checked: false },
                         { date: '2026-02-15', checked: false },
                         { date: '2026-03-10', checked: false }
@@ -180,21 +193,19 @@ import '../styles/_global.scss';
             </div>
           </div>
 
-          <div class="box mt-5" x-data="{ open: false, section: 'övrigt',  rows: [
-            { date: '2026-01-28', checked: false },
-            { date: '2026-02-15', checked: false },
-            { date: '2026-03-10', checked: false }
+          <div class="box mt-5" x-data="{ open: false, section: 'ovrigt',  rows: [
+            { date: '2026-01-21', title: 'HLR-utbildning', checked: false },
+            { date: '2026-01-31', title: 'ÖGP Växjö', checked: false },
           ] }">
-            <h2 class="title is-4" @click="open = !open" style="cursor:pointer;">
+            <h2 class="title is-5 my-0" @click="open = !open" style="cursor:pointer;">
               Övrig tid
               <span x-text="open ? '▲' : '▼'" class="ml-2 is-size-6"></span>
             </h2>
-            <div x-show="open" x-transition>
-              <div class="field">
-                <label class="label">Dates</label>
+            <div class="mt-4" x-show="open" x-transition>
+              <div class="field">                
                 <div>
                   <template x-for="(row, idx) in rows" :key="row.date">
-                    <div class="field is-grouped mb-2">
+                    <div class="field is-grouped mt-2">                      
                       <div class="control">
                         <label class="checkbox">
                           <input
@@ -204,7 +215,7 @@ import '../styles/_global.scss';
                             :value="row.date"
                             x-model="row.checked"
                           />
-                          <span x-text="row.date" class="ml-2"></span>
+                          <span x-text="row.date + ' ' + row.title" class="ml-2"></span>
                         </label>
                       </div>
                     </div>
@@ -220,9 +231,9 @@ import '../styles/_global.scss';
                 <div class="field">
                   <label class="label">Kommentarer</label>
                   <div class="control">
-                    <textarea class="textarea" rows="3" placeholder="Eventuella kommentarer"></textarea>
+                    <textarea class="textarea" rows="3" placeholder="Eventuella kommentarer" name="kommentarer"></textarea>
                   </div>
-                  <p class="help">Ange eventuella avvikelser från tillfällena ovan eller extra arbetstid</p>
+                  <p class="help">Eventuella kommentarer för tillfällena ovan, annan extra arbetstid eller utlägg</p>
                 </div>
               </div>
               <div class="column">
@@ -246,6 +257,9 @@ import '../styles/_global.scss';
             </div>
           </div>
           <div class="field">
+            <div class="cf-turnstile" data-sitekey="0x4AAAAAACV0HK5DAZEGpQip"></div>
+          </div>          
+          <div class="field">
             <div class="control">
               <button class="button is-link is-primary" type="submit">Skicka in tidrapport</button>
             </div>
@@ -253,5 +267,22 @@ import '../styles/_global.scss';
         </form>
       </div>
     </section>
+    <script>
+      document.addEventListener('alpine:init', () => {
+        Alpine.data('formHandler', () => ({
+          async handleSubmit(e) {
+            const form = e.target;
+            const formData = new FormData(form);
+            const res = await fetch(form.action, { method: 'POST', body: formData });
+            if (res.ok) {
+              window.location.href = '/tack';
+            } else {
+              alert('Något gick fel. Försök igen.');
+            }
+          }
+        }));
+      });
+    </script>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   </body>
 </html>

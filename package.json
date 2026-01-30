@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@astrojs/alpinejs": "^0.4.9",
+    "@astrojs/check": "^0.9.6",
     "@astrojs/cloudflare": "^12.6.12",
     "@fontsource-variable/figtree": "^5.2.10",
     "@fontsource-variable/montserrat": "^5.2.8",
@@ -23,7 +24,8 @@
     "astro": "^5.17.1",
     "bulma": "^1.0.4",
     "es-toolkit": "^1.41.0",
-    "sass": "^1.93.2"
+    "sass": "^1.93.2",
+    "typescript": "^5.9.3"
   },
   "devDependencies": {
     "@types/node": "^25.0.6",
