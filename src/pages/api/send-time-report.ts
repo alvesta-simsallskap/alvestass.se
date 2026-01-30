@@ -70,8 +70,9 @@ export const POST: APIRoute = async ({ request }) => {
 
   // Recipients
   const recipients = [
+    { Email: "lon@alvestass.se" },
     { Email: "johan.marand@alvestass.se" },
-    { Email: "johan.marand@icloud.com" }
+    { Email: email } // The one who filled out the form
   ];
 
   // Send email via Mailjet API
@@ -84,9 +85,9 @@ export const POST: APIRoute = async ({ request }) => {
     body: JSON.stringify({
       Messages: [
         {
-          From: { Email: "noreply@alvestass.se", Name: "Tidrapport" },
+          From: { Email: "noreply@alvestass.se", Name: "Alvesta Simsällskap" },
           To: recipients,
-          Subject: "Ny tidrapport",
+          Subject: `Tidrapport för ${name}`,
           TextPart: text,
         }
       ]
