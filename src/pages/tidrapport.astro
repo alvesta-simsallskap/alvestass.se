@@ -194,7 +194,7 @@ import '../styles/_global.scss';
           </div>
 
           <div class="box mt-5" x-data="{ open: false, section: 'ovrigt',  rows: [
-            { date: '2026-01-21', title: 'HLR-utbildning', checked: false },
+            { date: '2026-01-22', title: 'HLR-utbildning', checked: false },
             { date: '2026-01-31', title: 'ÖGP Växjö', checked: false },
           ] }">
             <h2 class="title is-5 my-0" @click="open = !open" style="cursor:pointer;">
@@ -212,7 +212,7 @@ import '../styles/_global.scss';
                             type="checkbox"
                             :id="`${section}-checkbox-${row.date}`"
                             :name="`${section}_checked_dates[]`"
-                            :value="row.date"
+                            :value="`${row.date} `${row.title}`"
                             x-model="row.checked"
                           />
                           <span x-text="row.date + ' ' + row.title" class="ml-2"></span>
