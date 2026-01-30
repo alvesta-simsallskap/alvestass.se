@@ -2,12 +2,15 @@ export const prerender = false;
 
 import type { APIRoute } from 'astro';
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, locals }) => {
+  const MJ_APIKEY_PUBLIC = locals.runtime.env.MJ_APIKEY_PUBLIC;
+  const MJ_APIKEY_PRIVATE = locals.runtime.env.MJ_APIKEY_PRIVATE;
+  const TURNSTILE_SECRET_KEY = locals.runtime.env.TURNSTILE_SECRET_KEY;
+ 
   const formData = await request.formData();
 
-  /*
   const token = formData.get('cf-turnstile-response');
-  const secretKey = import.meta.env.TURNSTILE_SECRET_KEY;
+  const secretKey = TURNSTILE_SECRET_KEY;
 
   const verifyRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
     method: 'POST',
@@ -20,8 +23,7 @@ export const POST: APIRoute = async ({ request }) => {
   if (!verifyData.success) {
     return new Response('Turnstile verification failed', { status: 400 });
   }
-  */
-
+  
   // Extract fields
   const name = formData.get('namn') || '';
   const email = formData.get('email') || '';
@@ -65,10 +67,6 @@ export const POST: APIRoute = async ({ request }) => {
   if (kommentarer) {
     text += `\nKommentarer: ${kommentarer}\n`;
   }
-
-  // Mailjet API credentials from environment variables
-  const MJ_APIKEY_PUBLIC = import.meta.env.MJ_APIKEY_PUBLIC;
-  const MJ_APIKEY_PRIVATE = import.meta.env.MJ_APIKEY_PRIVATE;
 
   // Recipients
   const recipients = [
