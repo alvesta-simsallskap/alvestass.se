@@ -5,6 +5,7 @@ import type { APIRoute } from 'astro';
 export const POST: APIRoute = async ({ request }) => {
   const formData = await request.formData();
 
+  /*
   const token = formData.get('cf-turnstile-response');
   const secretKey = import.meta.env.TURNSTILE_SECRET_KEY;
 
@@ -19,6 +20,7 @@ export const POST: APIRoute = async ({ request }) => {
   if (!verifyData.success) {
     return new Response('Turnstile verification failed', { status: 400 });
   }
+  */
 
   // Extract fields
   const name = formData.get('namn') || '';
