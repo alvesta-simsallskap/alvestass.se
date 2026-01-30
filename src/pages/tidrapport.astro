@@ -1,0 +1,257 @@
+---
+import 'bulma/css/bulma.min.css';
+import '../styles/_global.scss';
+---
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Tidrapport</title>
+  </head>
+  <body>
+    <section class="section">
+      <div class="container is-max-desktop">
+        <h1 class="title">Arbetad tid</h1>
+        <h2 class="subtitle">Januari 2026</h2>
+        <form method="POST" action="/api/send-time-report">
+          <div class="box mt-5">
+            <div class="field">
+              <label class="label">Namn</label>
+              <div class="control">
+                <input class="input" type="text" placeholder="Namn" required />
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">E-post (kopia skickas hit)</label>
+              <div class="control">
+                <input class="input" type="email" placeholder="E-postadress" required />
+              </div>
+            </div>
+          </div>
+
+          <div class="box mt-5" x-data="{ open: false, section: 'simskola', rows: [
+            { date: '2026-01-25', checked: false },
+          ] }">
+            <h2 class="title is-4" @click="open = !open" style="cursor:pointer;">
+              Simskola
+              <span x-text="open ? '▲' : '▼'" class="ml-2 is-size-6"></span>
+            </h2>
+            <div x-show="open" x-transition>
+              <div class="field">
+                <label class="label">Tillfällen</label>
+                <div>
+                  <template x-for="(row, idx) in rows" :key="row.date">
+                    <div class="field is-grouped mb-2">
+                      <div class="control">
+                        <label class="checkbox">
+                          <input
+                            type="checkbox"
+                            :id="`${section}-checkbox-${row.date}`"
+                            :name="`${section}_checked_dates[]`"
+                            :value="row.date"
+                            x-model="row.checked"
+                          />                         
+                          <span x-text="row.date" class="ml-2"></span>                          
+                        </label>
+                      </div>
+                    </div>
+                  </template>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="box mt-5" x-data="{ open: false }">
+            <h2 class="title is-4" @click="open = !open" style="cursor:pointer;">
+              Träningar
+              <span x-text="open ? '▲' : '▼'" class="ml-2 is-size-6"></span>
+            </h2>
+            <div x-show="open" x-transition>
+              <div class="columns">
+                <div class="column">
+                  <div class="field">
+                    <label class="label">Tävlingsgrupp</label>
+                    <div x-data="{ section: 'tävling', rows: [
+                        { date: '2026-01-05', checked: false },
+                        { date: '2026-02-15', checked: false },
+                        { date: '2026-03-10', checked: false }
+                      ] }">
+                      <template x-for="(row, idx) in rows" :key="row.date">
+                        <div class="field is-grouped mb-2">
+                          <div class="control">
+                            <label class="checkbox">
+                              <input
+                                type="checkbox"
+                                :id="`${section}-checkbox-${row.date}`"
+                                :name="`${section}_checked_dates[]`"
+                                :value="row.date"
+                                x-model="row.checked"
+                              />
+                              <span x-text="row.date" class="ml-2"></span>
+                            </label>
+                          </div>
+                        </div>
+                      </template>
+                    </div>
+                  </div>
+                </div>
+                <div class="column">
+                  <div class="field">
+                    <label class="label">Teknik</label>
+                    <div x-data="{ open: false, section: 'teknik', rows: [
+                        { date: '2026-01-05', checked: false },
+                        { date: '2026-02-15', checked: false },
+                        { date: '2026-03-10', checked: false }
+                      ] }">
+                      <template x-for="(row, idx) in rows" :key="row.date">
+                        <div class="field is-grouped mb-2">
+                          <div class="control">
+                            <label class="checkbox">
+                              <input
+                                type="checkbox"
+                                :id="`${section}-checkbox-${row.date}`"
+                                :name="`${section}_checked_dates[]`"
+                                :value="row.date"
+                                x-model="row.checked"
+                              />
+                              <span x-text="row.date" class="ml-2"></span>
+                            </label>
+                          </div>
+                        </div>
+                      </template>
+                    </div>
+                  </div>
+                </div>
+                <div class="column">
+                  <div class="field">
+                    <label class="label">Masters</label>
+                    <div x-data="{ open: false, section: 'masters', rows: [
+                        { date: '2026-01-05', checked: false },
+                        { date: '2026-02-15', checked: false },
+                        { date: '2026-03-10', checked: false }
+                      ] }">
+                      <template x-for="(row, idx) in rows" :key="row.date">
+                        <div class="field is-grouped mb-2">
+                          <div class="control">
+                            <label class="checkbox">
+                              <input
+                                type="checkbox"
+                                :id="`${section}-checkbox-${row.date}`"
+                                :name="`${section}_checked_dates[]`"
+                                :value="row.date"
+                                x-model="row.checked"
+                              />
+                              <span x-text="row.date" class="ml-2"></span>
+                            </label>
+                          </div>
+                        </div>
+                      </template>
+                    </div>
+                  </div>
+                </div>                
+                <div class="column">
+                  <div class="field">
+                    <label class="label">Vuxencrawl</label>
+                    <div x-data="{ open: false, section: 'vuxencrawl', rows: [
+                        { date: '2026-01-05', checked: false },
+                        { date: '2026-02-15', checked: false },
+                        { date: '2026-03-10', checked: false }
+                      ] }">
+                      <template x-for="(row, idx) in rows" :key="row.date">
+                        <div class="field is-grouped mb-2">
+                          <div class="control">
+                            <label class="checkbox">
+                              <input
+                                type="checkbox"
+                                :id="`${section}-checkbox-${row.date}`"
+                                :name="`${section}_checked_dates[]`"
+                                :value="row.date"
+                                x-model="row.checked"
+                              />
+                              <span x-text="row.date" class="ml-2"></span>
+                            </label>
+                          </div>
+                        </div>
+                      </template>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="box mt-5" x-data="{ open: false, section: 'övrigt',  rows: [
+            { date: '2026-01-28', checked: false },
+            { date: '2026-02-15', checked: false },
+            { date: '2026-03-10', checked: false }
+          ] }">
+            <h2 class="title is-4" @click="open = !open" style="cursor:pointer;">
+              Övrig tid
+              <span x-text="open ? '▲' : '▼'" class="ml-2 is-size-6"></span>
+            </h2>
+            <div x-show="open" x-transition>
+              <div class="field">
+                <label class="label">Dates</label>
+                <div>
+                  <template x-for="(row, idx) in rows" :key="row.date">
+                    <div class="field is-grouped mb-2">
+                      <div class="control">
+                        <label class="checkbox">
+                          <input
+                            type="checkbox"
+                            :id="`${section}-checkbox-${row.date}`"
+                            :name="`${section}_checked_dates[]`"
+                            :value="row.date"
+                            x-model="row.checked"
+                          />
+                          <span x-text="row.date" class="ml-2"></span>
+                        </label>
+                      </div>
+                    </div>
+                  </template>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="box mt-5">
+            <div class="columns">
+              <div class="column">
+                <div class="field">
+                  <label class="label">Kommentarer</label>
+                  <div class="control">
+                    <textarea class="textarea" rows="3" placeholder="Eventuella kommentarer"></textarea>
+                  </div>
+                  <p class="help">Ange eventuella avvikelser från tillfällena ovan eller extra arbetstid</p>
+                </div>
+              </div>
+              <div class="column">
+                <div class="field">
+                  <label class="label">Milersättning (km)</label>
+                  <div class="control">
+                    <input
+                      class="input"
+                      type="number"
+                      name="milersattning"
+                      min="1"
+                      max="500"
+                      placeholder="Ange kilometer"
+                      required
+                      style="max-width: 150px;"
+                    />
+                  </div>
+                  <p class="help">Ange antal kilometer (1-500)</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <div class="control">
+              <button class="button is-link is-primary" type="submit">Skicka in tidrapport</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </section>
+  </body>
+</html>

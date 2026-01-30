@@ -7,8 +7,11 @@ $assBlue: hsl(204 62% 34% / 1);
   $navbar-breakpoint: 320px, // Do not hide menu items too soon
   $navbar-item-img-max-height: 4.5rem,
   $card-shadow: 0 0.2em 0.8em -0.125em hsla(221deg, 14%, 4%, 0.2),
+  $box-shadow: 0 0.2em 0.8em -0.125em hsla(221deg, 14%, 4%, 0.2),
   $primary: $assBlue,
   $title-color: $darkSky,
+  $title-weight: normal,
+  $weight-semibold: normal,
   $content-heading-color: $darkSky
 );
 
