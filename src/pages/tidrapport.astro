@@ -212,7 +212,7 @@ import '../styles/_global.scss';
                             type="checkbox"
                             :id="`${section}-checkbox-${row.date}`"
                             :name="`${section}_checked_dates[]`"
-                            :value="`${row.date} `${row.title}`"
+                            :value="row.date + ' ' + row.title"
                             x-model="row.checked"
                           />
                           <span x-text="row.date + ' ' + row.title" class="ml-2"></span>
