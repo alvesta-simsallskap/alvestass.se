@@ -67,7 +67,6 @@ export const POST: APIRoute = async ({ request, locals }) => {
   // Recipients
   const recipients = [
     { Email: "lon@alvestass.se" },
-    { Email: "johan.marand@alvestass.se" },
     { Email: email } // The one who filled out the form
   ];
 
@@ -83,7 +82,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         {
           From: { Email: "noreply@alvestass.se", Name: "Alvesta Simsällskap" },
           To: recipients,
-          Subject: `Tidrapport för ${name}`,
+          Subject: `Tidrapport för ${name} 2026-01`,
           TextPart: text,
         }
       ]
