@@ -77,18 +77,29 @@ import '../styles/_global.scss';
 
           <div class="box mt-5" x-data="{ open: false }">
             <h2 class="title is-5 my-0" @click="open = !open" style="cursor:pointer;">
-              Träningar
+              Träningsgrupper
               <span x-text="open ? '▲' : '▼'" class="ml-2 is-size-6"></span>
             </h2>
             <div x-show="open" x-transition>
               <div class="columns mt-2">
                 <div class="column">
                   <div class="field">
-                    <label class="label">Tävlingsgrupp</label>
+                    <label class="label">Tävling (A/B)</label>
                     <div x-data="{ section: 'tavling', rows: [
-                        { date: '2026-01-05', checked: false },
-                        { date: '2026-02-15', checked: false },
-                        { date: '2026-03-10', checked: false },
+                        { date: '2026-01-05', title: 'Träning', checked: false },
+                        { date: '2026-01-07', title: 'Träning', checked: false },
+                        { date: '2026-01-10', title: 'Träning', checked: false },
+                        { date: '2026-01-11', title: 'Träning', checked: false },
+                        { date: '2026-01-12', title: 'Träning', checked: false },
+                        { date: '2026-01-14', title: 'Träning', checked: false },
+                        { date: '2026-01-17', title: 'Träning', checked: false },
+                        { date: '2026-01-18', title: 'Träning', checked: false },
+                        { date: '2026-01-19', title: 'Träning', checked: false },
+                        { date: '2026-01-21', title: 'Träning', checked: false },
+                        { date: '2026-01-24', title: 'Träning', checked: false },
+                        { date: '2026-01-25', title: 'Träning', checked: false },
+                        { date: '2026-01-26', title: 'Träning', checked: false },
+                        { date: '2026-01-28', title: 'Träning', checked: false },
                         { date: '2026-01-31', title: 'ÖGP Växjö', checked: false }
                       ] }">
                       <template x-for="(row, idx) in rows" :key="row.date">
@@ -114,9 +125,13 @@ import '../styles/_global.scss';
                   <div class="field">
                     <label class="label">Teknik</label>
                     <div x-data="{ open: false, section: 'teknik', rows: [
-                        { date: '2026-01-05', checked: false },
-                        { date: '2026-02-15', checked: false },
-                        { date: '2026-03-10', checked: false }
+                      { date: '2026-01-08', title: 'Träning', checked: false },
+                      { date: '2026-01-12', title: 'Träning', checked: false },
+                      { date: '2026-01-15', title: 'Träning', checked: false },
+                      { date: '2026-01-19', title: 'Träning', checked: false },
+                      { date: '2026-01-22', title: 'Träning', checked: false },
+                      { date: '2026-01-26', title: 'Träning', checked: false },
+                      { date: '2026-01-29', title: 'Träning', checked: false },                        
                       ] }">
                       <template x-for="(row, idx) in rows" :key="row.date">
                         <div class="field is-grouped mb-2">
@@ -141,9 +156,14 @@ import '../styles/_global.scss';
                   <div class="field">
                     <label class="label">Masters</label>
                     <div x-data="{ open: false, section: 'masters', rows: [
-                        { date: '2026-01-05', checked: false },
-                        { date: '2026-02-15', checked: false },
-                        { date: '2026-03-10', checked: false }
+                        { date: '2026-01-05', title: 'Träning', checked: false },
+                        { date: '2026-01-08', title: 'Träning', checked: false },
+                        { date: '2026-01-12', title: 'Träning', checked: false },
+                        { date: '2026-01-15', title: 'Träning', checked: false },
+                        { date: '2026-01-19', title: 'Träning', checked: false },
+                        { date: '2026-01-22', title: 'Träning', checked: false },
+                        { date: '2026-01-26', title: 'Träning', checked: false },
+                        { date: '2026-01-29', title: 'Träning', checked: false },
                       ] }">
                       <template x-for="(row, idx) in rows" :key="row.date">
                         <div class="field is-grouped mb-2">
@@ -168,9 +188,7 @@ import '../styles/_global.scss';
                   <div class="field">
                     <label class="label">Vuxencrawl</label>
                     <div x-data="{ open: false, section: 'vuxencrawl', rows: [
-                        { date: '2026-01-05', checked: false },
-                        { date: '2026-02-15', checked: false },
-                        { date: '2026-03-10', checked: false }
+                        { date: '2026-01-28', title: 'Träning', checked: false },
                       ] }">
                       <template x-for="(row, idx) in rows" :key="row.date">
                         <div class="field is-grouped mb-2">
