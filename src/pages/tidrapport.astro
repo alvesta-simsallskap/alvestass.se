@@ -44,7 +44,8 @@ import '../styles/_global.scss';
           </div>
 
           <div class="box mt-5" x-data="{ open: false, section: 'simskola', rows: [
-            { date: '2026-01-25', checked: false },
+            { date: '2026-01-22', title: 'HLR-utbildning', checked: false },
+            { date: '2026-01-25', title: 'Simskola', checked: false },            
           ] }">
             <h2 class="title is-5 my-0" @click="open = !open" style="cursor:pointer;">
               Simskola
@@ -61,10 +62,10 @@ import '../styles/_global.scss';
                             type="checkbox"
                             :id="`${section}-checkbox-${row.date}`"
                             :name="`${section}_checked_dates[]`"
-                            :value="row.date"
+                            :value="row.date + ' ' + row.title"
                             x-model="row.checked"
-                          />                         
-                          <span x-text="row.date" class="ml-2"></span>                          
+                          />
+                          <span x-text="row.date + ' ' + row.title" class="ml-2"></span>
                         </label>
                       </div>
                     </div>
@@ -87,7 +88,8 @@ import '../styles/_global.scss';
                     <div x-data="{ section: 'tavling', rows: [
                         { date: '2026-01-05', checked: false },
                         { date: '2026-02-15', checked: false },
-                        { date: '2026-03-10', checked: false }
+                        { date: '2026-03-10', checked: false },
+                        { date: '2026-01-31', title: 'ÖGP Växjö', checked: false }
                       ] }">
                       <template x-for="(row, idx) in rows" :key="row.date">
                         <div class="field is-grouped mb-2">
@@ -188,38 +190,6 @@ import '../styles/_global.scss';
                       </template>
                     </div>
                   </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="box mt-5" x-data="{ open: false, section: 'ovrigt',  rows: [
-            { date: '2026-01-22', title: 'HLR-utbildning', checked: false },
-            { date: '2026-01-31', title: 'ÖGP Växjö', checked: false },
-          ] }">
-            <h2 class="title is-5 my-0" @click="open = !open" style="cursor:pointer;">
-              Övrig tid
-              <span x-text="open ? '▲' : '▼'" class="ml-2 is-size-6"></span>
-            </h2>
-            <div class="mt-4" x-show="open" x-transition>
-              <div class="field">                
-                <div>
-                  <template x-for="(row, idx) in rows" :key="row.date">
-                    <div class="field is-grouped mt-2">                      
-                      <div class="control">
-                        <label class="checkbox">
-                          <input
-                            type="checkbox"
-                            :id="`${section}-checkbox-${row.date}`"
-                            :name="`${section}_checked_dates[]`"
-                            :value="row.date + ' ' + row.title"
-                            x-model="row.checked"
-                          />
-                          <span x-text="row.date + ' ' + row.title" class="ml-2"></span>
-                        </label>
-                      </div>
-                    </div>
-                  </template>
                 </div>
               </div>
             </div>

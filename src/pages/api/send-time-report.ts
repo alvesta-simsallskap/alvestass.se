@@ -36,7 +36,6 @@ export const POST: APIRoute = async ({ request, locals }) => {
   const teknik = formData.getAll('teknik_checked_dates[]');
   const masters = formData.getAll('masters_checked_dates[]');
   const vuxencrawl = formData.getAll('vuxencrawl_checked_dates[]');
-  const ovrigt = formData.getAll('ovrigt_checked_dates[]');
 
   // Compose email content
   let text = `Namn: ${name}.\n E-post: ${email}\n\n`;
@@ -55,9 +54,6 @@ export const POST: APIRoute = async ({ request, locals }) => {
   }
   if (vuxencrawl.length > 0) {
     text += `Vuxencrawl:\n${vuxencrawl.map(date => `  ${date}`).join('\n')}\n\n`;
-  }
-  if (ovrigt.length > 0) {
-    text += `Övrigt:\n${ovrigt.map(date => `  ${date}`).join('\n')}\n\n`;
   }
 
   if (milersattning) {
