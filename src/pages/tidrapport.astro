@@ -110,10 +110,10 @@ import '../styles/_global.scss';
                                 type="checkbox"
                                 :id="`${section}-checkbox-${row.date}`"
                                 :name="`${section}_checked_dates[]`"
-                                :value="row.date"
+                                :value="row.date + ' ' + row.title"
                                 x-model="row.checked"
                               />
-                              <span x-text="row.date" class="ml-2"></span>
+                              <span x-text="row.date + ' ' + row.title" class="ml-2"></span>
                             </label>
                           </div>
                         </div>
@@ -141,10 +141,10 @@ import '../styles/_global.scss';
                                 type="checkbox"
                                 :id="`${section}-checkbox-${row.date}`"
                                 :name="`${section}_checked_dates[]`"
-                                :value="row.date"
+                                :value="row.date + ' ' + row.title"
                                 x-model="row.checked"
                               />
-                              <span x-text="row.date" class="ml-2"></span>
+                              <span x-text="row.date + ' ' + row.title" class="ml-2"></span>
                             </label>
                           </div>
                         </div>
@@ -173,10 +173,10 @@ import '../styles/_global.scss';
                                 type="checkbox"
                                 :id="`${section}-checkbox-${row.date}`"
                                 :name="`${section}_checked_dates[]`"
-                                :value="row.date"
+                                :value="row.date + ' ' + row.title"
                                 x-model="row.checked"
                               />
-                              <span x-text="row.date" class="ml-2"></span>
+                              <span x-text="row.date + ' ' + row.title" class="ml-2"></span>
                             </label>
                           </div>
                         </div>
@@ -198,10 +198,10 @@ import '../styles/_global.scss';
                                 type="checkbox"
                                 :id="`${section}-checkbox-${row.date}`"
                                 :name="`${section}_checked_dates[]`"
-                                :value="row.date"
+                                :value="row.date + ' ' + row.title"
                                 x-model="row.checked"
                               />
-                              <span x-text="row.date" class="ml-2"></span>
+                              <span x-text="row.date + ' ' + row.title" class="ml-2"></span>
                             </label>
                           </div>
                         </div>
