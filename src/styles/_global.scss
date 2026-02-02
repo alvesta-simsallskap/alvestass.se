@@ -74,11 +74,16 @@ h1, h2, h3, h4, h5, .title, .subtitle {
   margin-bottom: 0.25em;
 }
 
-ul.events {
+ul.simple-list {
   list-style-type: none;
-  padding: 0;
-  margin: 0;
-  line-height: normal;
+  margin-top: 0;
+  margin-inline-start: 0;
+
+  li {  
+    padding: 0;
+    margin: 0;
+    line-height: 1.5;
+  }
 }
 
 .material-symbols-rounded {

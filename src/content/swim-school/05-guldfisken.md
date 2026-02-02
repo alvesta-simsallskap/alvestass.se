@@ -1,5 +1,5 @@
 ---
-title: Guldfisken (5)
+title: Guldfisken
 order: 5
 image: 'media/Simskola.005.jpeg'
 imageAttribution: 'Svensk Simidrott'

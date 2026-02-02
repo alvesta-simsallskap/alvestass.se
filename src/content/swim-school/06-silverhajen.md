@@ -1,5 +1,5 @@
 ---
-title: Silverhajen (6)
+title: Silverhajen
 order: 6
 image: 'media/Simskola.006.jpeg'
 imageAttribution: 'Svensk Simidrott'
