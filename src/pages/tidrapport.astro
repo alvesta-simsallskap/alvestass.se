@@ -171,7 +171,7 @@ const items = timeReportItems[monthKey];
             totalH += Math.floor(totalM / 60);
             totalM = totalM % 60;
 
-            let totalTimeReported = `${totalH}:${totalM}`;
+            let totalTimeReported = `${totalH}:${totalM < 10 ? '0' : ''}${totalM}`;
             if (totalFullDay > 0) {
               totalTimeReported += `. Heldag: ${totalFullDay}`;
             }

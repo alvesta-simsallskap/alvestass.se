@@ -60,7 +60,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         } else if (item.h === 10) {
           time = 'Halvdag';
         } else {
-          time = `${item.h}:${item.m}`;
+          time = `${item.h}:${item.m < 10 ? '0' : ''}${item.m}`;
         }
         
         rows += `<tr><td>${val}</td><td>${time}</td></tr>`;
