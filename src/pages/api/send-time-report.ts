@@ -88,6 +88,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
   // Handle file attachments for 'Utlägg'
   const attachments = [];
+  let utlaggHtml = '';
   for (const [key, value] of formData.entries()) {
     if (typeof value === 'object' && value instanceof File && key.startsWith('utlagg_file_')) {
       const id = key.replace('utlagg_file_', '');
@@ -97,18 +98,30 @@ export const POST: APIRoute = async ({ request, locals }) => {
         const base64 = Buffer.from(arrayBuffer).toString('base64');
         attachments.push({
           ContentType: value.type,
-          Filename: value.name + (desc ? ` (${desc})` : ''),
+          Filename: value.name,
           Base64Content: base64
         });
+        utlaggHtml += `<li>${value.name}${desc ? ` – ${desc}` : ''}</li>`;
       }
     }
   }
+  if (utlaggHtml) {
+    html += `<h4>Utlägg</h4><ul>${utlaggHtml}</ul>`;
+  }
+
+  // Information about the sending of the report
+  const now = new Date();
+  const formattedDate = now.toLocaleString('sv-SE', {
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit'
+  }).replace(' ', ' kl. ').replace(':', '.');
+  html += `<p><i>Tidrapporten skickades in genom alvestass.se/tidrapport ${formattedDate}</i></p>`;  
 
   // Recipients
   const recipients = [
-    { Email: "lon@alvestass.se" },
-    { Email: email } // The one who filled out the form
+    { Email: "lon@alvestass.se" }
   ];
+  const ccRecipients = email ? [{ Email: email }] : [];
 
   // Send email via Mailjet API (HTML + attachments)
   const mailjetPayload = {
@@ -116,6 +129,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       {
         From: { Email: "noreply@alvestass.se", Name: "Alvesta Simsällskap" },
         To: recipients,
+        Cc: ccRecipients,
         Subject: `Tidrapport för ${name} 2026-01`,
         HTMLPart: html,
         Attachments: attachments.length > 0 ? attachments : undefined
