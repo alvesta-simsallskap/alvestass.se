@@ -72,7 +72,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
   }
 
   // Compose email content (HTML)
-  let html = `<p><b>Namn:</b> ${name}<br/><b>E-post:</b> ${email}</p>`;
+  let html = '<h4>Tidrapport januari 2026</h4>'
+  html += `<p><b>Namn:</b> ${name}</p>`;
   html += buildTable('simskola', 'Simskola', simskola);
   html += buildTable('tavlingA', 'Tävlingsgrupp A', tavlingA);
   html += buildTable('tavlingB', 'Tävlingsgrupp B', tavlingB);
