@@ -110,12 +110,12 @@ export const POST: APIRoute = async ({ request, locals }) => {
   }
 
   // Information about the sending of the report
-  const now = new Date();
-  const formattedDate = now.toLocaleString('sv-SE', {
+  const formattedDate = new Date().toLocaleString('sv-SE', {
+    timeZone: 'Europe/Stockholm',
     year: 'numeric', month: '2-digit', day: '2-digit',
     hour: '2-digit', minute: '2-digit'
   }).replace(' ', ' kl. ').replace(':', '.');
-  html += `<p><i>Tidrapporten skickades in genom alvestass.se/tidrapport ${formattedDate}</i></p>`;  
+  html += `<p><i>Tidrapporten skickades in genom alvestass.se/tidrapport ${formattedDate}</i></p>`;
 
   // Recipients
   const recipients = [
