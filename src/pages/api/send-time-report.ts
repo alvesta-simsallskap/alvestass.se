@@ -54,9 +54,14 @@ export const POST: APIRoute = async ({ request, locals }) => {
     for (const val of checked) {
       const item = findTimeItem(section, val);
       if (item) {
-        const h = item.h ?? '';
-        const m = item.m ?? '';
-        rows += `<tr><td>${val}</td><td>${h}h ${m}m</td></tr>`;
+        let time: string; 
+        if (item.h === 0 && item.m === 0) {
+          time = item.special ?? '';
+        } else {
+          time = `${item.h} h ${item.m} m`;
+        }
+
+        rows += `<tr><td>${val}</td><td>${time}</td></tr>`;
       } else {
         rows += `<tr><td>${val}</td><td></td></tr>`;
       }
@@ -86,22 +91,24 @@ export const POST: APIRoute = async ({ request, locals }) => {
   ];
 
   // Send email via Mailjet API (HTML)
+  const mailjetPayload = {
+    Messages: [
+      {
+        From: { Email: "noreply@alvestass.se", Name: "Alvesta Simsällskap" },
+        To: recipients,
+        Subject: `Tidrapport för ${name} 2026-01`,
+        HTMLPart: html,
+      }
+    ]
+  };
+
   const res = await fetch('https://api.mailjet.com/v3.1/send', {
     method: 'POST',
     headers: {
       'Authorization': 'Basic ' + btoa(`${MJ_APIKEY_PUBLIC}:${MJ_APIKEY_PRIVATE}`),
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({
-      Messages: [
-        {
-          From: { Email: "noreply@alvestass.se", Name: "Alvesta Simsällskap" },
-          To: recipients,
-          Subject: `Tidrapport för ${name} 2026-01`,
-          HTMLPart: html,
-        }
-      ]
-    }),
+    body: JSON.stringify(mailjetPayload),
   });
 
   if (res.ok) {
