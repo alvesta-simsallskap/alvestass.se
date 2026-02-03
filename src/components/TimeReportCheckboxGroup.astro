@@ -30,7 +30,7 @@ const { section, items, label } = Astro.props;
               const swedishDays = ['Sön', 'Mån', 'Tis', 'Ons', 'Tors', 'Fre', 'Lör'];
               const weekday = swedishDays[dateObj.getDay()];
               return `${readableDate} ${weekday.toLowerCase()}`;
-            })()} {row.title}</span>
+            })()}. {row.title}</span>
           </label>
         </div>
       </div>

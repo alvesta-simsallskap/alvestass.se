@@ -96,17 +96,9 @@ const items = timeReportItems[monthKey];
                 <div class="field">
                   <label class="label">Milersättning (km)</label>
                   <div class="control">
-                    <input
-                      class="input"
-                      type="number"
-                      name="milersattning"
-                      min="1"
-                      max="500"
-                      placeholder="Ange kilometer"
-                      style="max-width: 150px;"
-                    />
+                    <input class="input" type="number" name="milersattning" min="1" max="1000" placeholder="Ange kilometer" style="max-width: 150px;" />
                   </div>
-                  <p class="help">Ange antal kilometer (1-500)</p>
+                  <p class="help">Ange antal kilometer</p>
                 </div>
               </div>
             </div>
@@ -122,13 +114,13 @@ const items = timeReportItems[monthKey];
                   <div class="field">
                     <label class="label">Fil (pdf, jpg, png)</label>
                     <div class="control">
-                      <input type="file" accept=".pdf,.png,.jpg,.jpeg" :name="`utlagg_file_${item.id}`" required />
+                      <input type="file" accept=".pdf,.png,.jpg,.jpeg" :name="`utlagg_file_${item.id}`" />
                     </div>
                   </div>
                   <div class="field">
                     <label class="label">Beskrivning</label>
                     <div class="control">
-                      <input type="text" class="input" :name="`utlagg_desc_${item.id}`" placeholder="Beskrivning av utlägg" required />
+                      <input type="text" class="input" :name="`utlagg_desc_${item.id}`" placeholder="Beskrivning av utlägg" />
                     </div>
                   </div>
                   <button class="button is-small is-danger mt-2" type="button" @click="files.splice(idx, 1)" x-show="files.length > 1">Ta bort</button>
