@@ -1,0 +1,28 @@
+---
+interface Props {
+  section: string;
+  items: Array<{ date: string; title: string }>;
+  label?: string;
+}
+const { section, items, label } = Astro.props;
+---
+<div class="field">
+  {label && <label class="label">{label}</label>}
+  <div>
+    {items.map((row) => (
+      <div class="field is-grouped mb-2">
+        <div class="control">
+          <label class="checkbox">
+            <input
+              type="checkbox"
+              id={`${section}-checkbox-${row.date}`}
+              name={`${section}_checked_dates[]`}
+              value={`${row.date} ${row.title}`}
+            />
+            <span class="ml-2">{row.date} {row.title}</span>
+          </label>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>

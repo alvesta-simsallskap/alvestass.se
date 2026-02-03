@@ -1,6 +1,13 @@
 ---
 import 'bulma/css/bulma.min.css';
 import '../styles/_global.scss';
+
+
+import timeReportItems from '../config/time-report-items.json';
+import TimeReportCheckboxGroup from '../components/TimeReportCheckboxGroup.astro';
+
+const monthKey = '2026-01';
+const items = timeReportItems[monthKey];
 ---
 
 <html>
@@ -44,35 +51,13 @@ import '../styles/_global.scss';
             </div>
           </div>
 
-          <div class="box mt-5" x-data="{ open: false, section: 'simskola', rows: [
-            { date: '2026-01-22', title: 'HLR-utbildning', checked: false },
-            { date: '2026-01-25', title: 'Simskola', checked: false },            
-          ] }">
+          <div class="box mt-5" x-data="{ open: false }">
             <h2 class="title is-5 my-0" @click="open = !open" style="cursor:pointer;">
               Simskola
               <span x-text="open ? '▲' : '▼'" class="ml-2 is-size-6"></span>
             </h2>
             <div class="mt-4" x-show="open" x-transition>
-              <div class="field">
-                <div>
-                  <template x-for="(row, idx) in rows" :key="row.date">
-                    <div class="field is-grouped mb-2">
-                      <div class="control">
-                        <label class="checkbox">
-                          <input
-                            type="checkbox"
-                            :id="`${section}-checkbox-${row.date}`"
-                            :name="`${section}_checked_dates[]`"
-                            :value="row.date + ' ' + row.title"
-                            x-model="row.checked"
-                          />
-                          <span x-text="row.date + ' ' + row.title" class="ml-2"></span>
-                        </label>
-                      </div>
-                    </div>
-                  </template>
-                </div>
-              </div>
+              <TimeReportCheckboxGroup section="simskola" items={items.simskola} />
             </div>
           </div>
 
@@ -84,131 +69,16 @@ import '../styles/_global.scss';
             <div x-show="open" x-transition>
               <div class="columns mt-2">
                 <div class="column">
-                  <div class="field">
-                    <label class="label">Tävling (A/B)</label>
-                    <div x-data="{ section: 'tavling', rows: [
-                        { date: '2026-01-05', title: 'Träning', checked: false },
-                        { date: '2026-01-07', title: 'Träning', checked: false },
-                        { date: '2026-01-10', title: 'Träning', checked: false },
-                        { date: '2026-01-11', title: 'Träning', checked: false },
-                        { date: '2026-01-12', title: 'Träning', checked: false },
-                        { date: '2026-01-14', title: 'Träning', checked: false },
-                        { date: '2026-01-17', title: 'Träning', checked: false },
-                        { date: '2026-01-18', title: 'Träning', checked: false },
-                        { date: '2026-01-19', title: 'Träning', checked: false },
-                        { date: '2026-01-21', title: 'Träning', checked: false },
-                        { date: '2026-01-24', title: 'Träning', checked: false },
-                        { date: '2026-01-25', title: 'Träning', checked: false },
-                        { date: '2026-01-26', title: 'Träning', checked: false },
-                        { date: '2026-01-28', title: 'Träning', checked: false },
-                        { date: '2026-01-31', title: 'ÖGP Växjö', checked: false }
-                      ] }">
-                      <template x-for="(row, idx) in rows" :key="row.date">
-                        <div class="field is-grouped mb-2">
-                          <div class="control">
-                            <label class="checkbox">
-                              <input
-                                type="checkbox"
-                                :id="`${section}-checkbox-${row.date}`"
-                                :name="`${section}_checked_dates[]`"
-                                :value="row.date + ' ' + row.title"
-                                x-model="row.checked"
-                              />
-                              <span x-text="row.date + ' ' + row.title" class="ml-2"></span>
-                            </label>
-                          </div>
-                        </div>
-                      </template>
-                    </div>
-                  </div>
+                  <TimeReportCheckboxGroup section="tavling" items={items.tavling} label="Tävling (A/B)" />
                 </div>
                 <div class="column">
-                  <div class="field">
-                    <label class="label">Teknik</label>
-                    <div x-data="{ open: false, section: 'teknik', rows: [
-                      { date: '2026-01-08', title: 'Träning', checked: false },
-                      { date: '2026-01-12', title: 'Träning', checked: false },
-                      { date: '2026-01-15', title: 'Träning', checked: false },
-                      { date: '2026-01-19', title: 'Träning', checked: false },
-                      { date: '2026-01-22', title: 'Träning', checked: false },
-                      { date: '2026-01-26', title: 'Träning', checked: false },
-                      { date: '2026-01-29', title: 'Träning', checked: false },                        
-                      ] }">
-                      <template x-for="(row, idx) in rows" :key="row.date">
-                        <div class="field is-grouped mb-2">
-                          <div class="control">
-                            <label class="checkbox">
-                              <input
-                                type="checkbox"
-                                :id="`${section}-checkbox-${row.date}`"
-                                :name="`${section}_checked_dates[]`"
-                                :value="row.date + ' ' + row.title"
-                                x-model="row.checked"
-                              />
-                              <span x-text="row.date + ' ' + row.title" class="ml-2"></span>
-                            </label>
-                          </div>
-                        </div>
-                      </template>
-                    </div>
-                  </div>
+                  <TimeReportCheckboxGroup section="teknik" items={items.teknik} label="Teknik" />
                 </div>
                 <div class="column">
-                  <div class="field">
-                    <label class="label">Masters</label>
-                    <div x-data="{ open: false, section: 'masters', rows: [
-                        { date: '2026-01-05', title: 'Träning', checked: false },
-                        { date: '2026-01-08', title: 'Träning', checked: false },
-                        { date: '2026-01-12', title: 'Träning', checked: false },
-                        { date: '2026-01-15', title: 'Träning', checked: false },
-                        { date: '2026-01-19', title: 'Träning', checked: false },
-                        { date: '2026-01-22', title: 'Träning', checked: false },
-                        { date: '2026-01-26', title: 'Träning', checked: false },
-                        { date: '2026-01-29', title: 'Träning', checked: false },
-                      ] }">
-                      <template x-for="(row, idx) in rows" :key="row.date">
-                        <div class="field is-grouped mb-2">
-                          <div class="control">
-                            <label class="checkbox">
-                              <input
-                                type="checkbox"
-                                :id="`${section}-checkbox-${row.date}`"
-                                :name="`${section}_checked_dates[]`"
-                                :value="row.date + ' ' + row.title"
-                                x-model="row.checked"
-                              />
-                              <span x-text="row.date + ' ' + row.title" class="ml-2"></span>
-                            </label>
-                          </div>
-                        </div>
-                      </template>
-                    </div>
-                  </div>
-                </div>                
+                  <TimeReportCheckboxGroup section="masters" items={items.masters} label="Masters" />
+                </div>
                 <div class="column">
-                  <div class="field">
-                    <label class="label">Vuxencrawl</label>
-                    <div x-data="{ open: false, section: 'vuxencrawl', rows: [
-                        { date: '2026-01-28', title: 'Träning', checked: false },
-                      ] }">
-                      <template x-for="(row, idx) in rows" :key="row.date">
-                        <div class="field is-grouped mb-2">
-                          <div class="control">
-                            <label class="checkbox">
-                              <input
-                                type="checkbox"
-                                :id="`${section}-checkbox-${row.date}`"
-                                :name="`${section}_checked_dates[]`"
-                                :value="row.date + ' ' + row.title"
-                                x-model="row.checked"
-                              />
-                              <span x-text="row.date + ' ' + row.title" class="ml-2"></span>
-                            </label>
-                          </div>
-                        </div>
-                      </template>
-                    </div>
-                  </div>
+                  <TimeReportCheckboxGroup section="vuxencrawl" items={items.vuxencrawl} label="Vuxencrawl" />
                 </div>
               </div>
             </div>

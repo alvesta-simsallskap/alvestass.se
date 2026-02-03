@@ -1,0 +1,48 @@
+{
+  "2026-01": {
+    "simskola": [
+      { "date": "2026-01-13", "title": "Uppstartsmöte" },
+      { "date": "2026-01-22", "title": "HLR-utbildning" },
+      { "date": "2026-01-25", "title": "Simskola" }
+    ],
+    "tavling": [
+      { "date": "2026-01-05", "title": "Träning" },
+      { "date": "2026-01-07", "title": "Träning" },
+      { "date": "2026-01-10", "title": "Träning" },
+      { "date": "2026-01-11", "title": "Träning" },
+      { "date": "2026-01-12", "title": "Träning" },
+      { "date": "2026-01-14", "title": "Träning" },
+      { "date": "2026-01-17", "title": "Träning" },
+      { "date": "2026-01-18", "title": "Träning" },
+      { "date": "2026-01-19", "title": "Träning" },
+      { "date": "2026-01-21", "title": "Träning" },
+      { "date": "2026-01-24", "title": "Träning" },
+      { "date": "2026-01-25", "title": "Träning" },
+      { "date": "2026-01-26", "title": "Träning" },
+      { "date": "2026-01-28", "title": "Träning" },
+      { "date": "2026-01-31", "title": "ÖGP Växjö" }
+    ],
+    "teknik": [
+      { "date": "2026-01-08", "title": "Träning" },
+      { "date": "2026-01-12", "title": "Träning" },
+      { "date": "2026-01-15", "title": "Träning" },
+      { "date": "2026-01-19", "title": "Träning" },
+      { "date": "2026-01-22", "title": "Träning" },
+      { "date": "2026-01-26", "title": "Träning" },
+      { "date": "2026-01-29", "title": "Träning" }
+    ],
+    "masters": [
+      { "date": "2026-01-05", "title": "Träning" },
+      { "date": "2026-01-08", "title": "Träning" },
+      { "date": "2026-01-12", "title": "Träning" },
+      { "date": "2026-01-15", "title": "Träning" },
+      { "date": "2026-01-19", "title": "Träning" },
+      { "date": "2026-01-22", "title": "Träning" },
+      { "date": "2026-01-26", "title": "Träning" },
+      { "date": "2026-01-29", "title": "Träning" }
+    ],
+    "vuxencrawl": [
+      { "date": "2026-01-28", "title": "Träning" }
+    ]
+  }
+}
