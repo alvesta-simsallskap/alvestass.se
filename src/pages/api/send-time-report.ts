@@ -86,13 +86,31 @@ export const POST: APIRoute = async ({ request, locals }) => {
     html += `<p><b>Kommentarer:</b> ${kommentarer}</p>`;
   }
 
+  // Handle file attachments for 'Utlägg'
+  const attachments = [];
+  for (const [key, value] of formData.entries()) {
+    if (typeof value === 'object' && value instanceof File && key.startsWith('utlagg_file_')) {
+      const id = key.replace('utlagg_file_', '');
+      const desc = formData.get(`utlagg_desc_${id}`) || '';
+      if (value.size > 0) {
+        const arrayBuffer = await value.arrayBuffer();
+        const base64 = Buffer.from(arrayBuffer).toString('base64');
+        attachments.push({
+          ContentType: value.type,
+          Filename: value.name + (desc ? ` (${desc})` : ''),
+          Base64Content: base64
+        });
+      }
+    }
+  }
+
   // Recipients
   const recipients = [
     { Email: "lon@alvestass.se" },
     { Email: email } // The one who filled out the form
   ];
 
-  // Send email via Mailjet API (HTML)
+  // Send email via Mailjet API (HTML + attachments)
   const mailjetPayload = {
     Messages: [
       {
@@ -100,6 +118,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         To: recipients,
         Subject: `Tidrapport för ${name} 2026-01`,
         HTMLPart: html,
+        Attachments: attachments.length > 0 ? attachments : undefined
       }
     ]
   };

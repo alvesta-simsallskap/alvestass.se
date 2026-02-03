@@ -43,7 +43,7 @@ const items = timeReportItems[monthKey];
           </div>
 
           <div class="box mt-5" x-data="{ open: false }">
-            <h2 class="title is-5 my-0" @click="open = !open" style="cursor:pointer;">
+            <h2 class="subtitle my-0" @click="open = !open" style="cursor:pointer;">
               Simskola
               <span x-text="open ? '▲' : '▼'" class="ml-2 is-size-6"></span>
             </h2>
@@ -53,7 +53,7 @@ const items = timeReportItems[monthKey];
           </div>
 
           <div class="box mt-5" x-data="{ open: false }">
-            <h2 class="title is-5 my-0" @click="open = !open" style="cursor:pointer;">
+            <h2 class="subtitle my-0" @click="open = !open" style="cursor:pointer;">
               Träningsgrupper
               <span x-text="open ? '▲' : '▼'" class="ml-2 is-size-6"></span>
             </h2>
@@ -80,7 +80,7 @@ const items = timeReportItems[monthKey];
           <div class="box mt-5" id="timereport-total-box">
             <span>Total tid:</span>
             <span x-text="totalTime"></span>
-          </div>
+          </div>       
           <div class="box mt-5">
             <div class="columns">
               <div class="column">
@@ -111,6 +111,32 @@ const items = timeReportItems[monthKey];
               </div>
             </div>
           </div>
+          <div class="box mt-5" x-data="{ open: false, files: [{ id: Date.now(), file: null, desc: '' }] }">
+            <h2 class="subtitle my-0" @click="open = !open" style="cursor:pointer;">
+              Utlägg
+              <span x-text="open ? '▲' : '▼'" class="ml-2 is-size-6"></span>
+            </h2>
+            <div class="mt-4" x-show="open" x-transition>
+              <template x-for="(item, idx) in files" :key="item.id">
+                <div class="box mb-3">
+                  <div class="field">
+                    <label class="label">Fil (pdf, jpg, png)</label>
+                    <div class="control">
+                      <input type="file" accept=".pdf,.png,.jpg,.jpeg" :name="`utlagg_file_${item.id}`" required />
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label class="label">Beskrivning</label>
+                    <div class="control">
+                      <input type="text" class="input" :name="`utlagg_desc_${item.id}`" placeholder="Beskrivning av utlägg" required />
+                    </div>
+                  </div>
+                  <button class="button is-small is-danger mt-2" type="button" @click="files.splice(idx, 1)" x-show="files.length > 1">Ta bort</button>
+                </div>
+              </template>
+              <button class="button is-link is-light" type="button" @click="files.push({ id: Date.now() + Math.random(), file: null, desc: '' })">Lägg till fil</button>
+            </div>
+          </div>          
           <div class="field">
             <div class="cf-turnstile" data-sitekey="0x4AAAAAACV0HK5DAZEGpQip" data-theme="light" data-callback="onTurnstileSuccess"></div>
           </div>
