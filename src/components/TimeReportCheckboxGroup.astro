@@ -1,7 +1,7 @@
 ---
 interface Props {
   section: string;
-  items: Array<{ date: string; title: string }>;
+  items: Array<{ date: string; title: string, h: number, m: number }>;
   label?: string;
 }
 const { section, items, label } = Astro.props;
@@ -18,8 +18,19 @@ const { section, items, label } = Astro.props;
               id={`${section}-checkbox-${row.date}`}
               name={`${section}_checked_dates[]`}
               value={`${row.date} ${row.title}`}
+              data-h={row.h ?? 0}
+              data-m={row.m ?? 0}
+              @change="$dispatch('timereportupdate')"
             />
-            <span class="ml-2">{row.date} {row.title}</span>
+            <span class="ml-1">{(() => {
+              const [year, month, day] = row.date.split('-');
+              const readableDate = `${day}`;
+              // const ymd = `${year.slice(2)}${month}${day}`;
+              const dateObj = new Date(row.date);
+              const swedishDays = ['Sön', 'Mån', 'Tis', 'Ons', 'Tors', 'Fre', 'Lör'];
+              const weekday = swedishDays[dateObj.getDay()];
+              return `${readableDate} ${weekday.toLowerCase()}`;
+            })()} {row.title}</span>
           </label>
         </div>
       </div>

@@ -1,5 +1,5 @@
 export const prerender = false;
-
+import timeReportItems from '../../config/time-report-items.json';
 import type { APIRoute } from 'astro';
 
 export const POST: APIRoute = async ({ request, locals }) => {
@@ -23,45 +23,60 @@ export const POST: APIRoute = async ({ request, locals }) => {
   if (!verifyData.success) {
     return new Response('Turnstile verification failed', { status: 400 });
   }
-  
+
   // Extract fields
   const name = formData.get('namn') || '';
   const email = formData.get('email') || '';
   const milersattning = formData.get('milersattning') || '';
   const kommentarer = formData.get('kommentarer') || '';
 
-  // Collect checked dates for each section
-  const simskola = formData.getAll('simskola_checked_dates[]');
-  const tavling = formData.getAll('tavling_checked_dates[]');
-  const teknik = formData.getAll('teknik_checked_dates[]');
-  const masters = formData.getAll('masters_checked_dates[]');
-  const vuxencrawl = formData.getAll('vuxencrawl_checked_dates[]');
+  // Collect checked dates for each section (supporting new keys)
+  const simskola = formData.getAll('simskola_checked_dates[]').filter((v): v is string => typeof v === 'string');
+  const tavlingA = formData.getAll('tavling-a_checked_dates[]').filter((v): v is string => typeof v === 'string');
+  const tavlingB = formData.getAll('tavling-b_checked_dates[]').filter((v): v is string => typeof v === 'string');
+  const teknik = formData.getAll('teknik_checked_dates[]').filter((v): v is string => typeof v === 'string');
+  const masters = formData.getAll('masters_checked_dates[]').filter((v): v is string => typeof v === 'string');
+  const vuxencrawl = formData.getAll('vuxencrawl_checked_dates[]').filter((v): v is string => typeof v === 'string');
 
-  // Compose email content
-  let text = `Namn: ${name}.\n E-post: ${email}\n\n`;
-
-  if (simskola.length > 0) {
-    text += `Simskola:\n${simskola.map(date => `  ${date}`).join('\n')}\n\n`;
-  }
-  if (tavling.length > 0) {
-    text += `Tävlingsgrupp:\n${tavling.map(date => `  ${date}`).join('\n')}\n\n`;
-  }
-  if (teknik.length > 0) {
-    text += `Teknik:\n${teknik.map(date => `  ${date}`).join('\n')}\n\n`;
-  }
-  if (masters.length > 0) {
-    text += `Masters:\n${masters.map(date => `  ${date}`).join('\n')}\n\n`;
-  }
-  if (vuxencrawl.length > 0) {
-    text += `Vuxencrawl:\n${vuxencrawl.map(date => `  ${date}`).join('\n')}\n\n`;
+  // Helper to find time info for a checked item
+  function findTimeItem(section: string, value: string) {
+    // value is "YYYY-MM-DD Title"
+    const [date, ...titleParts] = value.split(' ');
+    const title = titleParts.join(' ');
+    const items = (timeReportItems['2026-01'] as any)[section] || [];
+    return items.find((item: any) => item.date === date && item.title === title);
   }
 
+  // Helper to build HTML table for a section
+  function buildTable(section: string, label: string, checked: string[]) {
+    if (!checked.length) return '';
+    let rows = '';
+    for (const val of checked) {
+      const item = findTimeItem(section, val);
+      if (item) {
+        const h = item.h ?? '';
+        const m = item.m ?? '';
+        rows += `<tr><td>${val}</td><td>${h}h ${m}m</td></tr>`;
+      } else {
+        rows += `<tr><td>${val}</td><td></td></tr>`;
+      }
+    }
+    return `<h4>${label}</h4><table border="1" cellpadding="4" style="border-collapse:collapse;margin-bottom:1em;"><thead><tr><th>Datum & aktivitet</th><th>Tid</th></tr></thead><tbody>${rows}</tbody></table>`;
+  }
+
+  // Compose email content (HTML)
+  let html = `<p><b>Namn:</b> ${name}<br/><b>E-post:</b> ${email}</p>`;
+  html += buildTable('simskola', 'Simskola', simskola);
+  html += buildTable('tavlingA', 'Tävlingsgrupp A', tavlingA);
+  html += buildTable('tavlingB', 'Tävlingsgrupp B', tavlingB);
+  html += buildTable('teknik', 'Teknik', teknik);
+  html += buildTable('masters', 'Masters', masters);
+  html += buildTable('vuxencrawl', 'Vuxencrawl', vuxencrawl);
   if (milersattning) {
-    text += `\nMilersättning: ${milersattning} km\n\n`;
+    html += `<p><b>Milersättning:</b> ${milersattning} km</p>`;
   }
-
   if (kommentarer) {
-    text += `\nKommentarer: ${kommentarer}\n`;
+    html += `<p><b>Kommentarer:</b> ${kommentarer}</p>`;
   }
 
   // Recipients
@@ -70,7 +85,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     { Email: email } // The one who filled out the form
   ];
 
-  // Send email via Mailjet API
+  // Send email via Mailjet API (HTML)
   const res = await fetch('https://api.mailjet.com/v3.1/send', {
     method: 'POST',
     headers: {
@@ -83,7 +98,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
           From: { Email: "noreply@alvestass.se", Name: "Alvesta Simsällskap" },
           To: recipients,
           Subject: `Tidrapport för ${name} 2026-01`,
-          TextPart: text,
+          HTMLPart: html,
         }
       ]
     }),
