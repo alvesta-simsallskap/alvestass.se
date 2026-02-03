@@ -3,7 +3,7 @@
     "simskola": [
       { "date": "2026-01-13", "title": "Uppstartsmöte", "h": 2, "m": 0 },
       { "date": "2026-01-22", "title": "HLR-utbildning", "h": 2, "m": 0 },
-      { "date": "2026-01-25", "title": "Simskola", "h": 5, "m": 15  }
+      { "date": "2026-01-25", "title": "Simskola", "h": 5, "m": 25  }
     ],
     "tavlingA": [
       { "date": "2026-01-05", "title": "Träning", "h": 1, "m": 45 },
@@ -20,7 +20,7 @@
       { "date": "2026-01-25", "title": "Träning", "h": 1, "m": 45 },
       { "date": "2026-01-26", "title": "Träning", "h": 1, "m": 45 },
       { "date": "2026-01-28", "title": "Träning", "h": 1, "m": 45 },
-      { "date": "2026-01-31", "title": "ÖGP Växjö", "h": 0, "m": 0, "special": "heldag" }
+      { "date": "2026-01-31", "title": "ÖGP Växjö", "h": 20, "m": 0 }
     ],
     "tavlingB": [
       { "date": "2026-01-05", "title": "Träning", "h": 1, "m": 30 },
@@ -36,13 +36,13 @@
       { "date": "2026-01-28", "title": "Träning", "h": 1, "m": 30 }
     ],
     "teknik": [
-      { "date": "2026-01-08", "title": "Träning", "h": 1, "m": 30 },
-      { "date": "2026-01-12", "title": "Träning", "h": 1, "m": 30 },
-      { "date": "2026-01-15", "title": "Träning", "h": 1, "m": 30 },
-      { "date": "2026-01-19", "title": "Träning", "h": 1, "m": 30 },
-      { "date": "2026-01-22", "title": "Träning", "h": 1, "m": 30 },
-      { "date": "2026-01-26", "title": "Träning", "h": 1, "m": 30 },
-      { "date": "2026-01-29", "title": "Träning", "h": 1, "m": 30 }
+      { "date": "2026-01-08", "title": "Träning", "h": 1, "m": 15 },
+      { "date": "2026-01-12", "title": "Träning", "h": 1, "m": 15 },
+      { "date": "2026-01-15", "title": "Träning", "h": 1, "m": 15 },
+      { "date": "2026-01-19", "title": "Träning", "h": 1, "m": 15 },
+      { "date": "2026-01-22", "title": "Träning", "h": 1, "m": 15 },
+      { "date": "2026-01-26", "title": "Träning", "h": 1, "m": 15 },
+      { "date": "2026-01-29", "title": "Träning", "h": 1, "m": 15 }
     ],
     "masters": [
       { "date": "2026-01-05", "title": "Träning", "h": 1, "m": 30 },

@@ -54,13 +54,15 @@ export const POST: APIRoute = async ({ request, locals }) => {
     for (const val of checked) {
       const item = findTimeItem(section, val);
       if (item) {
-        let time: string; 
-        if (item.h === 0 && item.m === 0) {
-          time = item.special ?? '';
+        let time;
+        if (item.h === 20) {
+          time = 'Heldag';
+        } else if (item.h === 10) {
+          time = 'Halvdag';
         } else {
           time = `${item.h} h ${item.m} m`;
         }
-
+        
         rows += `<tr><td>${val}</td><td>${time}</td></tr>`;
       } else {
         rows += `<tr><td>${val}</td><td></td></tr>`;
