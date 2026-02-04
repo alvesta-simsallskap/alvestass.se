@@ -151,15 +151,15 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
   // Add salary estimate to email content if employee matched
   if (employee) {
-    html += `<h4>Löneestimat</h4><table border="1" cellpadding="4" style="border-collapse:collapse;margin-bottom:1em;">
-      <thead><tr><th>Sektion</th><th>Timmar</th><th>Minuter</th><th>Timlön</th><th>Summa</th></tr></thead><tbody>
+    html += `<h4>Preliminär löneberäkning</h4><table border="1" cellpadding="4" style="border-collapse:collapse;margin-bottom:1em;">
+      <thead><tr><th>Grupp</th><th>Timmar</th><th>Minuter</th><th>Timlön</th><th>Summa</th></tr></thead><tbody>
       <tr><td>Simskola</td><td>${salarySimskola.hours}</td><td>${salarySimskola.minutes}</td><td>${salarySimskola.salary ?? '-'}</td><td>${salarySimskola.total.toFixed(2)} kr</td></tr>
       <tr><td>Tävlingsgrupp A</td><td>${salaryTavlingA.hours}</td><td>${salaryTavlingA.minutes}</td><td>${salaryTavlingA.salary ?? '-'}</td><td>${salaryTavlingA.total.toFixed(2)} kr</td></tr>
       <tr><td>Tävlingsgrupp B</td><td>${salaryTavlingB.hours}</td><td>${salaryTavlingB.minutes}</td><td>${salaryTavlingB.salary ?? '-'}</td><td>${salaryTavlingB.total.toFixed(2)} kr</td></tr>
       <tr><td>Teknik</td><td>${salaryTeknik.hours}</td><td>${salaryTeknik.minutes}</td><td>${salaryTeknik.salary ?? '-'}</td><td>${salaryTeknik.total.toFixed(2)} kr</td></tr>
       <tr><td>Masters</td><td>${salaryMasters.hours}</td><td>${salaryMasters.minutes}</td><td>${salaryMasters.salary ?? '-'}</td><td>${salaryMasters.total.toFixed(2)} kr</td></tr>
       <tr><td>Vuxencrawl</td><td>${salaryVuxencrawl.hours}</td><td>${salaryVuxencrawl.minutes}</td><td>${salaryVuxencrawl.salary ?? '-'}</td><td>${salaryVuxencrawl.total.toFixed(2)} kr</td></tr>
-      <tr style="font-weight:bold"><td>Totalt</td><td colspan="3"></td><td>${totalSalary.toFixed(2)} kr</td></tr>
+      <tr style="font-weight:bold"><td>Totalt</td><td colspan="3"></td><td>${Math.round(totalSalary)} kr</td></tr>
       </tbody></table>`;
   }
 
