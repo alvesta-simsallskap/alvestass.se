@@ -4,9 +4,29 @@ import type { APIRoute } from 'astro';
 
 export const POST: APIRoute = async ({ request, locals }) => {
   const EMPLOYEES = [
-    { email: 'johan.marand@icloud.com', swimSchoolRate: 100, coachRate: 100 },
-    { email: 'towe.andersson@gmail.com', swimSchoolRate: 100, coachRate: 135 },
-    { email: 'lova.widqvist@icloud.com', swimSchoolRate: 85, coachRate: null },
+    { email: 'johan.marand@icloud.com', swimSchoolRate: 85, coachRate: 105 },
+    { email: 'annamaria.tovar@hotmail.com', swimSchoolRate: 85, coachRate: null },
+    { email: 'cornelia.axhed@outlook.com', swimSchoolRate: 95, coachRate: 135 },
+    { email: 'izakaxelsson2009@gmail.com', swimSchoolRate: 95, coachRate: null },
+    { email: 'widqvistlova@gmail.com', swimSchoolRate: 95, coachRate: null },
+    { email: 'thelmaklintipsa@gmail.com', swimSchoolRate: 115, coachRate: 135 },
+    { email: 'jonnaklintipsa11@gmail.com', swimSchoolRate: 65, coachRate: null },
+    { email: 'tsinatweldemichael42@gmail.com', swimSchoolRate: 85, coachRate: null },
+    { email: 'edvin.nilsson.11@edualvesta.se', swimSchoolRate: 65, coachRate: null },
+    { email: 'shahed27kikar@gmail.com', swimSchoolRate: 75, coachRate: null },
+    { email: 'reussfelix390@gmail.com', swimSchoolRate: 75, coachRate: null },
+    { email: 'alibrahemali06@gmail.com', swimSchoolRate: 65, coachRate: null },
+    { email: 'aina.mujadzic@outlook.com', swimSchoolRate: 85, coachRate: 105 },
+    { email: 'emii0113lus@gmail.com', swimSchoolRate: 75, coachRate: null },
+    { email: 'stella.gustavsson@icloud.com', swimSchoolRate: 85, coachRate: 105 },
+    { email: 'erik.hakamsson@gmail.com', swimSchoolRate: 75, coachRate: null },
+    { email: 'ra7838303@gmail.com', swimSchoolRate: 75, coachRate: null },
+    { email: 'aliciablyth@hotmail.com', swimSchoolRate: 95, coachRate: null },
+    { email: 'erona.h09@gmail.com', swimSchoolRate: 75, coachRate: null },
+    { email: 'williamlarson1999@gmail.com', swimSchoolRate: 115, coachRate: 155 },
+    { email: 'mujcicuna@gmail.com', swimSchoolRate: 95, coachRate: 125 },
+    { email: 'toweeandersson@gmail.com', swimSchoolRate: 105, coachRate: 135 },
+    { email: 'agnesannaandersson@gmail.com', swimSchoolRate: 95, coachRate: 115 },
   ]
   
   const MJ_APIKEY_PUBLIC = locals.runtime.env.MJ_APIKEY_PUBLIC;
