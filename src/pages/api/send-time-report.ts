@@ -3,6 +3,12 @@ import timeReportItems from '../../config/time-report-items.json';
 import type { APIRoute } from 'astro';
 
 export const POST: APIRoute = async ({ request, locals }) => {
+  const EMPLOYEES = [
+    { email: 'johan.marand@icloud.com', swimSchoolRate: 100, coachRate: 100 },
+    { email: 'towe.andersson@gmail.com', swimSchoolRate: 100, coachRate: 135 },
+    { email: 'lova.widqvist@icloud.com', swimSchoolRate: 85, coachRate: null },
+  ]
+  
   const MJ_APIKEY_PUBLIC = locals.runtime.env.MJ_APIKEY_PUBLIC;
   const MJ_APIKEY_PRIVATE = locals.runtime.env.MJ_APIKEY_PRIVATE;
   const TURNSTILE_SECRET_KEY = locals.runtime.env.TURNSTILE_SECRET_KEY;
@@ -85,6 +91,56 @@ export const POST: APIRoute = async ({ request, locals }) => {
   }
   if (kommentarer) {
     html += `<p><b>Kommentarer:</b> ${kommentarer}</p>`;
+  }
+
+  // Find employee salary info
+  const employee = EMPLOYEES.find(e => e.email.toLowerCase() === String(email).toLowerCase());
+
+  // Helper to calculate salary for a section
+  function calcSalary(section: string, checked: string[]): { hours: number, minutes: number, salary: number|null, total: number } {
+    let hours = 0, minutes = 0;
+    let rate: number|null = null;
+    if (!employee) return { hours, minutes, salary: null, total: 0 };
+    if (section === 'simskola') {
+      rate = employee.swimSchoolRate;
+    } else {
+      rate = employee.coachRate;
+    }
+    for (const val of checked) {
+      const item = findTimeItem(section, val);
+      if (item && typeof item.h === 'number' && typeof item.m === 'number') {
+        hours += item.h;
+        minutes += item.m;
+      }
+    }
+    const total = rate ? (hours + minutes / 60) * rate : 0;
+    return { hours, minutes, salary: rate, total };
+  }
+
+  // Calculate salary for each section
+  const salarySimskola = calcSalary('simskola', simskola);
+  const salaryTavlingA = calcSalary('tavlingA', tavlingA);
+  const salaryTavlingB = calcSalary('tavlingB', tavlingB);
+  const salaryTeknik = calcSalary('teknik', teknik);
+  const salaryMasters = calcSalary('masters', masters);
+  const salaryVuxencrawl = calcSalary('vuxencrawl', vuxencrawl);
+
+  // Calculate total salary
+  const totalSalary = [salarySimskola, salaryTavlingA, salaryTavlingB, salaryTeknik, salaryMasters, salaryVuxencrawl]
+    .reduce((sum, s) => sum + s.total, 0);
+
+  // Add salary estimate to email content if employee matched
+  if (employee) {
+    html += `<h4>Löneestimat</h4><table border="1" cellpadding="4" style="border-collapse:collapse;margin-bottom:1em;">
+      <thead><tr><th>Sektion</th><th>Timmar</th><th>Minuter</th><th>Timlön</th><th>Summa</th></tr></thead><tbody>
+      <tr><td>Simskola</td><td>${salarySimskola.hours}</td><td>${salarySimskola.minutes}</td><td>${salarySimskola.salary ?? '-'}</td><td>${salarySimskola.total.toFixed(2)} kr</td></tr>
+      <tr><td>Tävlingsgrupp A</td><td>${salaryTavlingA.hours}</td><td>${salaryTavlingA.minutes}</td><td>${salaryTavlingA.salary ?? '-'}</td><td>${salaryTavlingA.total.toFixed(2)} kr</td></tr>
+      <tr><td>Tävlingsgrupp B</td><td>${salaryTavlingB.hours}</td><td>${salaryTavlingB.minutes}</td><td>${salaryTavlingB.salary ?? '-'}</td><td>${salaryTavlingB.total.toFixed(2)} kr</td></tr>
+      <tr><td>Teknik</td><td>${salaryTeknik.hours}</td><td>${salaryTeknik.minutes}</td><td>${salaryTeknik.salary ?? '-'}</td><td>${salaryTeknik.total.toFixed(2)} kr</td></tr>
+      <tr><td>Masters</td><td>${salaryMasters.hours}</td><td>${salaryMasters.minutes}</td><td>${salaryMasters.salary ?? '-'}</td><td>${salaryMasters.total.toFixed(2)} kr</td></tr>
+      <tr><td>Vuxencrawl</td><td>${salaryVuxencrawl.hours}</td><td>${salaryVuxencrawl.minutes}</td><td>${salaryVuxencrawl.salary ?? '-'}</td><td>${salaryVuxencrawl.total.toFixed(2)} kr</td></tr>
+      <tr style="font-weight:bold"><td>Totalt</td><td colspan="3"></td><td>${totalSalary.toFixed(2)} kr</td></tr>
+      </tbody></table>`;
   }
 
   // Handle file attachments for 'Utlägg'
