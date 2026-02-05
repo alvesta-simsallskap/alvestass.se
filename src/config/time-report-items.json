@@ -3,7 +3,7 @@
     "simskola": [
       { "date": "2026-01-13", "title": "Uppstartsmöte", "h": 2, "m": 0 },
       { "date": "2026-01-22", "title": "HLR-utbildning", "h": 2, "m": 0 },
-      { "date": "2026-01-25", "title": "Simskola", "h": 5, "m": 25  }
+      { "date": "2026-01-25", "title": "Simskola", "h": 5, "m": 0  }
     ],
     "tavlingA": [
       { "date": "2026-01-05", "title": "Träning", "h": 1, "m": 45 },
