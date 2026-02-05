@@ -1,9 +1,13 @@
 export const prerender = false;
-import timeReportItems from '../../config/time-report-items.json';
+
 import type { APIRoute } from 'astro';
+import { parseTimeReportForm } from '../../lib/timeReportValidation';
+import { sendTimeReportEmail } from '../../lib/email';
+import { buildTable, calcSalary, findTimeItem } from '../../lib/salary';
+import type { TimeReportData, Employee } from '../../lib/types';
 
 export const POST: APIRoute = async ({ request, locals }) => {
-  const EMPLOYEES = [
+  const EMPLOYEES: Employee[] = [
     { email: 'johan.marand@icloud.com', swimSchoolRate: 115, coachRate: 145 }, // Testing as William
     { email: 'annamaria.tovar@hotmail.com', swimSchoolRate: 85, coachRate: null },
     { email: 'cornelia.axhed@outlook.com', swimSchoolRate: 95, coachRate: 135 },
@@ -32,130 +36,57 @@ export const POST: APIRoute = async ({ request, locals }) => {
   const MJ_APIKEY_PUBLIC = locals.runtime.env.MJ_APIKEY_PUBLIC;
   const MJ_APIKEY_PRIVATE = locals.runtime.env.MJ_APIKEY_PRIVATE;
   const TURNSTILE_SECRET_KEY = locals.runtime.env.TURNSTILE_SECRET_KEY;
+
+  // Detect debug mode (localhost)
+  const isDebug = (request.headers.get('host')?.startsWith('localhost') ?? false);
  
   const formData = await request.formData();
-
-  const token = formData.get('cf-turnstile-response');
-  const secretKey = TURNSTILE_SECRET_KEY;
-
-  const verifyRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: `secret=${secretKey}&response=${token}`,
-  });
-
-  const verifyData = await verifyRes.json() as { success: boolean };
-  
-  if (!verifyData.success) {
-    return new Response('Turnstile verification failed', { status: 400 });
-  }
-
-  // Extract fields
-  const name = formData.get('namn') || '';
-  const email = formData.get('email') || '';
-  const milersattning = formData.get('milersattning') || '';
-  const kommentarer = formData.get('kommentarer') || '';
-
-  // Collect checked dates for each section (supporting new keys)
-  const simskola = formData.getAll('simskola_checked_dates[]').filter((v): v is string => typeof v === 'string');
-  const tavlingA = formData.getAll('tavling-a_checked_dates[]').filter((v): v is string => typeof v === 'string');
-  const tavlingB = formData.getAll('tavling-b_checked_dates[]').filter((v): v is string => typeof v === 'string');
-  const teknik = formData.getAll('teknik_checked_dates[]').filter((v): v is string => typeof v === 'string');
-  const masters = formData.getAll('masters_checked_dates[]').filter((v): v is string => typeof v === 'string');
-  const vuxencrawl = formData.getAll('vuxencrawl_checked_dates[]').filter((v): v is string => typeof v === 'string');
-
-  // Helper to find time info for a checked item
-  function findTimeItem(section: string, value: string) {
-    // value is "YYYY-MM-DD Title"
-    const [date, ...titleParts] = value.split(' ');
-    const title = titleParts.join(' ');
-    const items = (timeReportItems['2026-01'] as any)[section] || [];
-    return items.find((item: any) => item.date === date && item.title === title);
-  }
-
-  // Helper to build HTML table for a section
-  function buildTable(section: string, label: string, checked: string[]) {
-    if (!checked.length) return '';
-    let rows = '';
-    for (const val of checked) {
-      const item = findTimeItem(section, val);
-      if (item) {
-        let time;
-        if (item.h === 20) {
-          time = 'Heldag';
-        } else if (item.h === 10) {
-          time = 'Halvdag';
-        } else {
-          time = `${item.h}:${item.m < 10 ? '0' : ''}${item.m}`;
-        }
-        
-        rows += `<tr><td>${val}</td><td>${time}</td></tr>`;
-      } else {
-        rows += `<tr><td>${val}</td><td></td></tr>`;
-      }
+  // Turnstile verification (skip in debug)
+  if (!isDebug) {
+    const token = formData.get('cf-turnstile-response');
+    const secretKey = TURNSTILE_SECRET_KEY;
+    const verifyRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `secret=${secretKey}&response=${token}`,
+    });
+    const verifyData = await verifyRes.json() as { success: boolean };
+    if (!verifyData.success) {
+      return new Response('Turnstile verification failed', { status: 400 });
     }
-    return `<h4>${label}</h4><table border="1" cellpadding="4" style="border-collapse:collapse;margin-bottom:1em;"><thead><tr><th>Datum och aktivitet</th><th>Tid</th></tr></thead><tbody>${rows}</tbody></table>`;
   }
+
+  // Parse and validate form
+  const data: TimeReportData = parseTimeReportForm(formData);
+
 
   // Compose email content (HTML)
-  let html = '<h4>Tidrapport januari 2026</h4>'
-  html += `<p><b>Namn:</b> ${name}</p>`;
-  html += buildTable('simskola', 'Simskola', simskola);
-  html += buildTable('tavlingA', 'Tävlingsgrupp A', tavlingA);
-  html += buildTable('tavlingB', 'Tävlingsgrupp B', tavlingB);
-  html += buildTable('teknik', 'Teknik', teknik);
-  html += buildTable('masters', 'Masters', masters);
-  html += buildTable('vuxencrawl', 'Vuxencrawl', vuxencrawl);
-  if (milersattning) {
-    html += `<p><b>Milersättning:</b> ${milersattning} km</p>`;
+  let html = '<h4>Tidrapport januari 2026</h4>';
+  html += `<p><b>Namn:</b> ${data.name}</p>`;
+  html += buildTable('simskola', 'Simskola', data.simskola);
+  html += buildTable('tavlingA', 'Tävlingsgrupp A', data.tavlingA);
+  html += buildTable('tavlingB', 'Tävlingsgrupp B', data.tavlingB);
+  html += buildTable('teknik', 'Teknik', data.teknik);
+  html += buildTable('masters', 'Masters', data.masters);
+  html += buildTable('vuxencrawl', 'Vuxencrawl', data.vuxencrawl);
+  if (data.milersattning) {
+    html += `<p><b>Milersättning:</b> ${data.milersattning} km</p>`;
   }
-  if (kommentarer) {
-    html += `<p><b>Kommentarer:</b> ${kommentarer}</p>`;
+  if (data.kommentarer) {
+    html += `<p><b>Kommentarer:</b> ${data.kommentarer}</p>`;
   }
 
   // Find employee salary info
-  const employee = EMPLOYEES.find(e => e.email.toLowerCase() === String(email).toLowerCase());
+  const employee = EMPLOYEES.find(e => e.email.toLowerCase() === String(data.email).toLowerCase());
 
-  // Helper to calculate salary for a section
-  function calcSalary(section: string, checked: string[]): { hours: number, minutes: number, salary: number|null, total: number } {
-    let hours = 0, minutes = 0;
-    let rate: number|null = null;
-    
-    if (!employee) return { hours, minutes, salary: null, total: 0 };
-    
-    if (section === 'simskola') {
-      rate = employee.swimSchoolRate;
-    } else {
-      rate = employee.coachRate;
-    }
-    
-    for (const val of checked) {
-      const item = findTimeItem(section, val);
-      
-      // Calculate time, exclude full day and half day: h=10, h=20
-      const excluded = new Set([10, 20]);
-      if (item && !excluded.has(item.h)) { 
-        hours += item.h;
-        minutes += item.m;
-      }
-    }
-
-    // Clean up hours and minutes
-    let totalMinutes = hours * 60 + minutes; 
-    hours = Math.floor(totalMinutes / 60);
-    minutes = totalMinutes % 60; // remainder
-
-    const total = rate ? (totalMinutes / 60) * rate : 0;
-    return { hours, minutes, salary: rate, total };
-  }
 
   // Calculate salary for each section
-  const salarySimskola = calcSalary('simskola', simskola);
-  const salaryTavlingA = calcSalary('tavlingA', tavlingA);
-  const salaryTavlingB = calcSalary('tavlingB', tavlingB);
-  const salaryTeknik = calcSalary('teknik', teknik);
-  const salaryMasters = calcSalary('masters', masters);
-  const salaryVuxencrawl = calcSalary('vuxencrawl', vuxencrawl);
+  const salarySimskola = calcSalary('simskola', data.simskola, employee);
+  const salaryTavlingA = calcSalary('tavlingA', data.tavlingA, employee);
+  const salaryTavlingB = calcSalary('tavlingB', data.tavlingB, employee);
+  const salaryTeknik = calcSalary('teknik', data.teknik, employee);
+  const salaryMasters = calcSalary('masters', data.masters, employee);
+  const salaryVuxencrawl = calcSalary('vuxencrawl', data.vuxencrawl, employee);
 
   // Calculate total salary
   const totalSalary = [salarySimskola, salaryTavlingA, salaryTavlingB, salaryTeknik, salaryMasters, salaryVuxencrawl]
@@ -163,45 +94,66 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
   // Calculate full day and half day
   let fullDay = 0, halfDay = 0;
-  for (const val of tavlingA) {
+  for (const val of data.tavlingA) {
     const item = findTimeItem('tavlingA', val);
-    if (item.h === 20) { fullDay++; }
-    if (item.h === 10) { halfDay++; }
+    if (item?.h === 20) { fullDay++; }
+    if (item?.h === 10) { halfDay++; }
   }
-  for (const val of tavlingB) {
+  for (const val of data.tavlingB) {
     const item = findTimeItem('tavlingB', val);
-    if (item.h === 20) { fullDay++; }
-    if (item.h === 10) { halfDay++; }
+    if (item?.h === 20) { fullDay++; }
+    if (item?.h === 10) { halfDay++; }
   }
-  for (const val of masters) {
+  for (const val of data.masters) {
     const item = findTimeItem('masters', val);
-    if (item.h === 20) { fullDay++; }
-    if (item.h === 10) { halfDay++; }
+    if (item?.h === 20) { fullDay++; }
+    if (item?.h === 10) { halfDay++; }
   }
-  for (const val of teknik) {
+  for (const val of data.teknik) {
     const item = findTimeItem('teknik', val);
-    if (item.h === 20) { fullDay++; }
-    if (item.h === 10) { halfDay++; }
+    if (item?.h === 20) { fullDay++; }
+    if (item?.h === 10) { halfDay++; }
   }
 
   const fullDaySalary = 1000 * fullDay;
   const halfDaySalary = 500 * halfDay;
 
   // Add salary estimate to email content if employee matched
+  // Helper to format numbers with space as thousands separator
+  const formatAmount = (amount: number) => amount.toLocaleString('sv-SE');
+
   if (employee) {
     html += `<h4>Preliminär löneberäkning</h4><table border="1" cellpadding="4" style="border-collapse:collapse;margin-bottom:1em;">
-      <thead><tr><th>Grupp</th><th>Timmar</th><th>Minuter</th><th>Timlön</th><th>Summa</th></tr></thead><tbody>
-      <tr><td>Simskola</td><td>${salarySimskola.hours}</td><td>${salarySimskola.minutes}</td><td>${salarySimskola.salary ?? '-'}</td><td>${salarySimskola.total.toFixed(2)} kr</td></tr>
-      <tr><td>Tävlingsgrupp A</td><td>${salaryTavlingA.hours}</td><td>${salaryTavlingA.minutes}</td><td>${salaryTavlingA.salary ?? '-'}</td><td>${salaryTavlingA.total.toFixed(2)} kr</td></tr>
-      <tr><td>Tävlingsgrupp B</td><td>${salaryTavlingB.hours}</td><td>${salaryTavlingB.minutes}</td><td>${salaryTavlingB.salary ?? '-'}</td><td>${salaryTavlingB.total.toFixed(2)} kr</td></tr>
-      <tr><td>Teknik</td><td>${salaryTeknik.hours}</td><td>${salaryTeknik.minutes}</td><td>${salaryTeknik.salary ?? '-'}</td><td>${salaryTeknik.total.toFixed(2)} kr</td></tr>
-      <tr><td>Masters</td><td>${salaryMasters.hours}</td><td>${salaryMasters.minutes}</td><td>${salaryMasters.salary ?? '-'}</td><td>${salaryMasters.total.toFixed(2)} kr</td></tr>
-      <tr><td>Vuxencrawl</td><td>${salaryVuxencrawl.hours}</td><td>${salaryVuxencrawl.minutes}</td><td>${salaryVuxencrawl.salary ?? '-'}</td><td>${salaryVuxencrawl.total.toFixed(2)} kr</td></tr>
-      <tr><td>Heldagar</td><td colspan="2">${fullDay}</td><td>1000</td><td>${fullDaySalary.toFixed(0)} kr</td></tr>
-      <tr><td>Halvdagar</td><td colspan="2">${halfDay}</td><td>500</td><td>${halfDaySalary.toFixed(0)} kr</td></tr>
-      <tr style="font-weight:bold"><td>Totalt</td><td colspan="3"></td><td>${Math.round(totalSalary + fullDaySalary + halfDaySalary)} kr</td></tr>
-      </tbody></table>`;
+      <thead><tr><th>Grupp</th><th>Timmar</th><th>Minuter</th><th>Lön</th><th>Summa</th></tr></thead><tbody>`;
+
+    if (salarySimskola.hours > 0 || salarySimskola.minutes > 0) {
+      html += `<tr><td>Simskola</td><td>${salarySimskola.hours}</td><td>${salarySimskola.minutes}</td><td>${salarySimskola.salary ?? '-'}</td><td>${formatAmount(salarySimskola.total)} kr</td></tr>`;
+    }
+    if (salaryTavlingA.hours > 0 || salaryTavlingA.minutes > 0) {
+      html += `<tr><td>Tävlingsgrupp A</td><td>${salaryTavlingA.hours}</td><td>${salaryTavlingA.minutes}</td><td>${salaryTavlingA.salary ?? '-'}</td><td>${formatAmount(salaryTavlingA.total)} kr</td></tr>`;
+    }
+    if (salaryTavlingB.hours > 0 || salaryTavlingB.minutes > 0) {
+      html += `<tr><td>Tävlingsgrupp B</td><td>${salaryTavlingB.hours}</td><td>${salaryTavlingB.minutes}</td><td>${salaryTavlingB.salary ?? '-'}</td><td>${formatAmount(salaryTavlingB.total)} kr</td></tr>`;
+    }
+    if (salaryTeknik.hours > 0 || salaryTeknik.minutes > 0) {
+      html += `<tr><td>Teknik</td><td>${salaryTeknik.hours}</td><td>${salaryTeknik.minutes}</td><td>${salaryTeknik.salary ?? '-'}</td><td>${formatAmount(salaryTeknik.total)} kr</td></tr>`;
+    }
+    if (salaryMasters.hours > 0 || salaryMasters.minutes > 0) {
+      html += `<tr><td>Masters</td><td>${salaryMasters.hours}</td><td>${salaryMasters.minutes}</td><td>${salaryMasters.salary ?? '-'}</td><td>${formatAmount(salaryMasters.total)} kr</td></tr>`;
+    }
+    if (salaryVuxencrawl.hours > 0 || salaryVuxencrawl.minutes > 0) {
+      html += `<tr><td>Vuxencrawl</td><td>${salaryVuxencrawl.hours}</td><td>${salaryVuxencrawl.minutes}</td><td>${salaryVuxencrawl.salary ?? '-'}</td><td>${formatAmount(salaryVuxencrawl.total)} kr</td></tr>`;
+    }
+    if (fullDay > 0) {
+      html += `<tr><td>Heldagar</td><td colspan="2">${fullDay}</td><td>1 000</td><td>${formatAmount(fullDaySalary)} kr</td></tr>`;
+    }
+    if (halfDay > 0) {
+      html += `<tr><td>Halvdagar</td><td colspan="2">${halfDay}</td><td>500</td><td>${formatAmount(halfDaySalary)} kr</td></tr>`;
+    }
+    html += `<tr style="font-weight:bold"><td>Totalt</td><td colspan="3"></td><td>${formatAmount(Math.round(totalSalary + fullDaySalary + halfDaySalary))} kr</td></tr>`;
+    html += `</tbody></table>`;
   }
+
 
   // Handle file attachments for 'Utlägg'
   const attachments = [];
@@ -226,41 +178,28 @@ export const POST: APIRoute = async ({ request, locals }) => {
     html += `<h4>Utlägg</h4><ul>${utlaggHtml}</ul>`;
   }
 
+
   // Information about the sending of the report
   const formattedDate = new Date().toLocaleString('sv-SE', {
     timeZone: 'Europe/Stockholm',
     year: 'numeric', month: '2-digit', day: '2-digit',
     hour: '2-digit', minute: '2-digit'
   }).replace(' ', ' kl. ').replace(':', '.');
-  html += `<p><i>Tidrapporten skickades in genom alvestass.se/tidrapport ${formattedDate}</i></p>`;
+  html += `<p><i>Skickades genom alvestass.se/tidrapport ${formattedDate}</i></p>`;
 
-  // Recipients
-  const recipients = [
-    { Email: "lon@alvestass.se" }
-  ];
-  const ccRecipients = email ? [{ Email: email }] : [];
+  // In debug mode, show HTML output instead of sending email
+  if (isDebug) {
+    return new Response(html, { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8' } });
+  }
 
-  // Send email via Mailjet API (HTML + attachments)
-  const mailjetPayload = {
-    Messages: [
-      {
-        From: { Email: "noreply@alvestass.se", Name: "Alvesta Simsällskap" },
-        To: recipients,
-        Cc: ccRecipients,
-        Subject: `Tidrapport för ${name} 2026-01`,
-        HTMLPart: html,
-        Attachments: attachments.length > 0 ? attachments : undefined
-      }
-    ]
-  };
-
-  const res = await fetch('https://api.mailjet.com/v3.1/send', {
-    method: 'POST',
-    headers: {
-      'Authorization': 'Basic ' + btoa(`${MJ_APIKEY_PUBLIC}:${MJ_APIKEY_PRIVATE}`),
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(mailjetPayload),
+  // Send email via utility
+  const res = await sendTimeReportEmail({
+    data,
+    employee,
+    attachments,
+    MJ_APIKEY_PUBLIC,
+    MJ_APIKEY_PRIVATE,
+    html,
   });
 
   if (res.ok) {
