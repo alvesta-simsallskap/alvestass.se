@@ -122,15 +122,19 @@ export const POST: APIRoute = async ({ request, locals }) => {
     let rate: number|null = null;
     
     if (!employee) return { hours, minutes, salary: null, total: 0 };
+    
     if (section === 'simskola') {
       rate = employee.swimSchoolRate;
     } else {
       rate = employee.coachRate;
     }
+    
     for (const val of checked) {
       const item = findTimeItem(section, val);
+      
       // Calculate time, exclude full day and half day: h=10, h=20
-      if (item && item.h !== 10 && item.h !== 20) { 
+      const excluded = new Set([10, 20])
+      if (item && !excluded.has(item.h)) { 
         hours += item.h;
         minutes += item.m;
       }
@@ -138,10 +142,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     // Clean up hours and minutes
     let totalMinutes = hours * 60 + minutes; 
-    hours += Math.floor(totalMinutes / 60);
-    minutes += totalMinutes % 60; // remainder
+    hours = Math.floor(totalMinutes / 60);
+    minutes = totalMinutes % 60; // remainder
 
-    const total = rate ? (hours + minutes / 60) * rate : 0;
+    const total = rate ? (totalMinutes / 60) * rate : 0;
     return { hours, minutes, salary: rate, total };
   }
 
