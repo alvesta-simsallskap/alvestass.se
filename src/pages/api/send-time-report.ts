@@ -23,7 +23,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     { email: 'ra7838303@gmail.com', swimSchoolRate: 75, coachRate: null },
     { email: 'aliciablyth@hotmail.com', swimSchoolRate: 95, coachRate: null },
     { email: 'erona.h09@gmail.com', swimSchoolRate: 75, coachRate: null },
-    { email: 'williamlarson1999@gmail.com', swimSchoolRate: 115, coachRate: 155 },
+    { email: 'williamlarson1999@gmail.com', swimSchoolRate: 115, coachRate: 145 },
     { email: 'mujcicuna@gmail.com', swimSchoolRate: 95, coachRate: 125 },
     { email: 'toweeandersson@gmail.com', swimSchoolRate: 105, coachRate: 135 },
     { email: 'agnesannaandersson@gmail.com', swimSchoolRate: 95, coachRate: 115 },
@@ -120,6 +120,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
   function calcSalary(section: string, checked: string[]): { hours: number, minutes: number, salary: number|null, total: number } {
     let hours = 0, minutes = 0;
     let rate: number|null = null;
+    
     if (!employee) return { hours, minutes, salary: null, total: 0 };
     if (section === 'simskola') {
       rate = employee.swimSchoolRate;
@@ -128,9 +129,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
     }
     for (const val of checked) {
       const item = findTimeItem(section, val);
-      if (item && typeof item.h === 'number' && typeof item.m === 'number') {
-        hours += item.h;
-        minutes += item.m;
+      // Calculate time, exclude full day and half day: h=10, h=20
+      if (item && item.h !== 10 && item.h !== 20) { 
+        let totalMinutes = item.h * 60 + item.m; 
+        hours += Math.floor(totalMinutes / 60);
+        minutes += totalMinutes % 60; // remainder
       }
     }
     const total = rate ? (hours + minutes / 60) * rate : 0;
@@ -149,6 +152,32 @@ export const POST: APIRoute = async ({ request, locals }) => {
   const totalSalary = [salarySimskola, salaryTavlingA, salaryTavlingB, salaryTeknik, salaryMasters, salaryVuxencrawl]
     .reduce((sum, s) => sum + s.total, 0);
 
+  // Calculate full day and half day
+  let fullDay = 0, halfDay = 0;
+  for (const val of tavlingA) {
+    const item = findTimeItem('tavlingA', val);
+    if (item.h === 20) { fullDay++; }
+    if (item.h === 10) { halfDay++; }
+  }
+  for (const val of tavlingB) {
+    const item = findTimeItem('tavlingB', val);
+    if (item.h === 20) { fullDay++; }
+    if (item.h === 10) { halfDay++; }
+  }
+  for (const val of masters) {
+    const item = findTimeItem('masters', val);
+    if (item.h === 20) { fullDay++; }
+    if (item.h === 10) { halfDay++; }
+  }
+  for (const val of teknik) {
+    const item = findTimeItem('teknik', val);
+    if (item.h === 20) { fullDay++; }
+    if (item.h === 10) { halfDay++; }
+  }
+
+  const fullDaySalary = 1000 * fullDay;
+  const halfDaySalary = 500 * halfDay;
+
   // Add salary estimate to email content if employee matched
   if (employee) {
     html += `<h4>Preliminär löneberäkning</h4><table border="1" cellpadding="4" style="border-collapse:collapse;margin-bottom:1em;">
@@ -159,7 +188,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
       <tr><td>Teknik</td><td>${salaryTeknik.hours}</td><td>${salaryTeknik.minutes}</td><td>${salaryTeknik.salary ?? '-'}</td><td>${salaryTeknik.total.toFixed(2)} kr</td></tr>
       <tr><td>Masters</td><td>${salaryMasters.hours}</td><td>${salaryMasters.minutes}</td><td>${salaryMasters.salary ?? '-'}</td><td>${salaryMasters.total.toFixed(2)} kr</td></tr>
       <tr><td>Vuxencrawl</td><td>${salaryVuxencrawl.hours}</td><td>${salaryVuxencrawl.minutes}</td><td>${salaryVuxencrawl.salary ?? '-'}</td><td>${salaryVuxencrawl.total.toFixed(2)} kr</td></tr>
-      <tr style="font-weight:bold"><td>Totalt</td><td colspan="3"></td><td>${Math.round(totalSalary)} kr</td></tr>
+      <tr><td>Heldagar</td><td colspan="2">${fullDay}</td><td>1000</td><td>${fullDaySalary.toFixed(0)} kr</td></tr>
+      <tr><td>Halvdagar</td><td colspan="2">${halfDay}</td><td>500</td><td>${halfDaySalary.toFixed(0)} kr</td></tr>
+      <tr style="font-weight:bold"><td>Totalt</td><td colspan="3"></td><td>${Math.round(totalSalary + fullDaySalary + halfDaySalary)} kr</td></tr>
       </tbody></table>`;
   }
 
