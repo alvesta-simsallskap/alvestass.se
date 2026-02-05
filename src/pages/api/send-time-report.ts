@@ -4,7 +4,7 @@ import type { APIRoute } from 'astro';
 
 export const POST: APIRoute = async ({ request, locals }) => {
   const EMPLOYEES = [
-    { email: 'johan.marand@icloud.com', swimSchoolRate: 85, coachRate: 105 },
+    { email: 'johan.marand@icloud.com', swimSchoolRate: 115, coachRate: 145 }, // Testing as William
     { email: 'annamaria.tovar@hotmail.com', swimSchoolRate: 85, coachRate: null },
     { email: 'cornelia.axhed@outlook.com', swimSchoolRate: 95, coachRate: 135 },
     { email: 'izakaxelsson2009@gmail.com', swimSchoolRate: 95, coachRate: null },
