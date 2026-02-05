@@ -133,7 +133,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       const item = findTimeItem(section, val);
       
       // Calculate time, exclude full day and half day: h=10, h=20
-      const excluded = new Set([10, 20])
+      const excluded = new Set([10, 20]);
       if (item && !excluded.has(item.h)) { 
         hours += item.h;
         minutes += item.m;
