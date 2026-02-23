@@ -120,7 +120,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
   // Add salary estimate to email content if employee matched
   // Helper to format numbers with space as thousands separator
-  const formatAmount = (amount: number) => amount.toLocaleString('sv-SE');
+  const formatAmount = (amount: number) => amount.toLocaleString('sv-SE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   if (employee) {
     html += `<h4>Preliminär löneberäkning</h4><table border="1" cellpadding="4" style="border-collapse:collapse;margin-bottom:1em;">
