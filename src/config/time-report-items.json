@@ -65,6 +65,7 @@
       { "date": "2026-02-15", "title": "Simskola", "h": 5, "m": 0  }
     ],
     "tavlingA": [
+      { "date": "2026-02-01", "title": "ÖGP Växjö", "h": 20, "m": 0 },
       { "date": "2026-02-04", "title": "Träning", "h": 1, "m": 45 },
       { "date": "2026-02-07", "title": "Träning", "h": 1, "m": 45 },
       { "date": "2026-02-08", "title": "Träning", "h": 1, "m": 45 },
@@ -77,7 +78,7 @@
     ],
     "tavlingB": [
       { "date": "2026-02-04", "title": "Träning", "h": 1, "m": 45 },
-      { "date": "2026-02-08", "title": "Träning", "h": 1, "m": 45 },
+      { "date": "2026-02-07", "title": "MSS Sprint", "h": 20, "m": 0 },
       { "date": "2026-02-09", "title": "Träning", "h": 1, "m": 45 },
       { "date": "2026-02-11", "title": "Träning", "h": 1, "m": 45 },
       { "date": "2026-02-15", "title": "Träning", "h": 1, "m": 45 },
