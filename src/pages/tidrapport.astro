@@ -6,7 +6,7 @@ import '../styles/_global.scss';
 import timeReportItems from '../config/time-report-items.json';
 import TimeReportCheckboxGroup from '../components/TimeReportCheckboxGroup.astro';
 
-const monthKey = '2026-01';
+const monthKey = '2026-02';
 const items = timeReportItems[monthKey];
 const isDevelopment = Astro.url.hostname === 'localhost';
 
@@ -26,7 +26,7 @@ const isDevelopment = Astro.url.hostname === 'localhost';
     <section class="section">
       <div class="container is-max-desktop">
         <h1 class="title">Alvesta Simsällskap</h1>
-        <h2 class="subtitle">Tidrapport januari 2026</h2>
+        <h2 class="subtitle">Tidrapport februari 2026</h2>
         <form method="POST" action="/api/send-time-report" x-data="formHandler" x-on:submit.prevent="handleSubmit" @timereportupdate.window="updateTotalTime()">
           <div class="box mt-5">
             <div class="field">

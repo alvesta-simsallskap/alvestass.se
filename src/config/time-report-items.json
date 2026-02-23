@@ -57,5 +57,59 @@
     "vuxencrawl": [
       { "date": "2026-01-28", "title": "Träning", "h": 1, "m": 0 }
     ]
+  },
+  "2026-02": {
+    "simskola": [
+      { "date": "2026-02-01", "title": "Simskola", "h": 5, "m": 0 },
+      { "date": "2026-02-08", "title": "Simskola", "h": 5, "m": 0 },
+      { "date": "2026-02-15", "title": "Simskola", "h": 5, "m": 0  }
+    ],
+    "tavlingA": [
+      { "date": "2026-02-04", "title": "Träning", "h": 1, "m": 45 },
+      { "date": "2026-02-07", "title": "Träning", "h": 1, "m": 45 },
+      { "date": "2026-02-08", "title": "Träning", "h": 1, "m": 45 },
+      { "date": "2026-02-09", "title": "Träning", "h": 1, "m": 45 },
+      { "date": "2026-02-11", "title": "Träning", "h": 1, "m": 45 },
+      { "date": "2026-02-14", "title": "Träning", "h": 1, "m": 45 },
+      { "date": "2026-02-15", "title": "Träning", "h": 1, "m": 45 },
+      { "date": "2026-02-23", "title": "Träning", "h": 1, "m": 45 },
+      { "date": "2026-02-25", "title": "Träning", "h": 1, "m": 45 }
+    ],
+    "tavlingB": [
+      { "date": "2026-02-04", "title": "Träning", "h": 1, "m": 45 },
+      { "date": "2026-02-08", "title": "Träning", "h": 1, "m": 45 },
+      { "date": "2026-02-09", "title": "Träning", "h": 1, "m": 45 },
+      { "date": "2026-02-11", "title": "Träning", "h": 1, "m": 45 },
+      { "date": "2026-02-15", "title": "Träning", "h": 1, "m": 45 },
+      { "date": "2026-02-23", "title": "Träning", "h": 1, "m": 45 },
+      { "date": "2026-02-25", "title": "Träning", "h": 1, "m": 45 }
+    ],
+    "teknik": [
+      { "date": "2026-02-02", "title": "Träning", "h": 1, "m": 15 },
+      { "date": "2026-02-05", "title": "Träning", "h": 1, "m": 15 },
+      { "date": "2026-02-09", "title": "Träning", "h": 1, "m": 15 },
+      { "date": "2026-02-12", "title": "Träning", "h": 1, "m": 15 },
+      { "date": "2026-02-16", "title": "Träning", "h": 1, "m": 15 },
+      { "date": "2026-02-19", "title": "Träning", "h": 1, "m": 15 },
+      { "date": "2026-02-23", "title": "Träning", "h": 1, "m": 15 },
+      { "date": "2026-02-26", "title": "Träning", "h": 1, "m": 15 }
+    ],
+    "masters": [
+      { "date": "2026-02-02", "title": "Träning", "h": 1, "m": 30 },
+      { "date": "2026-02-05", "title": "Träning", "h": 1, "m": 30 },
+      { "date": "2026-02-09", "title": "Träning", "h": 1, "m": 30 },
+      { "date": "2026-02-12", "title": "Träning", "h": 1, "m": 30 },
+      { "date": "2026-02-16", "title": "Träning", "h": 1, "m": 30 },
+      { "date": "2026-02-19", "title": "Träning", "h": 1, "m": 30 },
+      { "date": "2026-02-23", "title": "Träning", "h": 1, "m": 30 },
+      { "date": "2026-02-26", "title": "Träning", "h": 1, "m": 30 }
+
+    ],
+    "vuxencrawl": [
+      { "date": "2026-02-04", "title": "Träning", "h": 1, "m": 0 },
+      { "date": "2026-02-11", "title": "Träning", "h": 1, "m": 0 },
+      { "date": "2026-02-25", "title": "Träning", "h": 1, "m": 0 }
+    ]
   }
+
 }
