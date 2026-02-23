@@ -107,7 +107,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
   html += buildTable('masters', 'Masters', masters);
   html += buildTable('vuxencrawl', 'Vuxencrawl', vuxencrawl);
   if (milersattning) {
-    html += `<p><b>Milersättning:</b> ${milersattning} km</p>`;
+    html += `<p><b>Milersättning:</b> ${milersattning} km (privat resa, skattepliktigt, 25 kr/mil)</p>`;
   }
   if (kommentarer) {
     html += `<p><b>Kommentarer:</b> ${kommentarer}</p>`;
