@@ -31,6 +31,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
     { email: 'mujcicuna@gmail.com', swimSchoolRate: 95, coachRate: 125 },
     { email: 'toweeandersson@gmail.com', swimSchoolRate: 105, coachRate: 135 },
     { email: 'agnesannaandersson@gmail.com', swimSchoolRate: 95, coachRate: 115 },
+    { email: 'hamzkdka2022@gmail.com', swimSchoolRate: 75, coachRate: null },
+    { email: 'yazanjana483@gmail.com', swimSchoolRate: 75, coachRate: null },
   ]
   
   const MJ_APIKEY_PUBLIC = locals.runtime.env.MJ_APIKEY_PUBLIC;
