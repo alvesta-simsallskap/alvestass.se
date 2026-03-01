@@ -24,7 +24,7 @@ export async function sendTimeReportEmail({
         From: { Email: 'noreply@alvestass.se', Name: 'Alvesta Simsällskap' },
         To: recipients,
         Cc: ccRecipients,
-        Subject: `Tidrapport för ${data.name} 2026-01`,
+        Subject: `Tidrapport för ${data.name} 2026-02`,
         HTMLPart: html,
         Attachments: attachments.length > 0 ? attachments : undefined,
       },
