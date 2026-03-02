@@ -4,6 +4,7 @@ import type { APIRoute } from 'astro';
 import { parseTimeReportForm } from '../../lib/timeReportValidation';
 import { sendTimeReportEmail } from '../../lib/email';
 import { buildTable, calcSalary, findTimeItem } from '../../lib/salary';
+import { TIME_REPORT_MONTH_KEY, TIME_REPORT_MONTH_DISPLAY } from '../../config/time-report-settings';
 import type { TimeReportData, Employee } from '../../lib/types';
 
 export const POST: APIRoute = async ({ request, locals }) => {
@@ -61,9 +62,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
   // Parse and validate form
   const data: TimeReportData = parseTimeReportForm(formData);
 
-
   // Compose email content (HTML)
-  let html = '<h4>Tidrapport februari 2026</h4>';
+  let html = `<h4>Tidrapport ${TIME_REPORT_MONTH_DISPLAY}</h4>`;
   html += `<p><b>Namn:</b> ${data.name}</p>`;
   html += buildTable('simskola', 'Simskola', data.simskola);
   html += buildTable('tavlingA', 'Tävlingsgrupp A', data.tavlingA);
@@ -80,7 +80,6 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
   // Find employee salary info
   const employee = EMPLOYEES.find(e => e.email.toLowerCase() === String(data.email).toLowerCase());
-
 
   // Calculate salary for each section
   const salarySimskola = calcSalary('simskola', data.simskola, employee);
@@ -197,11 +196,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
   // Send email via utility
   const res = await sendTimeReportEmail({
     data,
-    employee,
     attachments,
     MJ_APIKEY_PUBLIC,
     MJ_APIKEY_PRIVATE,
     html,
+    monthKey: TIME_REPORT_MONTH_KEY,
   });
 
   if (res.ok) {

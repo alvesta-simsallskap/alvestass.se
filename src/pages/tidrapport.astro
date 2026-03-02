@@ -5,13 +5,11 @@ import '../styles/_global.scss';
 
 import timeReportItems from '../config/time-report-items.json';
 import TimeReportCheckboxGroup from '../components/TimeReportCheckboxGroup.astro';
+import { TIME_REPORT_MONTH_KEY, TIME_REPORT_MONTH_DISPLAY, IS_DEVELOPMENT } from '../config/time-report-settings';
 
-const monthKey = '2026-02';
-const items = timeReportItems[monthKey];
-// const isDevelopment = Astro.url.hostname === 'localhost';
-const isDevelopment = false;
+const items = timeReportItems[TIME_REPORT_MONTH_KEY];
 
-// Special-ersättnigar (läger, tävling)
+// Special-ersättningar (läger, tävling)
 // Heldag: 1000 kr
 // Halvdag: 500 kr
 // Övernattning: 300 kr
@@ -21,13 +19,13 @@ const isDevelopment = false;
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Tidrapport</title>
+    <title>Tidrapport {TIME_REPORT_MONTH_DISPLAY}</title>
   </head>
   <body>
     <section class="section">
       <div class="container is-max-desktop">
         <h1 class="title">Alvesta Simsällskap</h1>
-        <h2 class="subtitle">Tidrapport februari 2026</h2>
+        <h2 class="subtitle">Tidrapport {TIME_REPORT_MONTH_DISPLAY}</h2>
         <form method="POST" action="/api/send-time-report" x-data="formHandler" x-on:submit.prevent="handleSubmit" @timereportupdate.window="updateTotalTime()">
           <div class="box mt-5">
             <div class="field">
@@ -133,14 +131,14 @@ const isDevelopment = false;
               <button class="button is-link is-light" type="button" @click="files.push({ id: Date.now() + Math.random(), file: null, desc: '' })">Lägg till fil</button>
             </div>
           </div>          
-          {!isDevelopment ? (
+          {!IS_DEVELOPMENT ? (
           <div class="field">
             <div class="cf-turnstile" data-sitekey="0x4AAAAAACV0HK5DAZEGpQip" data-theme="light" data-callback="onTurnstileSuccess"></div>
           </div>
           ) : null}
           <div class="field">
             <div class="control">
-                <button id="submitBtn" class="button is-link is-primary" type="submit" disabled={!isDevelopment}>Skicka in tidrapport</button>
+                <button id="submitBtn" class="button is-link is-primary" type="submit" disabled={!IS_DEVELOPMENT}>Skicka in tidrapport</button>
             </div>
           </div>
         </form>
