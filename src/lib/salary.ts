@@ -1,10 +1,7 @@
 // Salary and HTML helpers for time report API
 import type { Employee, TimeReportData } from './types';
 import timeReportItems from '../config/time-report-items.json';
-
-// Extra time (in minutes) for specific activities
-export const EXTRA_TIME_SIMSKOLA = 30; // minutes
-export const EXTRA_TIME_TRAINING = 15; // minutes
+import { EXTRA_TIME_SIMSKOLA, EXTRA_TIME_TRAINING } from '../config/time-report-settings';
 
 export function findTimeItem(section: string, value: string) {
   const [date, ...titleParts] = value.split(' ');

@@ -4,7 +4,7 @@ import type { APIRoute } from 'astro';
 import { parseTimeReportForm } from '../../lib/timeReportValidation';
 import { sendTimeReportEmail } from '../../lib/email';
 import { buildTable, calcSalary, findTimeItem } from '../../lib/salary';
-import { TIME_REPORT_MONTH_KEY, TIME_REPORT_MONTH_DISPLAY } from '../../config/time-report-settings';
+import { TIME_REPORT_MONTH_KEY, TIME_REPORT_MONTH_DISPLAY, IS_DEVELOPMENT } from '../../config/time-report-settings';
 import type { TimeReportData, Employee } from '../../lib/types';
 
 export const POST: APIRoute = async ({ request, locals }) => {
@@ -40,12 +40,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
   const MJ_APIKEY_PRIVATE = locals.runtime.env.MJ_APIKEY_PRIVATE;
   const TURNSTILE_SECRET_KEY = locals.runtime.env.TURNSTILE_SECRET_KEY;
 
-  // Detect debug mode (localhost)
-  const isDebug = (request.headers.get('host')?.startsWith('localhost') ?? false);
- 
   const formData = await request.formData();
-  // Turnstile verification (skip in debug)
-  if (!isDebug) {
+
+  // Turnstile verification (skip in development mode)
+  if (!IS_DEVELOPMENT) {
     const token = formData.get('cf-turnstile-response');
     const secretKey = TURNSTILE_SECRET_KEY;
     const verifyRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
@@ -189,7 +187,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
   html += `<p><i>Skickades genom alvestass.se/tidrapport ${formattedDate}</i></p>`;
 
   // In debug mode, show HTML output instead of sending email
-  if (isDebug) {
+  if (IS_DEVELOPMENT) {
     return new Response(html, { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8' } });
   }
 

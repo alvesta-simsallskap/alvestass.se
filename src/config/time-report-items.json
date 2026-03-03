@@ -61,8 +61,11 @@
   "2026-02": {
     "simskola": [
       { "date": "2026-02-01", "title": "Simskola", "h": 5, "m": 10 },
+      { "date": "2026-02-01", "title": "Beredskap", "h": 3, "m": 0 },
       { "date": "2026-02-08", "title": "Simskola", "h": 5, "m": 10 },
-      { "date": "2026-02-15", "title": "Simskola", "h": 5, "m": 10  }
+      { "date": "2026-02-08", "title": "Beredskap", "h": 3, "m": 0 },
+      { "date": "2026-02-15", "title": "Simskola", "h": 5, "m": 10  },
+      { "date": "2026-02-15", "title": "Beredskap", "h": 3, "m": 0 }
     ],
     "tavlingA": [
       { "date": "2026-02-01", "title": "ÖGP Växjö", "h": 20, "m": 0 },
