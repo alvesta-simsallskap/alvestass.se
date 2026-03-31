@@ -8,11 +8,6 @@ import TimeReportCheckboxGroup from '../components/TimeReportCheckboxGroup.astro
 import { TIME_REPORT_MONTH_KEY, TIME_REPORT_MONTH_DISPLAY, IS_DEVELOPMENT } from '../config/time-report-settings';
 
 const items = timeReportItems[TIME_REPORT_MONTH_KEY];
-
-// Special-ersättningar (läger, tävling)
-// Heldag: 1000 kr
-// Halvdag: 500 kr
-// Övernattning: 300 kr
 ---
 
 <html>
@@ -79,30 +74,40 @@ const items = timeReportItems[TIME_REPORT_MONTH_KEY];
               <p class="has-text-grey"><i>15 minuter för förberedelse och undanplockning läggs automatiskt till på varje tillfälle.</i></p>
             </div>
           </div>
-          <div class="box mt-5" id="timereport-total-box">
-            <span>Total tid:</span>
-            <span x-text="totalTime"></span>
-          </div>       
-          <div class="box mt-5">
-            <div class="columns">
-              <div class="column">
-                <div class="field">
-                  <label class="label">Kommentarer</label>
-                  <div class="control">
-                    <textarea class="textarea" rows="3" placeholder="Eventuella kommentarer" name="kommentarer"></textarea>
+          <div class="box mt-5" x-data="{ open: false, extraTimes: [{ id: Date.now(), date: '', h: '', m: '', desc: '' }] }">
+            <h2 class="subtitle my-0" @click="open = !open" style="cursor:pointer;">
+              Övrig tid
+              <span x-text="open ? '▲' : '▼'" class="ml-2 is-size-6"></span>
+            </h2>
+            <div class="mt-4" x-show="open" x-transition>
+              <template x-for="(item, idx) in extraTimes" :key="item.id">
+                <div class="box mb-3">
+                  <div class="field is-horizontal is-align-items-center">
+                    <div class="field-body">
+                      <div class="field has-addons">
+                        <div class="control">
+                          <input type="date" class="input" :name="`extratid_date_${item.id}`" x-model="item.date" required />
+                        </div>
+                        <div class="control">
+                          <input type="number" class="input" min="0" max="24" :name="`extratid_h_${item.id}`" x-model="item.h" style="max-width: 80px;" required />
+                        </div>
+                        <p class="control"><a class="button is-static">h</a></p> 
+                        <div class="control">
+                          <input type="number" class="input" min="0" max="59" :name="`extratid_m_${item.id}`" x-model="item.m" style="max-width: 80px;" required />
+                        </div>
+                        <p class="control"><a class="button is-static">m</a></p>                        
+                        <div class="control is-expanded">
+                          <input type="text" class="input" :name="`extratid_desc_${item.id}`" x-model="item.desc" placeholder="Kort beskrivning" required />
+                        </div>
+                        <p class="control">
+                          <a class="button is-danger" type="button" @click="extraTimes.splice(idx, 1)" x-show="extraTimes.length > 1">x</a>
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                  <p class="help">Eventuella kommentarer för tillfällena ovan, annan extra arbetstid eller utlägg</p>
                 </div>
-              </div>
-              <div class="column">
-                <div class="field">
-                  <label class="label">Milersättning (km)</label>
-                  <div class="control">
-                    <input class="input" type="number" name="milersattning" min="1" max="1000" placeholder="Ange kilometer" style="max-width: 150px;" />
-                  </div>
-                  <p class="help">Ange antal kilometer. Till och från träning (2,50 kr/kilometer)</p>
-                </div>
-              </div>
+              </template>
+              <button class="button is-link is-light" type="button" @click="extraTimes.push({ id: Date.now() + Math.random(), date: '', h: '', m: '', desc: '' })">Lägg till rad</button>
             </div>
           </div>
           <div class="box mt-5" x-data="{ open: false, files: [{ id: Date.now(), file: null, desc: '' }] }">
@@ -130,7 +135,29 @@ const items = timeReportItems[TIME_REPORT_MONTH_KEY];
               </template>
               <button class="button is-link is-light" type="button" @click="files.push({ id: Date.now() + Math.random(), file: null, desc: '' })">Lägg till fil</button>
             </div>
-          </div>          
+          </div>
+          <div class="box mt-5">
+            <div class="columns">
+              <div class="column">
+                <div class="field">
+                  <label class="label">Kommentarer</label>
+                  <div class="control">
+                    <textarea class="textarea" rows="3" placeholder="Eventuella kommentarer" name="kommentarer"></textarea>
+                  </div>
+                  <p class="help">Eventuella kommentarer för tillfällena ovan, annan extra arbetstid eller utlägg</p>
+                </div>
+              </div>
+              <div class="column">
+                <div class="field">
+                  <label class="label">Milersättning (km)</label>
+                  <div class="control">
+                    <input class="input" type="number" name="milersattning" min="1" max="1000" placeholder="Ange kilometer" style="max-width: 150px;" />
+                  </div>
+                  <p class="help">Ange antal kilometer. Till och från träning (2,50 kr/kilometer)</p>
+                </div>
+              </div>
+            </div>
+          </div>
           {!IS_DEVELOPMENT ? (
           <div class="field">
             <div class="cf-turnstile" data-sitekey="0x4AAAAAACV0HK5DAZEGpQip" data-theme="light" data-callback="onTurnstileSuccess"></div>
@@ -146,40 +173,21 @@ const items = timeReportItems[TIME_REPORT_MONTH_KEY];
     </section>
     <script is:inline>
       document.addEventListener('alpine:init', () => {
-        Alpine.data('formHandler', () => ({          
-          totalTime: '0',
-          updateTotalTime() {
-            let totalH = 0, totalM = 0;
-            let totalFullDay = 0;
-            let totalHalfDay = 0;
-
-            document.querySelectorAll('input[type=checkbox][data-h][data-m]:checked').forEach(cb => {
-              const h = parseInt(cb.getAttribute('data-h')) || 0;
-              const m = parseInt(cb.getAttribute('data-m')) || 0;
-              
-              if (h === 10) { totalHalfDay += 1; return; }
-              if (h === 20) { totalFullDay += 1; return; }              
-
-              totalH += h;
-              totalM += m;
+        Alpine.data('formHandler', () => ({
+          collectExtraTime(formData) {
+            const extraTimesEl = this.$root.querySelectorAll('[x-data]')[2];
+            const extraTimes = extraTimesEl ? (Alpine.$data(extraTimesEl).extraTimes || []) : [];
+            extraTimes.forEach((item, idx) => {
+              formData.append(`extratid[${idx}][date]`, item.date);
+              formData.append(`extratid[${idx}][h]`, item.h);
+              formData.append(`extratid[${idx}][m]`, item.m);
+              formData.append(`extratid[${idx}][desc]`, item.desc);
             });
-
-            totalH += Math.floor(totalM / 60);
-            totalM = totalM % 60;
-
-            let totalTimeReported = `${totalH}:${totalM < 10 ? '0' : ''}${totalM}`;
-            if (totalFullDay > 0) {
-              totalTimeReported += `. Heldag: ${totalFullDay}`;
-            }
-            if (totalHalfDay > 0) {
-              totalTimeReported += `. Halvdag: ${totalHalfDay}`;
-            }
-
-            this.totalTime = totalTimeReported;
           },
           async handleSubmit(e) {
             const form = e.target;
             const formData = new FormData(form);
+            this.collectExtraTime(formData);
             const res = await fetch(form.action, { method: 'POST', body: formData });
             const isLocalhost = window.location.hostname === 'localhost';
             const contentType = res.headers.get('content-type') || '';

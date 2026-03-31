@@ -1,5 +1,12 @@
 // Shared types for time report API and frontend
 
+export interface ExtraTimeRow {
+  date: string;
+  h: string;
+  m: string;
+  desc: string;
+}
+
 export interface TimeReportData {
   name: string;
   email: string;
@@ -11,6 +18,7 @@ export interface TimeReportData {
   teknik: string[];
   masters: string[];
   vuxencrawl: string[];
+  extratid?: ExtraTimeRow[];
 }
 
 export interface Employee {

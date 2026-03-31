@@ -3,8 +3,8 @@ export const prerender = false;
 import type { APIRoute } from 'astro';
 import { parseTimeReportForm } from '../../lib/timeReportValidation';
 import { sendTimeReportEmail } from '../../lib/email';
-import { buildTable, calcSalary, findTimeItem } from '../../lib/salary';
-import { TIME_REPORT_MONTH_KEY, TIME_REPORT_MONTH_DISPLAY, IS_DEVELOPMENT } from '../../config/time-report-settings';
+import { buildTable, buildAdditionalTimeTable, calcSalary, findTimeItem } from '../../lib/salary';
+import { TIME_REPORT_MONTH_KEY, TIME_REPORT_MONTH_DISPLAY, HALF_DAY_SALARY, FULL_DAY_SALARY, IS_DEVELOPMENT } from '../../config/time-report-settings';
 import type { TimeReportData, Employee } from '../../lib/types';
 
 export const POST: APIRoute = async ({ request, locals }) => {
@@ -33,6 +33,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     { email: 'toweeandersson@gmail.com', swimSchoolRate: 105, coachRate: 135 },
     { email: 'agnesannaandersson@gmail.com', swimSchoolRate: 95, coachRate: 115 },
     { email: 'hamzkdka2022@gmail.com', swimSchoolRate: 75, coachRate: null },
+    { email: 'mariamkikar@gmail.com', swimSchoolRate: 75, coachRate: null },
     { email: 'yazanjana483@gmail.com', swimSchoolRate: 75, coachRate: null },
   ]
   
@@ -69,9 +70,15 @@ export const POST: APIRoute = async ({ request, locals }) => {
   html += buildTable('teknik', 'Teknik', data.teknik);
   html += buildTable('masters', 'Masters', data.masters);
   html += buildTable('vuxencrawl', 'Vuxencrawl', data.vuxencrawl);
+  
+  if (data.extratid) {
+    html += buildAdditionalTimeTable(data.extratid);
+  }
+  
   if (data.milersattning) {
     html += `<p><b>Milersättning:</b> ${data.milersattning} km (privat resa, skattepliktigt, 25 kr/mil)</p>`;
   }
+
   if (data.kommentarer) {
     html += `<p><b>Kommentarer:</b> ${data.kommentarer}</p>`;
   }
@@ -86,9 +93,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
   const salaryTeknik = calcSalary('teknik', data.teknik, employee);
   const salaryMasters = calcSalary('masters', data.masters, employee);
   const salaryVuxencrawl = calcSalary('vuxencrawl', data.vuxencrawl, employee);
+  const salaryOvrigTid = calcSalary('extratid', [], employee, data.extratid);
 
   // Calculate total salary
-  const totalSalary = [salarySimskola, salaryTavlingA, salaryTavlingB, salaryTeknik, salaryMasters, salaryVuxencrawl]
+  const totalSalary = [salarySimskola, salaryTavlingA, salaryTavlingB, salaryTeknik, salaryMasters, salaryVuxencrawl, salaryOvrigTid]
     .reduce((sum, s) => sum + s.total, 0);
 
   // Calculate full day and half day
@@ -114,8 +122,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
     if (item?.h === 10) { halfDay++; }
   }
 
-  const fullDaySalary = 1000 * fullDay;
-  const halfDaySalary = 500 * halfDay;
+  const fullDaySalary = FULL_DAY_SALARY * fullDay;
+  const halfDaySalary = HALF_DAY_SALARY * halfDay;
 
   // Add salary estimate to email content if employee matched
   // Helper to format numbers with space as thousands separator
@@ -128,27 +136,39 @@ export const POST: APIRoute = async ({ request, locals }) => {
     if (salarySimskola.hours > 0 || salarySimskola.minutes > 0) {
       html += `<tr><td>Simskola</td><td>${salarySimskola.hours}</td><td>${salarySimskola.minutes}</td><td>${salarySimskola.salary ?? '-'}</td><td>${formatAmount(salarySimskola.total)} kr</td></tr>`;
     }
+
     if (salaryTavlingA.hours > 0 || salaryTavlingA.minutes > 0) {
       html += `<tr><td>Tävlingsgrupp A</td><td>${salaryTavlingA.hours}</td><td>${salaryTavlingA.minutes}</td><td>${salaryTavlingA.salary ?? '-'}</td><td>${formatAmount(salaryTavlingA.total)} kr</td></tr>`;
     }
+
     if (salaryTavlingB.hours > 0 || salaryTavlingB.minutes > 0) {
       html += `<tr><td>Tävlingsgrupp B</td><td>${salaryTavlingB.hours}</td><td>${salaryTavlingB.minutes}</td><td>${salaryTavlingB.salary ?? '-'}</td><td>${formatAmount(salaryTavlingB.total)} kr</td></tr>`;
     }
+    
     if (salaryTeknik.hours > 0 || salaryTeknik.minutes > 0) {
       html += `<tr><td>Teknik</td><td>${salaryTeknik.hours}</td><td>${salaryTeknik.minutes}</td><td>${salaryTeknik.salary ?? '-'}</td><td>${formatAmount(salaryTeknik.total)} kr</td></tr>`;
     }
+
     if (salaryMasters.hours > 0 || salaryMasters.minutes > 0) {
       html += `<tr><td>Masters</td><td>${salaryMasters.hours}</td><td>${salaryMasters.minutes}</td><td>${salaryMasters.salary ?? '-'}</td><td>${formatAmount(salaryMasters.total)} kr</td></tr>`;
     }
+
     if (salaryVuxencrawl.hours > 0 || salaryVuxencrawl.minutes > 0) {
       html += `<tr><td>Vuxencrawl</td><td>${salaryVuxencrawl.hours}</td><td>${salaryVuxencrawl.minutes}</td><td>${salaryVuxencrawl.salary ?? '-'}</td><td>${formatAmount(salaryVuxencrawl.total)} kr</td></tr>`;
     }
+
     if (fullDay > 0) {
       html += `<tr><td>Heldagar</td><td colspan="2">${fullDay}</td><td>1 000</td><td>${formatAmount(fullDaySalary)} kr</td></tr>`;
     }
+
     if (halfDay > 0) {
       html += `<tr><td>Halvdagar</td><td colspan="2">${halfDay}</td><td>500</td><td>${formatAmount(halfDaySalary)} kr</td></tr>`;
     }
+
+    if (salaryOvrigTid.hours > 0 || salaryOvrigTid.minutes > 0) {
+      html += `<tr><td>Övrig tid</td><td>${salaryOvrigTid.hours}</td><td>${salaryOvrigTid.minutes}</td><td>${salaryOvrigTid.salary ?? '-'}</td><td>${formatAmount(salaryOvrigTid.total)} kr</td></tr>`;
+    }
+
     html += `<tr style="font-weight:bold"><td>Totalt</td><td colspan="3"></td><td>${formatAmount(Math.round(totalSalary + fullDaySalary + halfDaySalary))} kr</td></tr>`;
     html += `</tbody></table>`;
   }
@@ -176,7 +196,6 @@ export const POST: APIRoute = async ({ request, locals }) => {
   if (utlaggHtml) {
     html += `<h4>Utlägg</h4><ul>${utlaggHtml}</ul>`;
   }
-
 
   // Information about the sending of the report
   const formattedDate = new Date().toLocaleString('sv-SE', {

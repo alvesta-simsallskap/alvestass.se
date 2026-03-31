@@ -1,7 +1,24 @@
 // Validation and type helpers for time report API (Cloudflare/Edge compatible)
-import type { TimeReportData } from './types';
+import type { TimeReportData, ExtraTimeRow } from './types';
 
 export function parseTimeReportForm(formData: FormData): TimeReportData {
+  // Parse extra time rows
+  const extraRows: ExtraTimeRow[] = [];
+  let idx = 0;
+  while (true) {
+    const date = formData.get(`extratid[${idx}][date]`);
+    const h = formData.get(`extratid[${idx}][h]`);
+    const m = formData.get(`extratid[${idx}][m]`);
+    const desc = formData.get(`extratid[${idx}][desc]`);
+    if (date || h || m || desc) {
+      if (date && h && m && desc) {
+        extraRows.push({ date: String(date), h: String(h), m: String(m), desc: String(desc) });
+      }
+      idx++;
+    } else {
+      break;
+    }
+  }
   return {
     name: String(formData.get('namn') || ''),
     email: String(formData.get('email') || ''),
@@ -13,6 +30,7 @@ export function parseTimeReportForm(formData: FormData): TimeReportData {
     teknik: formData.getAll('teknik_checked_dates[]').filter((v): v is string => typeof v === 'string'),
     masters: formData.getAll('masters_checked_dates[]').filter((v): v is string => typeof v === 'string'),
     vuxencrawl: formData.getAll('vuxencrawl_checked_dates[]').filter((v): v is string => typeof v === 'string'),
+    extratid: extraRows,
   };
 }
 
