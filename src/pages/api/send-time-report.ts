@@ -14,7 +14,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     { email: 'cornelia.axhed@outlook.com', swimSchoolRate: 95, coachRate: 135 },
     { email: 'izakaxelsson2009@gmail.com', swimSchoolRate: 95, coachRate: null },
     { email: 'widqvistlova@gmail.com', swimSchoolRate: 95, coachRate: null },
-    { email: 'thelmaklintipsa@gmail.com', swimSchoolRate: 115, coachRate: 135 },
+    { email: 'thelmaklintipsa@gmail.com', swimSchoolRate: 160, coachRate: 135 },
     { email: 'jonnaklintipsa11@gmail.com', swimSchoolRate: 65, coachRate: null },
     { email: 'tsinatweldemichael42@gmail.com', swimSchoolRate: 85, coachRate: null },
     { email: 'edvin.nilsson.11@edualvesta.se', swimSchoolRate: 65, coachRate: null },
