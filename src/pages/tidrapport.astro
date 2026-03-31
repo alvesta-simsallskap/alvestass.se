@@ -71,7 +71,7 @@ const items = timeReportItems[TIME_REPORT_MONTH_KEY];
                   <TimeReportCheckboxGroup section="vuxencrawl" items={items.vuxencrawl} label="Vuxencrawl" />
                 </div>
               </div>
-              <p class="has-text-grey"><i>15 minuter för förberedelse och undanplockning läggs automatiskt till på varje tillfälle.</i></p>
+              <p class="has-text-grey"><i>15 minuter för förberedelse och undanplockning läggs automatiskt till på varje träning.</i></p>
             </div>
           </div>
           <div class="box mt-5" x-data="{ open: false, extraTimes: [{ id: Date.now(), date: '', h: '', m: '', desc: '' }] }">
@@ -86,18 +86,18 @@ const items = timeReportItems[TIME_REPORT_MONTH_KEY];
                     <div class="field-body">
                       <div class="field has-addons">
                         <div class="control">
-                          <input type="date" class="input" :name="`extratid_date_${item.id}`" x-model="item.date" required />
+                          <input type="date" class="input" :name="`extratid_date_${item.id}`" x-model="item.date" />
                         </div>
                         <div class="control">
-                          <input type="number" class="input" min="0" max="24" :name="`extratid_h_${item.id}`" x-model="item.h" style="max-width: 80px;" required />
+                          <input type="number" class="input" min="0" max="24" :name="`extratid_h_${item.id}`" x-model="item.h" style="max-width: 80px;" />
                         </div>
-                        <p class="control"><a class="button is-static">h</a></p> 
+                        <p class="control"><a class="button is-static">h</a></p>
                         <div class="control">
-                          <input type="number" class="input" min="0" max="59" :name="`extratid_m_${item.id}`" x-model="item.m" style="max-width: 80px;" required />
+                          <input type="number" class="input" min="0" max="59" :name="`extratid_m_${item.id}`" x-model="item.m" style="max-width: 80px;" />
                         </div>
-                        <p class="control"><a class="button is-static">m</a></p>                        
+                        <p class="control"><a class="button is-static">m</a></p>
                         <div class="control is-expanded">
-                          <input type="text" class="input" :name="`extratid_desc_${item.id}`" x-model="item.desc" placeholder="Kort beskrivning" required />
+                          <input type="text" class="input" :name="`extratid_desc_${item.id}`" x-model="item.desc" placeholder="Kort beskrivning" />
                         </div>
                         <p class="control">
                           <a class="button is-danger" type="button" @click="extraTimes.splice(idx, 1)" x-show="extraTimes.length > 1">x</a>

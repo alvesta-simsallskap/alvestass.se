@@ -4,7 +4,7 @@ import type { APIRoute } from 'astro';
 import { parseTimeReportForm } from '../../lib/timeReportValidation';
 import { sendTimeReportEmail } from '../../lib/email';
 import { buildTable, buildAdditionalTimeTable, calcSalary, findTimeItem } from '../../lib/salary';
-import { TIME_REPORT_MONTH_KEY, TIME_REPORT_MONTH_DISPLAY, HALF_DAY_SALARY, FULL_DAY_SALARY, IS_DEVELOPMENT } from '../../config/time-report-settings';
+import { TIME_REPORT_MONTH_KEY, TIME_REPORT_MONTH_DISPLAY, HALF_DAY_SALARY, FULL_DAY_SALARY, OVERNIGHT_SALARY, IS_DEVELOPMENT } from '../../config/time-report-settings';
 import type { TimeReportData, Employee } from '../../lib/types';
 
 export const POST: APIRoute = async ({ request, locals }) => {
@@ -100,30 +100,35 @@ export const POST: APIRoute = async ({ request, locals }) => {
     .reduce((sum, s) => sum + s.total, 0);
 
   // Calculate full day and half day
-  let fullDay = 0, halfDay = 0;
+  let fullDay = 0, halfDay = 0, overnight = 0;
   for (const val of data.tavlingA) {
     const item = findTimeItem('tavlingA', val);
     if (item?.h === 20) { fullDay++; }
     if (item?.h === 10) { halfDay++; }
+    if (item?.h === 15) { overnight++; }
   }
   for (const val of data.tavlingB) {
     const item = findTimeItem('tavlingB', val);
     if (item?.h === 20) { fullDay++; }
     if (item?.h === 10) { halfDay++; }
+    if (item?.h === 15) { overnight++; }
   }
   for (const val of data.masters) {
     const item = findTimeItem('masters', val);
     if (item?.h === 20) { fullDay++; }
     if (item?.h === 10) { halfDay++; }
+    if (item?.h === 15) { overnight++; }
   }
   for (const val of data.teknik) {
     const item = findTimeItem('teknik', val);
     if (item?.h === 20) { fullDay++; }
     if (item?.h === 10) { halfDay++; }
+    if (item?.h === 15) { overnight++; }
   }
 
   const fullDaySalary = FULL_DAY_SALARY * fullDay;
   const halfDaySalary = HALF_DAY_SALARY * halfDay;
+  const overnightSalary = OVERNIGHT_SALARY * overnight;
 
   // Add salary estimate to email content if employee matched
   // Helper to format numbers with space as thousands separator
@@ -158,18 +163,22 @@ export const POST: APIRoute = async ({ request, locals }) => {
     }
 
     if (fullDay > 0) {
-      html += `<tr><td>Heldagar</td><td colspan="2">${fullDay}</td><td>1 000</td><td>${formatAmount(fullDaySalary)} kr</td></tr>`;
+      html += `<tr><td>Heldagar</td><td colspan="2">${fullDay}</td><td>${FULL_DAY_SALARY}</td><td>${formatAmount(fullDaySalary)} kr</td></tr>`;
     }
 
     if (halfDay > 0) {
-      html += `<tr><td>Halvdagar</td><td colspan="2">${halfDay}</td><td>500</td><td>${formatAmount(halfDaySalary)} kr</td></tr>`;
+      html += `<tr><td>Halvdagar</td><td colspan="2">${halfDay}</td><td>${HALF_DAY_SALARY}</td><td>${formatAmount(halfDaySalary)} kr</td></tr>`;
+    }
+
+    if (overnight > 0) {
+      html += `<tr><td>Övernattning</td><td colspan="2">${overnight}</td><td>${OVERNIGHT_SALARY}</td><td>${formatAmount(overnightSalary)} kr</td></tr>`;
     }
 
     if (salaryOvrigTid.hours > 0 || salaryOvrigTid.minutes > 0) {
       html += `<tr><td>Övrig tid</td><td>${salaryOvrigTid.hours}</td><td>${salaryOvrigTid.minutes}</td><td>${salaryOvrigTid.salary ?? '-'}</td><td>${formatAmount(salaryOvrigTid.total)} kr</td></tr>`;
     }
 
-    html += `<tr style="font-weight:bold"><td>Totalt</td><td colspan="3"></td><td>${formatAmount(Math.round(totalSalary + fullDaySalary + halfDaySalary))} kr</td></tr>`;
+    html += `<tr style="font-weight:bold"><td>Totalt</td><td colspan="3"></td><td>${formatAmount(Math.round(totalSalary + fullDaySalary + halfDaySalary + overnightSalary))} kr</td></tr>`;
     html += `</tbody></table>`;
   }
 

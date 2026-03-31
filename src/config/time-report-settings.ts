@@ -1,6 +1,6 @@
 // Central place to set the current time report month and its display name
-export const TIME_REPORT_MONTH_KEY = '2026-02';
-export const TIME_REPORT_MONTH_DISPLAY = 'februari 2026';
+export const TIME_REPORT_MONTH_KEY = '2026-03';
+export const TIME_REPORT_MONTH_DISPLAY = 'mars 2026';
 
 // Extra time (in minutes) for specific activities
 export const EXTRA_TIME_SIMSKOLA = 30; // minutes

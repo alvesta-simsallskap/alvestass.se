@@ -1,14 +1,14 @@
 // Salary and HTML helpers for time report API
 import type { Employee, TimeReportData, ExtraTimeRow } from './types';
 import timeReportItems from '../config/time-report-items.json';
-import { EXTRA_TIME_SIMSKOLA, EXTRA_TIME_TRAINING } from '../config/time-report-settings';
+import { EXTRA_TIME_SIMSKOLA, EXTRA_TIME_TRAINING, TIME_REPORT_MONTH_KEY } from '../config/time-report-settings';
 
 const TABLE_ATTRIBUTES = `border=\"1\" cellpadding=\"4\" style=\"border-collapse:collapse;margin-bottom:1em;\"`
 
 export function findTimeItem(section: string, value: string) {
   const [date, ...titleParts] = value.split(' ');
   const title = titleParts.join(' ');
-  const items = (timeReportItems['2026-02'] as any)[section] || [];
+  const items = (timeReportItems[TIME_REPORT_MONTH_KEY] as any)[section] || [];
   return items.find((item: any) => item.date === date && item.title === title);
 }
 
@@ -68,7 +68,7 @@ export function calcSalary(section: string, checked: string[], employee?: Employ
   
   for (const val of checked) {
     const item = findTimeItem(section, val);
-    const excluded = new Set([10, 20]);
+    const excluded = new Set([10, 15, 20]);
     if (item && !excluded.has(item.h)) {
       hours += item.h;
       minutes += item.m;

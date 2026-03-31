@@ -115,6 +115,81 @@
       { "date": "2026-02-11", "title": "Träning", "h": 1, "m": 0 },
       { "date": "2026-02-25", "title": "Träning", "h": 1, "m": 0 }
     ]
+  },
+  "2026-03": {
+    "simskola": [
+      { "date": "2026-03-01", "title": "Simskola", "h": 5, "m": 10 },
+      { "date": "2026-03-01", "title": "Beredskap", "h": 3, "m": 0 },
+      { "date": "2026-03-08", "title": "Simskola", "h": 5, "m": 10 },
+      { "date": "2026-03-08", "title": "Beredskap", "h": 3, "m": 0 },
+      { "date": "2026-03-15", "title": "Simskola", "h": 5, "m": 10  },
+      { "date": "2026-03-15", "title": "Beredskap", "h": 3, "m": 0 },
+      { "date": "2026-03-22", "title": "Simskola", "h": 5, "m": 10  },
+      { "date": "2026-03-22", "title": "Beredskap", "h": 3, "m": 0 },
+      { "date": "2026-03-29", "title": "Simskola", "h": 5, "m": 10  },
+      { "date": "2026-03-29", "title": "Beredskap", "h": 3, "m": 0 },
+      { "date": "2026-03-30", "title": "After School", "h": 2, "m": 30 },
+      { "date": "2026-03-31", "title": "After School", "h": 2, "m": 30 }
+    ],
+    "tavlingA": [
+      { "date": "2026-03-02", "title": "Träning", "h": 1, "m": 45 },
+      { "date": "2026-03-04", "title": "Träning", "h": 1, "m": 45 },
+      { "date": "2026-03-07", "title": "Träning", "h": 1, "m": 45 },
+      { "date": "2026-03-08", "title": "Träning", "h": 1, "m": 45 },
+      { "date": "2026-03-09", "title": "Träning", "h": 1, "m": 45 },
+      { "date": "2026-03-11", "title": "Träning", "h": 1, "m": 45 },
+      { "date": "2026-03-14", "title": "ÖGP 2 Kalmar", "h": 20, "m": 0 },
+      { "date": "2026-03-14", "title": "ÖGP 2 Övernattning", "h": 15, "m": 0 },
+      { "date": "2026-03-15", "title": "ÖGP 2 Kalmar", "h": 20, "m": 0 },
+      { "date": "2026-03-18", "title": "Träning", "h": 1, "m": 45 },
+      { "date": "2026-03-21", "title": "Träning", "h": 1, "m": 45 },
+      { "date": "2026-03-22", "title": "Träning", "h": 1, "m": 45 },
+      { "date": "2026-03-23", "title": "Träning", "h": 1, "m": 45 },
+      { "date": "2026-03-25", "title": "Träning", "h": 1, "m": 45 },
+      { "date": "2026-03-28", "title": "Träning", "h": 1, "m": 45 },
+      { "date": "2026-03-29", "title": "Träning", "h": 1, "m": 45 }
+    ],
+    "tavlingB": [
+      { "date": "2026-03-02", "title": "Träning", "h": 1, "m": 30 },
+      { "date": "2026-03-04", "title": "Träning", "h": 1, "m": 30 },
+      { "date": "2026-03-08", "title": "Träning", "h": 1, "m": 45 },
+      { "date": "2026-03-09", "title": "Träning", "h": 1, "m": 30 },
+      { "date": "2026-03-11", "title": "Träning", "h": 1, "m": 30 },
+      { "date": "2026-03-15", "title": "Träning", "h": 1, "m": 45 },
+      { "date": "2026-03-16", "title": "Träning", "h": 1, "m": 30 },
+      { "date": "2026-03-18", "title": "Träning", "h": 1, "m": 30 },
+      { "date": "2026-03-22", "title": "Träning", "h": 1, "m": 45 },
+      { "date": "2026-03-23", "title": "Träning", "h": 1, "m": 30 },
+      { "date": "2026-03-25", "title": "Träning", "h": 1, "m": 30 },
+      { "date": "2026-03-29", "title": "Träning", "h": 1, "m": 45 }
+    ],
+    "teknik": [
+      { "date": "2026-03-02", "title": "Träning", "h": 1, "m": 15 },
+      { "date": "2026-03-05", "title": "Träning", "h": 1, "m": 15 },
+      { "date": "2026-03-09", "title": "Träning", "h": 1, "m": 15 },
+      { "date": "2026-03-12", "title": "Träning", "h": 1, "m": 15 },
+      { "date": "2026-03-16", "title": "Träning", "h": 1, "m": 15 },
+      { "date": "2026-03-16", "title": "Småstjärnorna Växjö", "h": 10, "m": 0 },
+      { "date": "2026-03-19", "title": "Träning", "h": 1, "m": 15 },
+      { "date": "2026-03-23", "title": "Träning", "h": 1, "m": 15 },
+      { "date": "2026-03-26", "title": "Träning", "h": 1, "m": 15 }
+    ],
+    "masters": [
+      { "date": "2026-03-02", "title": "Träning", "h": 1, "m": 30 },
+      { "date": "2026-03-05", "title": "Träning", "h": 1, "m": 30 },
+      { "date": "2026-03-09", "title": "Träning", "h": 1, "m": 30 },
+      { "date": "2026-03-12", "title": "Träning", "h": 1, "m": 30 },
+      { "date": "2026-03-16", "title": "Träning", "h": 1, "m": 30 },
+      { "date": "2026-03-19", "title": "Träning", "h": 1, "m": 30 },
+      { "date": "2026-03-23", "title": "Träning", "h": 1, "m": 30 },
+      { "date": "2026-03-26", "title": "Träning", "h": 1, "m": 30 },
+      { "date": "2026-03-30", "title": "Träning", "h": 1, "m": 30 }
+    ],
+    "vuxencrawl": [
+      { "date": "2026-03-04", "title": "Träning", "h": 1, "m": 0 },
+      { "date": "2026-03-11", "title": "Träning", "h": 1, "m": 0 },
+      { "date": "2026-03-18", "title": "Träning", "h": 1, "m": 0 },
+      { "date": "2026-03-25", "title": "Träning", "h": 1, "m": 0 }
+    ]
   }
-
 }
