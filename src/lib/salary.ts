@@ -23,6 +23,7 @@ export function buildTable(section: string, label: string, checked: string[]) {
     if (item) {
       if (item.h === 20) time = 'Heldag';
       else if (item.h === 10) time = 'Halvdag';
+      else if (item.h === 15) time = 'Natt';
       else time = `${item.h}:${item.m < 10 ? '0' : ''}${item.m}`;
       rows += `<tr><td>${val}</td><td>${time}</td></tr>`;
       // Sum up extra time for summary row
