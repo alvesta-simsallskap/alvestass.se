@@ -87,3 +87,11 @@ trailbase/            Trailbase backend service
 - `src/content/club/04-styrelse.md` contains board member names (personal data) — not yet handled per Principle VII; flag for future migration
 - `TODO(INTEGRITETSPOLICY)`: `/integritetspolicy` page must exist before any personal data feature goes live
 - `TODO(GDPR_REGISTER)`: `docs/gdpr-register.md` must be created before any personal data is stored
+
+## Active Technologies
+- TypeScript 5.9 (strict mode) + Astro 5.17, @astrojs/cloudflare 12.6, Trailbase v0.26.3, Alpine.js 3.15, Bulma 1.0 (002-time-report-trailbase)
+- Trailbase SQLite on fly.io (arn); three new tables (002-time-report-trailbase)
+- Trailbase SQLite on fly.io (region: arn / Stockholm) — three new tables (002-time-report-trailbase)
+
+## Recent Changes
+- 002-time-report-trailbase: Added TypeScript 5.9 (strict mode) + Astro 5.17, @astrojs/cloudflare 12.6, Trailbase v0.26.3, Alpine.js 3.15, Bulma 1.0
