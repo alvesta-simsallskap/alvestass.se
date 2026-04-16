@@ -23,7 +23,7 @@ const { section, items, label } = Astro.props;
               @change="$dispatch('timereportupdate')"
             />
             <span class="ml-1">{(() => {
-              const [year, month, day] = row.date.split('-');
+              const [, , day] = row.date.split('-');
               const readableDate = `${day}`;
               // const ymd = `${year.slice(2)}${month}${day}`;
               const dateObj = new Date(row.date);
