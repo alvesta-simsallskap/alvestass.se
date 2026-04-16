@@ -1,0 +1,93 @@
+---
+import { fetchClubInfo } from '../lib/trailbase';
+import type { ClubInfo } from '../lib/trailbase';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import 'bulma/css/bulma.min.css';
+import '../styles/_global.scss';
+import '@fontsource-variable/figtree';
+
+export const prerender = false;
+
+let clubInfo: ClubInfo | null = null;
+try {
+  clubInfo = await fetchClubInfo(Astro.locals.runtime.env.TRAILBASE_URL);
+} catch {
+  // Trailbase unreachable — Cloudflare stale-if-error will serve last cached page
+}
+
+Astro.response.headers.set(
+  'Cache-Control',
+  'public, max-age=300, stale-if-error=86400'
+);
+---
+
+<html class="has-navbar-fixed-top">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kontakt — Alvesta Simsällskap</title>
+</head>
+
+<body x-data="{ atTop: true, open: false, modal: false }" x-on:scroll.window="atTop = (window.pageYOffset > 100) ? false : true;">
+  <Nav />
+
+  <section class="section">
+    <div class="container is-max-desktop">
+      <h1 class="title is-3 has-text-centered">Kontakt</h1>
+
+      {clubInfo ? (
+        <div class="card">
+          <div class="card-content">
+            <h2 class="title is-4">{clubInfo.name}</h2>
+            {clubInfo.tagline && (
+              <p class="subtitle is-6 has-text-grey">{clubInfo.tagline}</p>
+            )}
+            {clubInfo.short_description && (
+              <p class="block">{clubInfo.short_description}</p>
+            )}
+
+            <div class="columns is-multiline">
+              <div class="column is-half">
+                <h3 class="heading">Adress</h3>
+                <p>
+                  {clubInfo.address}<br />
+                  {clubInfo.postal_code} {clubInfo.city}
+                </p>
+              </div>
+
+              <div class="column is-half">
+                <h3 class="heading">Kontaktuppgifter</h3>
+                <p>
+                  <span class="material-symbols-rounded is-size-6" style="vertical-align: middle;">phone</span>
+                  <a href={`tel:${clubInfo.phone.replace(/\s/g, '')}`}>{clubInfo.phone}</a>
+                </p>
+                <p>
+                  <span class="material-symbols-rounded is-size-6" style="vertical-align: middle;">mail</span>
+                  <a href={`mailto:${clubInfo.email}`}>{clubInfo.email}</a>
+                </p>
+              </div>
+            </div>
+
+            <p class="has-text-grey is-size-7 mt-4">
+              Grundad {clubInfo.founding_year}
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div class="notification is-warning is-light has-text-centered">
+          <p>Kontaktuppgifter laddas inte just nu. Försök igen senare.</p>
+        </div>
+      )}
+
+      <div class="has-text-centered mt-5">
+        <a href="/" class="button is-link is-light">
+          Tillbaka till startsidan
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</body>
+</html>
