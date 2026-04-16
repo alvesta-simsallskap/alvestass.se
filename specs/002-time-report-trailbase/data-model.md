@@ -79,7 +79,7 @@ export interface TimeReportConfig {
 |--------|------|-------------|-------|
 | `id` | INTEGER | PRIMARY KEY | Auto-assigned |
 | `month_key` | TEXT | NOT NULL | ISO month, e.g. `2026-04` — matches `time_report_config.active_month_key` |
-| `group` | TEXT | NOT NULL | One of: `simskola`, `tavlingA`, `tavlingB`, `teknik`, `masters`, `vuxencrawl` |
+| `training_group` | TEXT | NOT NULL | One of: `simskola`, `tavlingA`, `tavlingB`, `teknik`, `masters`, `vuxencrawl` |
 | `date` | TEXT | NOT NULL | ISO date, e.g. `2026-04-15` |
 | `title` | TEXT | NOT NULL | Display name, e.g. `Träning`, `Simskola`, `ÖGP Växjö` |
 | `hours` | INTEGER | NOT NULL | Duration hours; codes: 10=half-day, 15=overnight, 20=full-day |
@@ -101,20 +101,20 @@ export interface TimeReportConfig {
 -- GDPR: No personal data — training schedule only
 
 CREATE TABLE IF NOT EXISTS time_report_sessions (
-  id        INTEGER PRIMARY KEY,
-  month_key TEXT    NOT NULL CHECK(month_key != ''),
-  group   TEXT    NOT NULL CHECK(group IN (
-              'simskola', 'tavlingA', 'tavlingB',
-              'teknik', 'masters', 'vuxencrawl'
-            )),
-  date      TEXT    NOT NULL CHECK(date != ''),
-  title     TEXT    NOT NULL CHECK(title != ''),
-  hours     INTEGER NOT NULL CHECK(hours >= 0),
-  minutes   INTEGER NOT NULL DEFAULT 0 CHECK(minutes >= 0 AND minutes < 60)
+  id             INTEGER PRIMARY KEY,
+  month_key      TEXT    NOT NULL CHECK(month_key != ''),
+  training_group TEXT    NOT NULL CHECK(training_group IN (
+                   'simskola', 'tavlingA', 'tavlingB',
+                   'teknik', 'masters', 'vuxencrawl'
+                 )),
+  date           TEXT    NOT NULL CHECK(date != ''),
+  title          TEXT    NOT NULL CHECK(title != ''),
+  hours          INTEGER NOT NULL CHECK(hours >= 0),
+  minutes        INTEGER NOT NULL DEFAULT 0 CHECK(minutes >= 0 AND minutes < 60)
 ) STRICT;
 
 CREATE INDEX IF NOT EXISTS idx_sessions_month_group
-  ON time_report_sessions (month_key, group);
+  ON time_report_sessions (month_key, training_group);
 ```
 
 ### TypeScript Interface
@@ -122,16 +122,16 @@ CREATE INDEX IF NOT EXISTS idx_sessions_month_group
 ```typescript
 export interface TimeReportSession {
   id: number;
-  month_key: string;   // e.g. "2026-04"
-  group: string;       // e.g. "tavlingA"
-  date: string;        // e.g. "2026-04-15"
-  title: string;       // e.g. "Träning"
-  hours: number;       // 10=half-day, 15=overnight, 20=full-day, else normal
+  month_key: string;        // e.g. "2026-04"
+  training_group: string;   // e.g. "tavlingA"
+  date: string;             // e.g. "2026-04-15"
+  title: string;            // e.g. "Träning"
+  hours: number;            // 10=half-day, 15=overnight, 20=full-day, else normal
   minutes: number;
 }
 
-// Grouped by group (shape used by the Astro page and salary module)
-export type SessionsByGroup = {
+// Grouped by training group (shape used by the Astro page and salary module)
+export type SessionsByTrainingGroup = {
   simskola: TimeReportSession[];
   tavlingA: TimeReportSession[];
   tavlingB: TimeReportSession[];

@@ -101,11 +101,6 @@ gates are satisfied by the design below.
 
 ### Service User Authentication
 
-The Worker uses a **long-lived Trailbase API token** stored as the
-`TRAILBASE_API_TOKEN` Worker secret. This token is passed as a `Bearer` header on
-every Trailbase API call. No per-request login is required, avoiding an extra
-~100 ms roundtrip to fly.io on each form load.
-
 **Service user role**: Regular (non-admin) Trailbase user. All three tables
 (`time_report_config`, `time_report_sessions`, `instructors`) use
 "Authenticated" read access — meaning any Trailbase user created by an admin
@@ -129,8 +124,8 @@ fixes the `any` type violations.
 
 The `findTimeItem` function signature changes from
 `(section: string, value: string)` to
-`(schedule: SessionSchedule, group: string, value: string)` where `SessionSchedule`
-is a typed map of `GroupKey → Session[]`.
+`(schedule: SessionSchedule, trainingGroup: string, value: string)` where `SessionSchedule`
+is a typed map of `TrainingTrainingGroupKey → Session[]`.
 
 ### `tidrapport.astro` → SSR
 
@@ -164,7 +159,7 @@ src/
 │   ├── salary.ts                REFACTOR — pure fns, accept schedule + config params,
 │   │                                       fix `any` types
 │   ├── types.ts                 MODIFY — rename Employee→Instructor; add Session,
-│   │                                     GroupKey, SessionSchedule, TimeReportConfig
+│   │                                     TrainingTrainingGroupKey, SessionSchedule, TimeReportConfig
 │   └── timeReportValidation.ts  UNCHANGED
 ├── pages/
 │   ├── tidrapport.astro         MODIFY — add prerender=false, SSR fetch, error state
@@ -198,4 +193,4 @@ package.json                     MODIFY — add vitest dev dependency
 | Situation | Justification |
 |-----------|--------------|
 | `prerender = false` on `tidrapport.astro` | Required by Principle IV/V: page must serve Trailbase data at request time; static generation is technically impossible for live schedule |
-| Service admin account for read-only Worker | Required to satisfy both FR-004 and FR-005 simultaneously; documented tradeoff in Architectural Decisions above |
+| Regular service user reading all three tables | All tables use "Authenticated" read; service user is non-admin, satisfying FR-004 (no public access) and FR-005 (Worker reads instructor rates) simultaneously |

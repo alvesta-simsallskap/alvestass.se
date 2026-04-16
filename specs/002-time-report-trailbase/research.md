@@ -47,7 +47,7 @@ all Trailbase record lookups. Multiple filters are AND'd automatically.
 ```
 GET /api/records/v1/time_report_sessions
   ?filter[month_key][$eq]=2026-04
-  &filter[group][$eq]=simskola
+  &filter[training_group][$eq]=simskola
   &limit=500
 ```
 
@@ -135,7 +135,7 @@ endpoint is publicly accessible (FR-008, spec session 2026-04-16). Consequently:
 ## Decision 6: Session Data Fetch Strategy
 
 **Decision**: Fetch all sessions for the active month in a single request
-(`?filter[month_key][$eq]=<key>&limit=500`). Group them by group in the
+(`?filter[month_key][$eq]=<key>&limit=500`). Group them by training group in the
 Worker/Astro frontmatter before passing to the template.
 
 **Rationale**: Simpler than 6 group-specific requests. Typical months have

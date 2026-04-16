@@ -58,7 +58,7 @@ Authorization: Bearer <auth_token>
     {
       "id": 42,
       "month_key": "2026-04",
-      "group": "tavlingA",
+      "training_group": "tavlingA",
       "date": "2026-04-07",
       "title": "Träning",
       "hours": 1,

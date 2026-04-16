@@ -20,13 +20,13 @@ deployment dependency and unblocks non-technical administrators.
 
 **Independent Test**: An administrator creates a new session entry in the
 backend, then opens the time report form and confirms the new session appears
-in the correct group list.
+in the correct training group list.
 
 **Acceptance Scenarios**:
 
 1. **Given** a new session exists in the backend for the active month,
    **When** an instructor opens the time report form,
-   **Then** the new session appears in the correct group (simskola,
+   **Then** the new session appears in the correct training group (simskola,
    tävlingsgrupp, etc.) with the correct date and title.
 
 2. **Given** a session is removed from the backend,
@@ -100,7 +100,7 @@ loaded sessions match the new month.
 
 2. **Given** no sessions exist in the backend for the configured active month,
    **When** an instructor opens the time report form,
-   **Then** each group appears empty (no sessions to check off) and the
+   **Then** each training group appears empty (no sessions to check off) and the
    form remains submittable.
 
 ---
@@ -108,16 +108,19 @@ loaded sessions match the new month.
 ### Edge Cases
 
 - What happens when the backend returns an empty schedule for the active month?
-  The form shows each group as empty and the instructor can still submit
+  The form shows each training group as empty and the instructor can still submit
   extra time and expense entries.
 - What happens when the backend is temporarily unreachable when the form is
   loaded? A Swedish error message is shown; no broken or partially-loaded form
   is presented.
 - What happens when an instructor submits a form while the backend is
-  unreachable at submission time? The submission fails gracefully with a Swedish
-  error message prompting the instructor to try again.
+  unreachable at submission time? The time report email is still sent to the
+  payroll inbox (without a preliminary salary estimate). The instructor receives
+  the same confirmation as usual. A missing salary estimate is recoverable; a
+  lost submission is not. This matches the existing behaviour for unregistered
+  emails (US2 scenario 3).
 - What happens if the active month in configuration has no corresponding
-  sessions in the schedule table? The form loads but groups are empty.
+  sessions in the schedule table? The form loads but training groups are empty.
 - What happens with expense (utlägg) attachments? File upload behaviour is
   unchanged; attachments are still sent by email.
 
@@ -160,7 +163,7 @@ loaded sessions match the new month.
 ### Key Entities
 
 - **Session** (schedule entry): Belongs to a reporting period (month key) and
-  a group (simskola, tavlingA, tavlingB, teknik, masters, vuxencrawl). Has a
+  a training group (simskola, tavlingA, tavlingB, teknik, masters, vuxencrawl). Has a
   date, title, duration in hours and minutes. Duration codes for full-day
   travel competitions (20 h), half-day (10 h) and overnight stay (15 h) must
   be preserved as-is.
@@ -207,8 +210,8 @@ loaded sessions match the new month.
   secrets) for ALL backend API calls — both schedule loading on page render
   and instructor rate lookup on form submission. No backend API endpoint is
   accessible without a valid service token.
-- The schedule structure (six named groups: simskola, tavlingA, tavlingB,
-  teknik, masters, vuxencrawl) remains fixed; adding new group types is out
+- The schedule structure (six named training groups: simskola, tavlingA, tavlingB,
+  teknik, masters, vuxencrawl) remains fixed; adding new training group types is out
   of scope.
 - Expense (utlägg) file attachments continue to be sent by email; file
   storage in Trailbase is out of scope.
@@ -229,11 +232,16 @@ loaded sessions match the new month.
   A: "Instructor" — the term "employee" is retired. All references in this
   spec, the data model, and implementation use "instructor" exclusively.
 - Q: What is the canonical term for the named groupings in the schedule
-  (simskola, tävlingsgrupp, etc.)? → A: "group" — the term "section" is
+  (simskola, tävlingsgrupp, etc.)? → A: "training group" — the term "section" is
   retired. All occurrences of "section" (referring to schedule groupings)
-  have been replaced with "group" throughout this spec.
+  have been replaced with "training group" throughout this spec.
 - Q: Should backend API endpoints for schedule data require authentication,
   or may they be publicly accessible? → A: All backend API endpoints MUST
   require the service user token; no endpoint is publicly accessible. The
   Worker uses the service credentials for every Trailbase call (schedule
   loading on page render and instructor rate lookup on submission).
+- Q: If the backend is unreachable at form submission time, should the
+  submission fail or succeed without a salary estimate? → A: The submission
+  succeeds and the email is still delivered — without a salary estimate. A
+  missing estimate is recoverable; a lost submission is not. This matches
+  existing behaviour for unregistered instructor emails.
