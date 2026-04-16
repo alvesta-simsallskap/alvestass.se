@@ -114,10 +114,10 @@ the new month.
 
 **Purpose**: Remove dead code, validate the full build, and run end-to-end acceptance.
 
-- [ ] T025 Delete `src/config/time-report-items.json` — only after confirming all sessions for the current active month have been entered in the Trailbase `time_report_sessions` table (verify via Trailbase admin UI)
+- [X] T025 Delete `src/config/time-report-items.json` — only after confirming all sessions for the current active month have been entered in the Trailbase `time_report_sessions` table (verify via Trailbase admin UI)
 - [X] T026 [P] Delete `src/config/time-report-settings.ts` — only after confirming no remaining imports of this file exist anywhere in `src/` (run `grep -r "time-report-settings" src/` first)
 - [X] T027 Run `pnpm build` — fix all TypeScript strict-mode errors and `astro check` warnings until the command exits cleanly with zero errors. This is the merge gate (SC-005).
-- [ ] T028 Manual end-to-end test per `specs/002-time-report-trailbase/quickstart.md` steps 7–9: (a) `curl` config and sessions endpoints to verify authenticated access; (b) `pnpm dev`, load `/tidrapport`, confirm schedule renders; (c) submit form with a registered instructor email in development mode, verify HTML preview shows correct salary estimate (SC-006 email flow regression check).
+- [X] T028 Manual end-to-end test per `specs/002-time-report-trailbase/quickstart.md` steps 7–9: (a) `curl` config and sessions endpoints to verify authenticated access; (b) `pnpm dev`, load `/tidrapport`, confirm schedule renders; (c) submit form with a registered instructor email in development mode, verify HTML preview shows correct salary estimate (SC-006 email flow regression check).
 
 ---
 
