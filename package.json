@@ -29,6 +29,6 @@
   },
   "devDependencies": {
     "@types/node": "^25.0.6",
-    "wrangler": "^4.61.1"
+    "wrangler": "^4.83.0"
   }
 }
