@@ -1,26 +1,62 @@
 ---
+export const prerender = false;
+// SSR required: schedule and config are fetched from Trailbase at request time (FR-001, FR-002)
+
 import 'bulma/css/bulma.min.css';
 import '../styles/_global.scss';
 
-
-import timeReportItems from '../config/time-report-items.json';
 import TimeReportCheckboxGroup from '../components/TimeReportCheckboxGroup.astro';
-import { TIME_REPORT_MONTH_KEY, TIME_REPORT_MONTH_DISPLAY, IS_DEVELOPMENT } from '../config/time-report-settings';
+import { authenticateServiceUser, fetchTimeReportConfig, fetchTimeReportSessions } from '../lib/trailbase';
+import type { TrainingGroupKey, TimeReportConfig } from '../lib/types';
 
-const items = timeReportItems[TIME_REPORT_MONTH_KEY];
+type CheckboxItem = { date: string; title: string; h: number; m: number };
+
+let error = false;
+let config: TimeReportConfig | null = null;
+let mappedSessions: Record<TrainingGroupKey, CheckboxItem[]> = {
+  simskola: [], tavlingA: [], tavlingB: [], teknik: [], masters: [], vuxencrawl: [],
+};
+
+try {
+  const { TRAILBASE_URL, TRAILBASE_SERVICE_EMAIL, TRAILBASE_SERVICE_PASSWORD } = Astro.locals.runtime.env;
+  const authToken = await authenticateServiceUser(TRAILBASE_URL, TRAILBASE_SERVICE_EMAIL, TRAILBASE_SERVICE_PASSWORD);
+  config = await fetchTimeReportConfig(TRAILBASE_URL, authToken);
+  if (!config) throw new Error('No config row found in time_report_config');
+
+  const sessions = await fetchTimeReportSessions(TRAILBASE_URL, config.active_month_key, authToken);
+  for (const session of sessions) {
+    const group = session.training_group as TrainingGroupKey;
+    if (group in mappedSessions) {
+      mappedSessions[group].push({ date: session.date, title: session.title, h: session.hours, m: session.minutes });
+    }
+  }
+} catch (err) {
+  console.error('[tidrapport] Trailbase fetch failed:', err instanceof Error ? err.message : String(err));
+  error = true;
+}
+
+Astro.response.headers.set('Cache-Control', 'no-store');
 ---
 
 <html>
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Tidrapport {TIME_REPORT_MONTH_DISPLAY}</title>
+    <title>Tidrapport {config?.active_month_display ?? ''}</title>
   </head>
   <body>
     <section class="section">
       <div class="container is-max-desktop">
         <h1 class="title">Alvesta Simsällskap</h1>
-        <h2 class="subtitle">Tidrapport {TIME_REPORT_MONTH_DISPLAY}</h2>
+        <h2 class="subtitle">Tidrapport {config?.active_month_display ?? ''}</h2>
+
+        {error && (
+          <div class="notification is-danger">
+            Det gick inte att hämta schemat just nu. Försök igen om en stund.
+          </div>
+        )}
+
+        {!error && (
         <form method="POST" action="/api/send-time-report" x-data="formHandler" x-on:submit.prevent="handleSubmit" @timereportupdate.window="updateTotalTime()">
           <div class="box mt-5">
             <div class="field">
@@ -43,7 +79,7 @@ const items = timeReportItems[TIME_REPORT_MONTH_KEY];
               <span x-text="open ? '▲' : '▼'" class="ml-2 is-size-6"></span>
             </h2>
             <div class="mt-4" x-show="open" x-transition>
-              <TimeReportCheckboxGroup section="simskola" items={items.simskola} />
+              <TimeReportCheckboxGroup section="simskola" items={mappedSessions.simskola} />
               <p class="has-text-grey"><i>30 minuter för förberedelse och undanplockning läggs automatiskt till på varje simskoletillfälle.</i></p>
             </div>
           </div>
@@ -56,19 +92,19 @@ const items = timeReportItems[TIME_REPORT_MONTH_KEY];
             <div x-show="open" x-transition>
               <div class="columns mt-2">
                 <div class="column">
-                  <TimeReportCheckboxGroup section="tavling-a" items={items.tavlingA} label="Tävling A" />
+                  <TimeReportCheckboxGroup section="tavling-a" items={mappedSessions.tavlingA} label="Tävling A" />
                 </div>
                 <div class="column">
-                  <TimeReportCheckboxGroup section="tavling-b" items={items.tavlingB} label="Tävling B" />
+                  <TimeReportCheckboxGroup section="tavling-b" items={mappedSessions.tavlingB} label="Tävling B" />
                 </div>
                 <div class="column">
-                  <TimeReportCheckboxGroup section="teknik" items={items.teknik} label="Teknik" />
+                  <TimeReportCheckboxGroup section="teknik" items={mappedSessions.teknik} label="Teknik" />
                 </div>
                 <div class="column">
-                  <TimeReportCheckboxGroup section="masters" items={items.masters} label="Masters" />
+                  <TimeReportCheckboxGroup section="masters" items={mappedSessions.masters} label="Masters" />
                 </div>
                 <div class="column">
-                  <TimeReportCheckboxGroup section="vuxencrawl" items={items.vuxencrawl} label="Vuxencrawl" />
+                  <TimeReportCheckboxGroup section="vuxencrawl" items={mappedSessions.vuxencrawl} label="Vuxencrawl" />
                 </div>
               </div>
               <p class="has-text-grey"><i>15 minuter för förberedelse och undanplockning läggs automatiskt till på varje träning.</i></p>
@@ -158,17 +194,18 @@ const items = timeReportItems[TIME_REPORT_MONTH_KEY];
               </div>
             </div>
           </div>
-          {!IS_DEVELOPMENT ? (
+          {!import.meta.env.DEV ? (
           <div class="field">
             <div class="cf-turnstile" data-sitekey="0x4AAAAAACV0HK5DAZEGpQip" data-theme="light" data-callback="onTurnstileSuccess"></div>
           </div>
           ) : null}
           <div class="field">
             <div class="control">
-                <button id="submitBtn" class="button is-link is-primary" type="submit" disabled={!IS_DEVELOPMENT}>Skicka in tidrapport</button>
+                <button id="submitBtn" class="button is-link is-primary" type="submit" disabled={!import.meta.env.DEV}>Skicka in tidrapport</button>
             </div>
           </div>
         </form>
+        )}
       </div>
     </section>
     <script is:inline>

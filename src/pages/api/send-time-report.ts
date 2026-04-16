@@ -4,53 +4,26 @@ import type { APIRoute } from 'astro';
 import { parseTimeReportForm } from '../../lib/timeReportValidation';
 import { sendTimeReportEmail } from '../../lib/email';
 import { buildTable, buildAdditionalTimeTable, calcSalary, findTimeItem } from '../../lib/salary';
-import { TIME_REPORT_MONTH_KEY, TIME_REPORT_MONTH_DISPLAY, HALF_DAY_SALARY, FULL_DAY_SALARY, OVERNIGHT_SALARY, IS_DEVELOPMENT } from '../../config/time-report-settings';
-import type { TimeReportData, Employee } from '../../lib/types';
+import { authenticateServiceUser, fetchTimeReportConfig, fetchTimeReportSessions, fetchInstructor } from '../../lib/trailbase';
+import type { TimeReportData, Instructor, TrainingGroupKey, SessionSchedule, TimeReportConfig } from '../../lib/types';
 
 export const POST: APIRoute = async ({ request, locals }) => {
-  const EMPLOYEES: Employee[] = [
-    { email: 'johan.marand@icloud.com', swimSchoolRate: 115, coachRate: 145 }, // Testing as William
-    { email: 'annamaria.tovar@hotmail.com', swimSchoolRate: 85, coachRate: null },
-    { email: 'cornelia.axhed@outlook.com', swimSchoolRate: 95, coachRate: 135 },
-    { email: 'izakaxelsson2009@gmail.com', swimSchoolRate: 95, coachRate: null },
-    { email: 'widqvistlova@gmail.com', swimSchoolRate: 95, coachRate: null },
-    { email: 'thelmaklintipsa@gmail.com', swimSchoolRate: 160, coachRate: 135 },
-    { email: 'jonnaklintipsa11@gmail.com', swimSchoolRate: 65, coachRate: null },
-    { email: 'tsinatweldemichael42@gmail.com', swimSchoolRate: 85, coachRate: null },
-    { email: 'edvin.nilsson.11@edualvesta.se', swimSchoolRate: 65, coachRate: null },
-    { email: 'shahed27kikar@gmail.com', swimSchoolRate: 75, coachRate: null },
-    { email: 'reussfelix390@gmail.com', swimSchoolRate: 75, coachRate: null },
-    { email: 'alibrahemali06@gmail.com', swimSchoolRate: 65, coachRate: null },
-    { email: 'aina.mujadzic@outlook.com', swimSchoolRate: 85, coachRate: 105 },
-    { email: 'emii0113lus@gmail.com', swimSchoolRate: 75, coachRate: null },
-    { email: 'stella.gustavsson09@icloud.com', swimSchoolRate: 85, coachRate: 105 },
-    { email: 'erik.hakamsson@gmail.com', swimSchoolRate: 75, coachRate: null },
-    { email: 'ra7838303@gmail.com', swimSchoolRate: 75, coachRate: null },
-    { email: 'aliciablyth@hotmail.com', swimSchoolRate: 95, coachRate: null },
-    { email: 'erona.h09@gmail.com', swimSchoolRate: 75, coachRate: null },
-    { email: 'williamlarson1999@gmail.com', swimSchoolRate: 115, coachRate: 145 },
-    { email: 'mujcicuna@gmail.com', swimSchoolRate: 95, coachRate: 130 },
-    { email: 'toweeandersson@gmail.com', swimSchoolRate: 105, coachRate: 135 },
-    { email: 'agnesannaandersson@gmail.com', swimSchoolRate: 95, coachRate: 115 },
-    { email: 'hamzkdka2022@gmail.com', swimSchoolRate: 75, coachRate: null },
-    { email: 'mariamkikar@gmail.com', swimSchoolRate: 75, coachRate: null },
-    { email: 'yazanjana483@gmail.com', swimSchoolRate: 75, coachRate: null },
-  ]
-  
   const MJ_APIKEY_PUBLIC = locals.runtime.env.MJ_APIKEY_PUBLIC;
   const MJ_APIKEY_PRIVATE = locals.runtime.env.MJ_APIKEY_PRIVATE;
   const TURNSTILE_SECRET_KEY = locals.runtime.env.TURNSTILE_SECRET_KEY;
+  const TRAILBASE_URL = locals.runtime.env.TRAILBASE_URL;
+  const TRAILBASE_SERVICE_EMAIL = locals.runtime.env.TRAILBASE_SERVICE_EMAIL;
+  const TRAILBASE_SERVICE_PASSWORD = locals.runtime.env.TRAILBASE_SERVICE_PASSWORD;
 
   const formData = await request.formData();
 
   // Turnstile verification (skip in development mode)
-  if (!IS_DEVELOPMENT) {
+  if (!import.meta.env.DEV) {
     const token = formData.get('cf-turnstile-response');
-    const secretKey = TURNSTILE_SECRET_KEY;
     const verifyRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `secret=${secretKey}&response=${token}`,
+      body: `secret=${TURNSTILE_SECRET_KEY}&response=${token}`,
     });
     const verifyData = await verifyRes.json() as { success: boolean };
     if (!verifyData.success) {
@@ -61,20 +34,64 @@ export const POST: APIRoute = async ({ request, locals }) => {
   // Parse and validate form
   const data: TimeReportData = parseTimeReportForm(formData);
 
+  // Fetch config, sessions and instructor from Trailbase.
+  // Auth failure or missing config degrades gracefully — email is still sent
+  // without a salary estimate (spec: a missing estimate is recoverable, a lost
+  // submission is not).
+  let instructor: Instructor | undefined;
+  let config: TimeReportConfig | null = null;
+  let schedule: SessionSchedule = {
+    simskola: [], tavlingA: [], tavlingB: [], teknik: [], masters: [], vuxencrawl: [],
+  };
+
+  try {
+    const authToken = await authenticateServiceUser(TRAILBASE_URL, TRAILBASE_SERVICE_EMAIL, TRAILBASE_SERVICE_PASSWORD);
+    config = await fetchTimeReportConfig(TRAILBASE_URL, authToken);
+
+    if (config) {
+      const sessions = await fetchTimeReportSessions(TRAILBASE_URL, config.active_month_key, authToken);
+      for (const session of sessions) {
+        const group = session.training_group as TrainingGroupKey;
+        if (group in schedule) {
+          schedule[group].push({ date: session.date, title: session.title, hours: session.hours, minutes: session.minutes });
+        }
+      }
+    }
+
+    const found = await fetchInstructor(TRAILBASE_URL, data.email, authToken);
+    if (found) instructor = found;
+  } catch {
+    // Backend unreachable — proceed without salary estimate
+  }
+
+  // Fall back to empty config values if Trailbase was unreachable
+  const activeMonthDisplay = config?.active_month_display ?? '';
+  const activeMonthKey = config?.active_month_key ?? '';
+  const effectiveConfig: TimeReportConfig = config ?? {
+    id: 0,
+    active_month_key: activeMonthKey,
+    active_month_display: activeMonthDisplay,
+    extra_time_simskola: 30,
+    extra_time_training: 15,
+    half_day_salary: 500,
+    full_day_salary: 1000,
+    overnight_salary: 300,
+  };
+
   // Compose email content (HTML)
-  let html = `<h4>Tidrapport ${TIME_REPORT_MONTH_DISPLAY}</h4>`;
+  let html = `<h4>Tidrapport ${activeMonthDisplay}</h4>`;
   html += `<p><b>Namn:</b> ${data.name}</p>`;
-  html += buildTable('simskola', 'Simskola', data.simskola);
-  html += buildTable('tavlingA', 'Tävlingsgrupp A', data.tavlingA);
-  html += buildTable('tavlingB', 'Tävlingsgrupp B', data.tavlingB);
-  html += buildTable('teknik', 'Teknik', data.teknik);
-  html += buildTable('masters', 'Masters', data.masters);
-  html += buildTable('vuxencrawl', 'Vuxencrawl', data.vuxencrawl);
-  
+  html += buildTable('simskola', 'Simskola', data.simskola, schedule, effectiveConfig);
+  html += buildTable('tavlingA', 'Tävlingsgrupp A', data.tavlingA, schedule, effectiveConfig);
+  html += buildTable('tavlingB', 'Tävlingsgrupp B', data.tavlingB, schedule, effectiveConfig);
+  html += buildTable('teknik', 'Teknik', data.teknik, schedule, effectiveConfig);
+  html += buildTable('masters', 'Masters', data.masters, schedule, effectiveConfig);
+  html += buildTable('vuxencrawl', 'Vuxencrawl', data.vuxencrawl, schedule, effectiveConfig);
+
   if (data.extratid) {
     html += buildAdditionalTimeTable(data.extratid);
   }
-  
+
   if (data.milersattning) {
     html += `<p><b>Milersättning:</b> ${data.milersattning} km (privat resa, skattepliktigt, 25 kr/mil)</p>`;
   }
@@ -83,105 +100,77 @@ export const POST: APIRoute = async ({ request, locals }) => {
     html += `<p><b>Kommentarer:</b> ${data.kommentarer}</p>`;
   }
 
-  // Find employee salary info
-  const employee = EMPLOYEES.find(e => e.email.toLowerCase() === String(data.email).toLowerCase());
+  // Calculate salary for each group
+  const salarySimskola   = calcSalary('simskola',   data.simskola,   schedule, effectiveConfig, instructor);
+  const salaryTavlingA   = calcSalary('tavlingA',   data.tavlingA,   schedule, effectiveConfig, instructor);
+  const salaryTavlingB   = calcSalary('tavlingB',   data.tavlingB,   schedule, effectiveConfig, instructor);
+  const salaryTeknik     = calcSalary('teknik',     data.teknik,     schedule, effectiveConfig, instructor);
+  const salaryMasters    = calcSalary('masters',    data.masters,    schedule, effectiveConfig, instructor);
+  const salaryVuxencrawl = calcSalary('vuxencrawl', data.vuxencrawl, schedule, effectiveConfig, instructor);
+  const salaryOvrigTid   = calcSalary('extratid',   [],              schedule, effectiveConfig, instructor, data.extratid);
 
-  // Calculate salary for each section
-  const salarySimskola = calcSalary('simskola', data.simskola, employee);
-  const salaryTavlingA = calcSalary('tavlingA', data.tavlingA, employee);
-  const salaryTavlingB = calcSalary('tavlingB', data.tavlingB, employee);
-  const salaryTeknik = calcSalary('teknik', data.teknik, employee);
-  const salaryMasters = calcSalary('masters', data.masters, employee);
-  const salaryVuxencrawl = calcSalary('vuxencrawl', data.vuxencrawl, employee);
-  const salaryOvrigTid = calcSalary('extratid', [], employee, data.extratid);
-
-  // Calculate total salary
   const totalSalary = [salarySimskola, salaryTavlingA, salaryTavlingB, salaryTeknik, salaryMasters, salaryVuxencrawl, salaryOvrigTid]
     .reduce((sum, s) => sum + s.total, 0);
 
-  // Calculate full day and half day
+  // Count flat-rate competition sessions
   let fullDay = 0, halfDay = 0, overnight = 0;
-  for (const val of data.tavlingA) {
-    const item = findTimeItem('tavlingA', val);
-    if (item?.h === 20) { fullDay++; }
-    if (item?.h === 10) { halfDay++; }
-    if (item?.h === 15) { overnight++; }
-  }
-  for (const val of data.tavlingB) {
-    const item = findTimeItem('tavlingB', val);
-    if (item?.h === 20) { fullDay++; }
-    if (item?.h === 10) { halfDay++; }
-    if (item?.h === 15) { overnight++; }
-  }
-  for (const val of data.masters) {
-    const item = findTimeItem('masters', val);
-    if (item?.h === 20) { fullDay++; }
-    if (item?.h === 10) { halfDay++; }
-    if (item?.h === 15) { overnight++; }
-  }
-  for (const val of data.teknik) {
-    const item = findTimeItem('teknik', val);
-    if (item?.h === 20) { fullDay++; }
-    if (item?.h === 10) { halfDay++; }
-    if (item?.h === 15) { overnight++; }
-  }
+  const countSpecial = (group: TrainingGroupKey, vals: string[]) => {
+    for (const val of vals) {
+      const item = findTimeItem(schedule, group, val);
+      if (item?.hours === 20) fullDay++;
+      if (item?.hours === 10) halfDay++;
+      if (item?.hours === 15) overnight++;
+    }
+  };
+  countSpecial('tavlingA', data.tavlingA);
+  countSpecial('tavlingB', data.tavlingB);
+  countSpecial('masters', data.masters);
+  countSpecial('teknik', data.teknik);
 
-  const fullDaySalary = FULL_DAY_SALARY * fullDay;
-  const halfDaySalary = HALF_DAY_SALARY * halfDay;
-  const overnightSalary = OVERNIGHT_SALARY * overnight;
+  const fullDaySalary   = effectiveConfig.full_day_salary * fullDay;
+  const halfDaySalary   = effectiveConfig.half_day_salary * halfDay;
+  const overnightSalary = effectiveConfig.overnight_salary * overnight;
 
-  // Add salary estimate to email content if employee matched
-  // Helper to format numbers with space as thousands separator
+  // Add salary estimate if instructor was found
   const formatAmount = (amount: number) => amount.toLocaleString('sv-SE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-  if (employee) {
+  if (instructor) {
     html += `<h4>Preliminär löneberäkning</h4><table border="1" cellpadding="4" style="border-collapse:collapse;margin-bottom:1em;">
       <thead><tr><th>Grupp</th><th>Timmar</th><th>Minuter</th><th>Lön</th><th>Summa</th></tr></thead><tbody>`;
 
     if (salarySimskola.hours > 0 || salarySimskola.minutes > 0) {
       html += `<tr><td>Simskola</td><td>${salarySimskola.hours}</td><td>${salarySimskola.minutes}</td><td>${salarySimskola.salary ?? '-'}</td><td>${formatAmount(salarySimskola.total)} kr</td></tr>`;
     }
-
     if (salaryTavlingA.hours > 0 || salaryTavlingA.minutes > 0) {
       html += `<tr><td>Tävlingsgrupp A</td><td>${salaryTavlingA.hours}</td><td>${salaryTavlingA.minutes}</td><td>${salaryTavlingA.salary ?? '-'}</td><td>${formatAmount(salaryTavlingA.total)} kr</td></tr>`;
     }
-
     if (salaryTavlingB.hours > 0 || salaryTavlingB.minutes > 0) {
       html += `<tr><td>Tävlingsgrupp B</td><td>${salaryTavlingB.hours}</td><td>${salaryTavlingB.minutes}</td><td>${salaryTavlingB.salary ?? '-'}</td><td>${formatAmount(salaryTavlingB.total)} kr</td></tr>`;
     }
-    
     if (salaryTeknik.hours > 0 || salaryTeknik.minutes > 0) {
       html += `<tr><td>Teknik</td><td>${salaryTeknik.hours}</td><td>${salaryTeknik.minutes}</td><td>${salaryTeknik.salary ?? '-'}</td><td>${formatAmount(salaryTeknik.total)} kr</td></tr>`;
     }
-
     if (salaryMasters.hours > 0 || salaryMasters.minutes > 0) {
       html += `<tr><td>Masters</td><td>${salaryMasters.hours}</td><td>${salaryMasters.minutes}</td><td>${salaryMasters.salary ?? '-'}</td><td>${formatAmount(salaryMasters.total)} kr</td></tr>`;
     }
-
     if (salaryVuxencrawl.hours > 0 || salaryVuxencrawl.minutes > 0) {
       html += `<tr><td>Vuxencrawl</td><td>${salaryVuxencrawl.hours}</td><td>${salaryVuxencrawl.minutes}</td><td>${salaryVuxencrawl.salary ?? '-'}</td><td>${formatAmount(salaryVuxencrawl.total)} kr</td></tr>`;
     }
-
     if (fullDay > 0) {
-      html += `<tr><td>Heldagar</td><td colspan="2">${fullDay}</td><td>${FULL_DAY_SALARY}</td><td>${formatAmount(fullDaySalary)} kr</td></tr>`;
+      html += `<tr><td>Heldagar</td><td colspan="2">${fullDay}</td><td>${effectiveConfig.full_day_salary}</td><td>${formatAmount(fullDaySalary)} kr</td></tr>`;
     }
-
     if (halfDay > 0) {
-      html += `<tr><td>Halvdagar</td><td colspan="2">${halfDay}</td><td>${HALF_DAY_SALARY}</td><td>${formatAmount(halfDaySalary)} kr</td></tr>`;
+      html += `<tr><td>Halvdagar</td><td colspan="2">${halfDay}</td><td>${effectiveConfig.half_day_salary}</td><td>${formatAmount(halfDaySalary)} kr</td></tr>`;
     }
-
     if (overnight > 0) {
-      html += `<tr><td>Övernattning</td><td colspan="2">${overnight}</td><td>${OVERNIGHT_SALARY}</td><td>${formatAmount(overnightSalary)} kr</td></tr>`;
+      html += `<tr><td>Övernattning</td><td colspan="2">${overnight}</td><td>${effectiveConfig.overnight_salary}</td><td>${formatAmount(overnightSalary)} kr</td></tr>`;
     }
-
     if (salaryOvrigTid.hours > 0 || salaryOvrigTid.minutes > 0) {
       html += `<tr><td>Övrig tid</td><td>${salaryOvrigTid.hours}</td><td>${salaryOvrigTid.minutes}</td><td>${salaryOvrigTid.salary ?? '-'}</td><td>${formatAmount(salaryOvrigTid.total)} kr</td></tr>`;
     }
-
     html += `<tr style="font-weight:bold"><td>Totalt</td><td colspan="3"></td><td>${formatAmount(Math.round(totalSalary + fullDaySalary + halfDaySalary + overnightSalary))} kr</td></tr>`;
     html += `</tbody></table>`;
   }
-
 
   // Handle file attachments for 'Utlägg'
   const attachments = [];
@@ -215,7 +204,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
   html += `<p><i>Skickades genom alvestass.se/tidrapport ${formattedDate}</i></p>`;
 
   // In debug mode, show HTML output instead of sending email
-  if (IS_DEVELOPMENT) {
+  if (import.meta.env.DEV) {
     return new Response(html, { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8' } });
   }
 
@@ -226,7 +215,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     MJ_APIKEY_PUBLIC,
     MJ_APIKEY_PRIVATE,
     html,
-    monthKey: TIME_REPORT_MONTH_KEY,
+    monthKey: activeMonthKey,
   });
 
   if (res.ok) {

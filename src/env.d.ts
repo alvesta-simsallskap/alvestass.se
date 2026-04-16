@@ -8,6 +8,8 @@ declare namespace App {
         MJ_APIKEY_PRIVATE: string;
         TURNSTILE_SECRET_KEY: string;
         TRAILBASE_URL: string;
+        TRAILBASE_SERVICE_EMAIL: string;
+        TRAILBASE_SERVICE_PASSWORD: string;
       };
     }
   }

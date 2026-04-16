@@ -6,3 +6,5 @@ MJ_APIKEY_PUBLIC=your-mailjet-public-key
 MJ_APIKEY_PRIVATE=your-mailjet-private-key
 TURNSTILE_SECRET_KEY=your-turnstile-secret
 TRAILBASE_URL=https://alvestass-trailbase.fly.dev
+TRAILBASE_SERVICE_EMAIL=trailbase_service@alvestass.se
+TRAILBASE_SERVICE_PASSWORD=your-trailbase-service-password
