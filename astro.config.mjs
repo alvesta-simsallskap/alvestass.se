@@ -9,9 +9,6 @@ import alpinejs from '@astrojs/alpinejs';
 export default defineConfig({
   adapter: cloudflare({
     imageService: 'cloudflare', // Use Cloudflare image service
-    platformProxy: {
-      enabled: true,
-    },
   }),
 
   integrations: [alpinejs()]

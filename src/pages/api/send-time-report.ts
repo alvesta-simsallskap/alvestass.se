@@ -1,19 +1,20 @@
 export const prerender = false;
 
 import type { APIRoute } from 'astro';
+import { env } from 'cloudflare:workers';
 import { parseTimeReportForm } from '../../lib/timeReportValidation';
 import { sendTimeReportEmail } from '../../lib/email';
 import { buildTable, buildAdditionalTimeTable, calcSalary, findTimeItem } from '../../lib/salary';
 import { authenticateServiceUser, fetchTimeReportConfig, fetchTimeReportSessions, fetchInstructor } from '../../lib/trailbase';
 import type { TimeReportData, Instructor, TrainingGroupKey, SessionSchedule, TimeReportConfig } from '../../lib/types';
 
-export const POST: APIRoute = async ({ request, locals }) => {
-  const MJ_APIKEY_PUBLIC = locals.runtime.env.MJ_APIKEY_PUBLIC;
-  const MJ_APIKEY_PRIVATE = locals.runtime.env.MJ_APIKEY_PRIVATE;
-  const TURNSTILE_SECRET_KEY = locals.runtime.env.TURNSTILE_SECRET_KEY;
-  const TRAILBASE_URL = locals.runtime.env.TRAILBASE_URL;
-  const TRAILBASE_SERVICE_EMAIL = locals.runtime.env.TRAILBASE_SERVICE_EMAIL;
-  const TRAILBASE_SERVICE_PASSWORD = locals.runtime.env.TRAILBASE_SERVICE_PASSWORD;
+export const POST: APIRoute = async ({ request }) => {
+  const MJ_APIKEY_PUBLIC = env.MJ_APIKEY_PUBLIC;
+  const MJ_APIKEY_PRIVATE = env.MJ_APIKEY_PRIVATE;
+  const TURNSTILE_SECRET_KEY = env.TURNSTILE_SECRET_KEY;
+  const TRAILBASE_URL = env.TRAILBASE_URL;
+  const TRAILBASE_SERVICE_EMAIL = env.TRAILBASE_SERVICE_EMAIL;
+  const TRAILBASE_SERVICE_PASSWORD = env.TRAILBASE_SERVICE_PASSWORD;
 
   const formData = await request.formData();
 

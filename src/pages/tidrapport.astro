@@ -5,6 +5,7 @@ export const prerender = false;
 import 'bulma/css/bulma.min.css';
 import '../styles/_global.scss';
 
+import { env } from 'cloudflare:workers';
 import TimeReportCheckboxGroup from '../components/TimeReportCheckboxGroup.astro';
 import { authenticateServiceUser, fetchTimeReportConfig, fetchTimeReportSessions } from '../lib/trailbase';
 import type { TrainingGroupKey, TimeReportConfig } from '../lib/types';
@@ -18,12 +19,11 @@ let mappedSessions: Record<TrainingGroupKey, CheckboxItem[]> = {
 };
 
 try {
-  const { TRAILBASE_URL, TRAILBASE_SERVICE_EMAIL, TRAILBASE_SERVICE_PASSWORD } = Astro.locals.runtime.env;
-  const authToken = await authenticateServiceUser(TRAILBASE_URL, TRAILBASE_SERVICE_EMAIL, TRAILBASE_SERVICE_PASSWORD);
-  config = await fetchTimeReportConfig(TRAILBASE_URL, authToken);
+  const authToken = await authenticateServiceUser(env.TRAILBASE_URL, env.TRAILBASE_SERVICE_EMAIL, env.TRAILBASE_SERVICE_PASSWORD);
+  config = await fetchTimeReportConfig(env.TRAILBASE_URL, authToken);
   if (!config) throw new Error('No config row found in time_report_config');
 
-  const sessions = await fetchTimeReportSessions(TRAILBASE_URL, config.active_month_key, authToken);
+  const sessions = await fetchTimeReportSessions(env.TRAILBASE_URL, config.active_month_key, authToken);
   for (const session of sessions) {
     const group = session.training_group as TrainingGroupKey;
     if (group in mappedSessions) {
