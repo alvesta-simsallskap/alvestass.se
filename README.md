@@ -6,13 +6,6 @@
 pnpm dev
 ```
 
-Wrangler and KV (key, value) in Cloudflare
-
-```
-npx wrangler kv namespace create "TIME"
-npx wrangler kv key put <KEY> <VALUE> --binding=<TIME> --local
-```
-
 ## Website
 
 Pages CMS.

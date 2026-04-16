@@ -12,11 +12,5 @@
 	},
 	"observability": {
 		"enabled": true
-	},
-	"kv_namespaces": [
-		{
-			"binding": "TIME",
-			"id": "83278bf16b4a4b98acec0f5dec506b52"
-		}
-	]
+	}
 }
