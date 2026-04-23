@@ -15,6 +15,15 @@ Content-driven Astro site deployed on Cloudflare's edge network.
 - **Backend**: Trailbase on fly.io (`arn` — Stockholm) — the ONLY database/persistence layer
 - **Secrets manager**: `wrangler secret put` — NEVER commit secrets to git
 
+## README
+
+`README.md` must always be kept up to date. When any of the following change, update the README in the same task:
+- Tech stack or versions
+- Development commands
+- Project structure
+- Admin CLI features, build steps, or SDK dependencies
+- Deployment process
+
 ## Key Commands
 
 ```bash
