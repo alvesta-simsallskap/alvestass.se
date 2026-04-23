@@ -1,0 +1,32 @@
+---
+import Nav from './Nav.astro';
+import Footer from './Footer.astro';
+import MemberModal from './MemberModal.astro';
+import '../styles/_global.scss';
+import '@fontsource-variable/figtree';
+import '@fontsource/material-symbols-rounded/300.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<html class="has-navbar-fixed-top">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{title} — Alvesta Simsällskap</title>
+  {description && <meta name="description" content={description} />}
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+</head>
+
+<body x-data="{ atTop: true, open: false, modal: false }" x-on:scroll.window="atTop = (window.pageYOffset > 100) ? false : true;">
+  <Nav />
+  <slot />
+  <Footer />
+  <MemberModal :class="{ 'is-active': modal }" />
+</body>
+</html>

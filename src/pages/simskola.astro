@@ -1,0 +1,26 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../components/Layout.astro';
+import Section from '../components/Section.astro';
+import Grid from '../components/Grid.astro';
+import SwimSchoolGroup from '../components/SwimSchoolGroup.astro';
+
+const swimSchoolGroups = (await getCollection('swimSchool')).sort(
+  (a, b) => a.data.order - b.data.order
+);
+---
+
+<Layout
+  title="Simskola"
+  description="Simskola för barn i Alvesta Simsällskap — se alla grupper och nivåer."
+>
+  <Section id="simskola" title="Simskola">
+    <Grid>
+      {swimSchoolGroups.map(entry => (
+        <div class="cell">
+          <SwimSchoolGroup id={entry.id} />
+        </div>
+      ))}
+    </Grid>
+  </Section>
+</Layout>

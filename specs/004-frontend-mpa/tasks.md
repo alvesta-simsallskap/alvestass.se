@@ -16,7 +16,7 @@
 
 **Purpose**: Create the shared page shell that all new pages will use. This is the foundation; no page work can begin without it.
 
-- [ ] T001 Create `src/components/Layout.astro` — accept `title: string` and `description?: string` props; render `<html class="has-navbar-fixed-top">`, full `<head>` (charset, viewport, title as `{title} — Alvesta Simsällskap`, optional description meta, Bulma CSS import, `_global.scss` import, Figtree font import, Material Symbols CSS import), `<body x-data="{ atTop: true, open: false, modal: false }" x-on:scroll.window="...">`, `<Nav />`, `<slot />`, `<Footer />`, `<MemberModal :class="{ 'is-active': modal }" />`; do NOT include the `alpinejs-scroll-to` CDN script
+- [x] T001 Create `src/components/Layout.astro` — accept `title: string` and `description?: string` props; render `<html class="has-navbar-fixed-top">`, full `<head>` (charset, viewport, title as `{title} — Alvesta Simsällskap`, optional description meta, Bulma CSS import, `_global.scss` import, Figtree font import, Material Symbols CSS import), `<body x-data="{ atTop: true, open: false, modal: false }" x-on:scroll.window="...">`, `<Nav />`, `<slot />`, `<Footer />`, `<MemberModal :class="{ 'is-active': modal }" />`; do NOT include the `alpinejs-scroll-to` CDN script
 
 **Checkpoint**: Layout.astro exists and compiles without TypeScript errors (`pnpm build`)
 
@@ -28,7 +28,7 @@
 
 **⚠️ CRITICAL**: No user story verification can be done until this phase is complete.
 
-- [ ] T002 Update `src/components/Nav.astro` — replace each `href="#…" @click="$refs.….scrollIntoView()"` with plain page `<a>` links (`href="/"` for logo, `href="/simskola"`, `href="/traning"`, `href="/foreningen"`); derive the current pathname via `const { pathname } = Astro.url;` and add `class:list={['navbar-item', { 'is-active': pathname === '/simskola' }]}` (and equivalently for each link) so the active page is highlighted; remove the `x-scroll-to-header` directive from the `<nav>` element
+- [x] T002 Update `src/components/Nav.astro` — replace each `href="#…" @click="$refs.….scrollIntoView()"` with plain page `<a>` links (`href="/"` for logo, `href="/simskola"`, `href="/traning"`, `href="/foreningen"`); derive the current pathname via `const { pathname } = Astro.url;` and add `class:list={['navbar-item', { 'is-active': pathname === '/simskola' }]}` (and equivalently for each link) so the active page is highlighted; remove the `x-scroll-to-header` directive from the `<nav>` element
 
 **Checkpoint**: Nav renders page links; `pnpm build` passes with zero TypeScript errors
 
@@ -40,9 +40,9 @@
 
 **Independent Test**: Open `http://localhost:4321/simskola`, `/traning`, and `/foreningen` directly in a browser. Each page must load without errors, display its content, and show the correct nav item highlighted as active.
 
-- [ ] T003 [P] [US1] Create `src/pages/simskola.astro` — import Layout; fetch `swimSchool` collection sorted by `order`; render `<Layout title="Simskola">` wrapping a `<Section id="simskola" title="Simskola">` with a `<Grid>` of `<SwimSchoolGroup>` cards; page is static (no `prerender = false`)
-- [ ] T004 [P] [US1] Create `src/pages/traning.astro` — import Layout; fetch `trainingGroups` collection sorted by `order`; render `<Layout title="Träningsgrupper">` wrapping a `<Section id="traning" title="Träningsgrupper">` with a `<Grid>` of `<TrainingGroup>` cards; page is static
-- [ ] T005 [P] [US1] Create `src/pages/foreningen.astro` — import Layout; fetch `clubInfo` collection sorted by `order`; render `<Layout title="Föreningen">` wrapping a `<Section id="foreningen" title="Om föreningen">` with a `<Grid>` of `<ClubInfo>` cards; page is static
+- [x] T003 [P] [US1] Create `src/pages/simskola.astro` — import Layout; fetch `swimSchool` collection sorted by `order`; render `<Layout title="Simskola">` wrapping a `<Section id="simskola" title="Simskola">` with a `<Grid>` of `<SwimSchoolGroup>` cards; page is static (no `prerender = false`)
+- [x] T004 [P] [US1] Create `src/pages/traning.astro` — import Layout; fetch `trainingGroups` collection sorted by `order`; render `<Layout title="Träningsgrupper">` wrapping a `<Section id="traning" title="Träningsgrupper">` with a `<Grid>` of `<TrainingGroup>` cards; page is static
+- [x] T005 [P] [US1] Create `src/pages/foreningen.astro` — import Layout; fetch `clubInfo` collection sorted by `order`; render `<Layout title="Föreningen">` wrapping a `<Section id="foreningen" title="Om föreningen">` with a `<Grid>` of `<ClubInfo>` cards; page is static
 
 **Checkpoint**: All three section pages load correctly at their respective URLs; navigation active state highlights the current page; `pnpm build` passes
 
@@ -54,7 +54,7 @@
 
 **Independent Test**: Open `http://localhost:4321/`. The hero displays. Below it, three teaser cards appear for Simskola, Träningsgrupper, and Om föreningen, each with a link to its section page. No section content is rendered inline. Nav shows no active item (root path has no match).
 
-- [ ] T006 [US2] Update `src/pages/index.astro` — wrap with `<Layout title="Startsidan">`; remove the three `<Section>` blocks and their collection fetches; keep `<Hero />`; add a Bulma columns/cards teaser section below the hero with three cards: "Simskola" → `/simskola`, "Träningsgrupper" → `/traning`, "Om föreningen" → `/foreningen`; remove the `alpinejs-scroll-to` CDN script tag (now absent from Layout); remove unused collection imports
+- [x] T006 [US2] Update `src/pages/index.astro` — wrap with `<Layout title="Startsidan">`; remove the three `<Section>` blocks and their collection fetches; keep `<Hero />`; add a Bulma columns/cards teaser section below the hero with three cards: "Simskola" → `/simskola`, "Träningsgrupper" → `/traning`, "Om föreningen" → `/foreningen`; remove the `alpinejs-scroll-to` CDN script tag (now absent from Layout); remove unused collection imports
 
 **Checkpoint**: Home page shows hero + three teaser cards; no inline section content; `pnpm build` passes; no unused imports remain
 
@@ -66,7 +66,7 @@
 
 **Independent Test**: Navigate to `http://localhost:4321/finns-inte`. The page renders with the site nav and footer, displays a clear "Sidan hittades inte" heading, and provides a link back to the home page.
 
-- [ ] T007 [US3] Create `src/pages/404.astro` — use `<Layout title="Sidan hittades inte">`; render a centered Bulma `section` with a `title` heading "Sidan hittades inte" and a subtitle, plus a `<a href="/" class="button is-primary">Gå till startsidan</a>`; page is static
+- [x] T007 [US3] Create `src/pages/404.astro` — use `<Layout title="Sidan hittades inte">`; render a centered Bulma `section` with a `title` heading "Sidan hittades inte" and a subtitle, plus a `<a href="/" class="button is-primary">Gå till startsidan</a>`; page is static
 
 **Checkpoint**: `http://localhost:4321/finns-inte` returns the 404 page with nav and a back-link; `pnpm build` passes
 
@@ -76,9 +76,9 @@
 
 **Purpose**: Final quality pass — clean up leftover Alpine scroll artefacts, verify meta descriptions, confirm build and browser compliance.
 
-- [ ] T008 [P] Remove unused `x-ref` prop from `src/components/Section.astro` — replace `x-ref={id}` with nothing (the `id` attribute is kept for anchor compatibility); update the destructure to remove the unused `x-ref` binding
-- [ ] T009 [P] Add `description` prop to each new page's `<Layout>` call — `simskola.astro`: "Simskola för barn i Alvesta Simsällskap — se alla grupper och nivåer."; `traning.astro`: "Träningsgrupper för simmare på alla nivåer i Alvesta Simsällskap."; `foreningen.astro`: "Om Alvesta Simsällskap — historia, styrelse och kontaktuppgifter."
-- [ ] T010 Run `pnpm build` and confirm zero TypeScript errors and zero `astro check` warnings
+- [x] T008 [P] Remove unused `x-ref` prop from `src/components/Section.astro` — replace `x-ref={id}` with nothing (the `id` attribute is kept for anchor compatibility); update the destructure to remove the unused `x-ref` binding
+- [x] T009 [P] Add `description` prop to each new page's `<Layout>` call — `simskola.astro`: "Simskola för barn i Alvesta Simsällskap — se alla grupper och nivåer."; `traning.astro`: "Träningsgrupper för simmare på alla nivåer i Alvesta Simsällskap."; `foreningen.astro`: "Om Alvesta Simsällskap — historia, styrelse och kontaktuppgifter."
+- [x] T010 Run `pnpm build` and confirm zero TypeScript errors and zero `astro check` warnings
 - [ ] T011 Manual browser verification — open each page (`/`, `/simskola`, `/traning`, `/foreningen`, `/kontakt`, `/tidrapport`, `/404`) at mobile (≤ 768 px), tablet, and desktop widths; confirm layout, nav active state, and teaser cards render correctly at all breakpoints
 
 ---

@@ -1,0 +1,26 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../components/Layout.astro';
+import Section from '../components/Section.astro';
+import Grid from '../components/Grid.astro';
+import ClubInfo from '../components/ClubInfo.astro';
+
+const clubInfo = (await getCollection('clubInfo')).sort(
+  (a, b) => a.data.order - b.data.order
+);
+---
+
+<Layout
+  title="Föreningen"
+  description="Om Alvesta Simsällskap — historia, styrelse och kontaktuppgifter."
+>
+  <Section id="foreningen" title="Om föreningen">
+    <Grid>
+      {clubInfo.map(entry => (
+        <div class="cell">
+          <ClubInfo id={entry.id} />
+        </div>
+      ))}
+    </Grid>
+  </Section>
+</Layout>
