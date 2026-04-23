@@ -92,6 +92,8 @@ trailbase/            Trailbase backend service
 - TypeScript 5.9 (strict mode) + Astro 5.17, @astrojs/cloudflare 12.6, Trailbase v0.26.3, Alpine.js 3.15, Bulma 1.0 (002-time-report-trailbase)
 - Trailbase SQLite on fly.io (arn); three new tables (002-time-report-trailbase)
 - Trailbase SQLite on fly.io (region: arn / Stockholm) — three new tables (002-time-report-trailbase)
+- Go 1.23+ + `github.com/charmbracelet/bubbletea`, `github.com/charmbracelet/bubbles`, `github.com/charmbracelet/lipgloss`, `github.com/stretchr/testify` (tests only) (003-admin-cli)
+- Local config file at `$UserConfigDir/alvestass-admin/config.json` (permissions `0600`); no local database (003-admin-cli)
 
 ## Recent Changes
 - 002-time-report-trailbase: Added TypeScript 5.9 (strict mode) + Astro 5.17, @astrojs/cloudflare 12.6, Trailbase v0.26.3, Alpine.js 3.15, Bulma 1.0
