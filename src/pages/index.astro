@@ -1,72 +1,47 @@
 ---
-import { getCollection } from 'astro:content';
-import Nav from '../components/Nav.astro';
+import Layout from '../components/Layout.astro';
 import Hero from '../components/Hero.astro';
-import Footer from '../components/Footer.astro';
-import Section from '../components/Section.astro';
-import Grid from '../components/Grid.astro';
-import MemberModal from '../components/MemberModal.astro';
-import SwimSchoolGroup from '../components/SwimSchoolGroup.astro';
-import TrainingGroup from '../components/TrainingGroup.astro'
-import ClubInfo from '../components/ClubInfo.astro'
-
-const swimsSchoolGroups = (await getCollection('swimSchool')).sort(
-  (a, b) => a.data.order - b.data.order
-);
-
-const trainingGroups = (await getCollection('trainingGroups')).sort(
-  (a, b) => a.data.order - b.data.order
-);
-
-const clubInfo = (await getCollection('clubInfo')).sort(
-  (a, b) => a.data.order - b.data.order
-);
-
-import '../styles/_global.scss';
-import '@fontsource-variable/figtree';
 ---
 
-<html class="has-navbar-fixed-top">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Alvesta Simsällskap</title>
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <script is:inline defer src="https://unpkg.com/alpinejs-scroll-to@latest/dist/scroll-to.min.js"></script>
-</head>
-
-<body x-data="{ atTop: true, open: false, modal: false }" x-on:scroll.window="atTop = (window.pageYOffset > 100) ? false : true; ">
-  <Nav></Nav>
-  <Hero></Hero>
-  <Section id="swimschool" title="Simskola">
-    <Grid>
-        {swimsSchoolGroups.map(entry => (
-          <div class="cell">
-            <SwimSchoolGroup id={entry.id} ></SwimSchoolGroup>            
+<Layout title="Startsidan">
+  <Hero />
+  <section class="section">
+    <div class="container is-max-desktop">
+      <div class="columns is-multiline">
+        <div class="column is-one-third">
+          <div class="card">
+            <div class="card-content">
+              <h2 class="title is-4">Simskola</h2>
+              <p class="block">Lär dig simma med vår simskola — grupper för alla åldrar och nivåer.</p>
+            </div>
+            <div class="card-footer">
+              <a href="/simskola" class="card-footer-item">Läs mer →</a>
+            </div>
           </div>
-        ))}
-    </Grid>
-  </Section>
-  <Section id="training" title="Träningsgrupper">
-    <Grid>
-        {trainingGroups.map(entry => (
-          <div class="cell">
-            <TrainingGroup id={entry.id} ></TrainingGroup>      
-          </div>
-        ))}
-    </Grid>
-  </Section>
-  <Section id="club" title="Föreningen">
-    <Grid>
-      {clubInfo.map(entry => 
-        <div class="cell">
-          <ClubInfo id={entry.id} ></ClubInfo>      
         </div>
-      )}
-    </Grid>
-  </Section>  
-  <Footer></Footer>
-  <MemberModal :class="{ 'is-active': modal }"></MemberModal>
-</body>
-
-</html>
+        <div class="column is-one-third">
+          <div class="card">
+            <div class="card-content">
+              <h2 class="title is-4">Träningsgrupper</h2>
+              <p class="block">Träna och tävla med oss — grupper för alla nivåer från nybörjare till elit.</p>
+            </div>
+            <div class="card-footer">
+              <a href="/traning" class="card-footer-item">Läs mer →</a>
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <div class="card">
+            <div class="card-content">
+              <h2 class="title is-4">Om föreningen</h2>
+              <p class="block">Lär känna Alvesta Simsällskap — grundat 1921 med simning i fokus.</p>
+            </div>
+            <div class="card-footer">
+              <a href="/foreningen" class="card-footer-item">Läs mer →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
