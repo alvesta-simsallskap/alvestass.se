@@ -1,5 +1,7 @@
 # build output
 dist/
+tools/admin-cli/alvestass-admin
+tools/admin-cli/alvestass-admin.exe
 
 # generated types
 .astro/
