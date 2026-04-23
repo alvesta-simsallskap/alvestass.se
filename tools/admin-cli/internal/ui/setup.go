@@ -44,7 +44,7 @@ func newSetupModel(existingURL string) setupModel {
 	urlIn.Focus()
 
 	emailIn := textinput.New()
-	emailIn.Placeholder = "admin@alvestass.se"
+	emailIn.Placeholder = "admin@localhost"
 
 	passIn := textinput.New()
 	passIn.Placeholder = "lösenord"
@@ -74,7 +74,12 @@ func (m setupModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if msg.Type == tea.KeyEnter && m.step < setupStepAuthing {
 			val := strings.TrimSpace(m.inputs[m.step].Value())
 			if val == "" {
-				return m, nil
+				if placeholder := m.inputs[m.step].Placeholder; placeholder != "" {
+					m.inputs[m.step].SetValue(placeholder)
+					val = placeholder
+				} else {
+					return m, nil
+				}
 			}
 			m.inputs[m.step].Blur()
 			next := m.step + 1
