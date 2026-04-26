@@ -21,9 +21,9 @@ phases depend on. No user story work can start until T001–T003 are complete.
 
 **⚠️ CRITICAL**: Run `pnpm build` after T002 and T003 to catch type errors early.
 
-- [ ] T001 Write Trailbase migration `trailbase/migrations/U1776686400__update_instructors.sql`: recreate `instructors` table with `swim_school_rate` nullable (remove NOT NULL), add `travel_compensation INTEGER NOT NULL DEFAULT 0`, add CHECK constraint `(swim_school_rate IS NOT NULL OR coach_rate IS NOT NULL)` — use table-rename recreation pattern per research.md Decision 1
-- [ ] T002 [P] Update `src/lib/types.ts`: change `Instructor.swim_school_rate` from `number` to `number | null`; add `travel_compensation: boolean` field to the `Instructor` interface
-- [ ] T003 [P] Update `src/lib/salary.ts`: in `calcSalary`, the line `if (group === 'simskola') rate = instructor.swim_school_rate` already works with `number | null` via the existing `rate ? ... : 0` guard — verify TypeScript strict mode accepts the updated `Instructor` type with no additional changes needed
+- [x] T001 Write Trailbase migration `trailbase/migrations/U1776686400__update_instructors.sql`: recreate `instructors` table with `swim_school_rate` nullable (remove NOT NULL), add `travel_compensation INTEGER NOT NULL DEFAULT 0`, add CHECK constraint `(swim_school_rate IS NOT NULL OR coach_rate IS NOT NULL)` — use table-rename recreation pattern per research.md Decision 1
+- [x] T002 [P] Update `src/lib/types.ts`: change `Instructor.swim_school_rate` from `number` to `number | null`; add `travel_compensation: boolean` field to the `Instructor` interface
+- [x] T003 [P] Update `src/lib/salary.ts`: in `calcSalary`, the line `if (group === 'simskola') rate = instructor.swim_school_rate` already works with `number | null` via the existing `rate ? ... : 0` guard — verify TypeScript strict mode accepts the updated `Instructor` type with no additional changes needed
 
 **Checkpoint**: Foundation ready — all user story phases can now begin
 
@@ -35,8 +35,8 @@ phases depend on. No user story work can start until T001–T003 are complete.
 state machine. This phase is the gateway to all story phases — it enables
 step 2 to render.
 
-- [ ] T004 Create `src/pages/api/lookup-instructor.ts`: SSR API route (`export const prerender = false`) that accepts `POST { email: string }`, authenticates via `authenticateServiceUser`, calls `fetchInstructor` from `src/lib/trailbase.ts`, and returns `{ swimSchool: boolean, coach: boolean, travelCompensation: boolean }` (200) or `{ error: "not_found" }` (404) or `{ error: "backend_unavailable" }` (503) or `{ error: "invalid_email" }` (400) — MUST NOT log the email value; set `Cache-Control: no-store`; see `contracts/lookup-instructor.md` for full contract
-- [ ] T005 Rewrite `src/pages/tidrapport.astro`: replace the existing single-step form with a top-level Alpine.js `x-data` component holding state `{ step: 1, email: '', loading: false, error: null, role: null, extraTimes: [...], files: [...] }` and a `lookupEmail()` async method that POSTs to `/api/lookup-instructor`, sets `this.role` on success and advances `this.step` to 2, or sets `this.error` (Swedish message) on 404/503 — step 1 UI: email `<input>` bound to `x-model="email"`, submit button disabled (`x-bind:disabled="loading"`) with loading text `x-text="loading ? 'Söker...' : 'Fortsätt'"`, and error notification `<div x-show="error" x-text="error">` — do NOT add step 2 content yet; verify step 1 submits and shows error for unknown email
+- [x] T004 Create `src/pages/api/lookup-instructor.ts`: SSR API route (`export const prerender = false`) that accepts `POST { email: string }`, authenticates via `authenticateServiceUser`, calls `fetchInstructor` from `src/lib/trailbase.ts`, and returns `{ swimSchool: boolean, coach: boolean, travelCompensation: boolean }` (200) or `{ error: "not_found" }` (404) or `{ error: "backend_unavailable" }` (503) or `{ error: "invalid_email" }` (400) — MUST NOT log the email value; set `Cache-Control: no-store`; see `contracts/lookup-instructor.md` for full contract
+- [x] T005 Rewrite `src/pages/tidrapport.astro`: replace the existing single-step form with a top-level Alpine.js `x-data` component holding state `{ step: 1, email: '', loading: false, error: null, role: null, extraTimes: [...], files: [...] }` and a `lookupEmail()` async method that POSTs to `/api/lookup-instructor`, sets `this.role` on success and advances `this.step` to 2, or sets `this.error` (Swedish message) on 404/503 — step 1 UI: email `<input>` bound to `x-model="email"`, submit button disabled (`x-bind:disabled="loading"`) with loading text `x-text="loading ? 'Söker...' : 'Fortsätt'"`, and error notification `<div x-show="error" x-text="error">` — do NOT add step 2 content yet; verify step 1 submits and shows error for unknown email
 
 ---
 
@@ -50,8 +50,8 @@ sees Simskola + Övrig tid + Kommentarer and can submit a complete time report.
 Simskola, Övrig tid, and Kommentarer appear in step 2. Submit; verify the
 email is received at the payroll inbox.
 
-- [ ] T006 [US1] Add step 2 form base to `src/pages/tidrapport.astro` (visible when `step === 2`): include name field (`name="namn"`), hidden email field (`:value="email"` `name="email"` `type="hidden"`), Övrig tid section (always — keep existing Alpine state `extraTimes` merged into top-level `x-data` component, adapt `collectExtraTime` and `handleSubmit` methods into the same top-level component), Kommentarer textarea (`name="kommentarer"`, always visible), Turnstile widget, and submit button — replaces the existing `formHandler` Alpine component
-- [ ] T007 [US1] Add Simskola section to step 2 in `src/pages/tidrapport.astro` using `<template x-if="role?.swimSchool">` wrapping the existing Simskola box markup (with `TimeReportCheckboxGroup` component, `mappedSessions.simskola` items, and the preparation-time note)
+- [x] T006 [US1] Add step 2 form base to `src/pages/tidrapport.astro` (visible when `step === 2`): include name field (`name="namn"`), hidden email field (`:value="email"` `name="email"` `type="hidden"`), Övrig tid section (always — keep existing Alpine state `extraTimes` merged into top-level `x-data` component, adapt `collectExtraTime` and `handleSubmit` methods into the same top-level component), Kommentarer textarea (`name="kommentarer"`, always visible), Turnstile widget, and submit button — replaces the existing `formHandler` Alpine component
+- [x] T007 [US1] Add Simskola section to step 2 in `src/pages/tidrapport.astro` using `<template x-if="role?.swimSchool">` wrapping the existing Simskola box markup (with `TimeReportCheckboxGroup` component, `mappedSessions.simskola` items, and the preparation-time note)
 - [ ] T008 [US1] Browser verify using `pnpm dev`: swim-school-only instructor (coach_rate NULL in Trailbase) — step 1 accepts email → step 2 shows Simskola and Övrig tid and Kommentarer → Träningsgrupper and Utlägg are absent from the page → submit opens email preview in new tab (dev mode)
 
 ---
@@ -65,8 +65,8 @@ email is received at the payroll inbox.
 `swim_school_rate` NULL. Enter their email in step 1. Confirm Träningsgrupper
 and Utlägg appear; Simskola is absent. Submit; verify the email is received.
 
-- [ ] T009 [US2] Add Träningsgrupper section to step 2 in `src/pages/tidrapport.astro` using `<template x-if="role?.coach">` wrapping the existing Träningsgrupper box markup (all training group columns: tavlingA, tavlingB, teknik, masters, vuxencrawl, plus preparation-time note)
-- [ ] T010 [US2] Add Utlägg section to step 2 in `src/pages/tidrapport.astro` using `<template x-if="role?.coach">` wrapping the existing Utlägg box markup (file upload inputs with Alpine `files` state — merge `files` array into top-level `x-data` component)
+- [x] T009 [US2] Add Träningsgrupper section to step 2 in `src/pages/tidrapport.astro` using `<template x-if="role?.coach">` wrapping the existing Träningsgrupper box markup (all training group columns: tavlingA, tavlingB, teknik, masters, vuxencrawl, plus preparation-time note)
+- [x] T010 [US2] Add Utlägg section to step 2 in `src/pages/tidrapport.astro` using `<template x-if="role?.coach">` wrapping the existing Utlägg box markup (file upload inputs with Alpine `files` state — merge `files` array into top-level `x-data` component)
 - [ ] T011 [US2] Browser verify using `pnpm dev`: coach-only instructor (swim_school_rate NULL in Trailbase) — step 2 shows Träningsgrupper + Utlägg + Övrig tid + Kommentarer; Simskola is absent from the page; submit works
 
 ---
@@ -80,7 +80,7 @@ is true; it is absent from the DOM (not CSS-hidden) for ineligible instructors.
 one with `travel_compensation = 0`. Confirm field visible for eligible
 instructor (inspect DOM) and absent from DOM for ineligible instructor.
 
-- [ ] T012 [US4] Add Milersättning field to step 2 in `src/pages/tidrapport.astro` using `<template x-if="role?.travelCompensation">` wrapping the Milersättning input (`name="milersattning"`) and its label/help text — place it in the same columns box as Kommentarer (existing layout), using `x-if` to ensure DOM removal for ineligible instructors (satisfies SC-003)
+- [x] T012 [US4] Add Milersättning field to step 2 in `src/pages/tidrapport.astro` using `<template x-if="role?.travelCompensation">` wrapping the Milersättning input (`name="milersattning"`) and its label/help text — place it in the same columns box as Kommentarer (existing layout), using `x-if` to ensure DOM removal for ineligible instructors (satisfies SC-003)
 - [ ] T013 [US4] Browser verify: eligible instructor sees Milersättning; browser DevTools confirm the field is absent from the DOM for ineligible instructor (not just display:none)
 
 ---
@@ -112,9 +112,9 @@ appears and step 2 is not shown. Verify message is in Swedish.
 
 ## Phase 8: Polish & Cross-Cutting Concerns
 
-- [ ] T016 Run `pnpm build` (runs `wrangler types && astro check && astro build`) and resolve any TypeScript strict-mode errors from the `Instructor` type changes — verify zero errors and zero `astro check` warnings
-- [ ] T017 [P] Verify no email addresses appear in Cloudflare Worker log output from `lookup-instructor.ts` — review the implementation for any accidental `console.log` / `console.error` calls that include the email value
-- [ ] T018 [P] Add `travel_compensation` field to GDPR notes in `trailbase/migrations/U1776686400__update_instructors.sql` migration comment (legal basis: contractual necessity; retention: end of employment + 1 year) — confirm TODO(GDPR_REGISTER) note is present
+- [x] T016 Run `pnpm build` (runs `wrangler types && astro check && astro build`) and resolve any TypeScript strict-mode errors from the `Instructor` type changes — verify zero errors and zero `astro check` warnings
+- [x] T017 [P] Verify no email addresses appear in Cloudflare Worker log output from `lookup-instructor.ts` — review the implementation for any accidental `console.log` / `console.error` calls that include the email value
+- [x] T018 [P] Add `travel_compensation` field to GDPR notes in `trailbase/migrations/U1776686400__update_instructors.sql` migration comment (legal basis: contractual necessity; retention: end of employment + 1 year) — confirm TODO(GDPR_REGISTER) note is present
 
 ---
 
