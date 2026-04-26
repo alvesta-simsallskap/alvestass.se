@@ -89,6 +89,10 @@ func run(configPath string) error {
 			}
 		case ui.MenuHelp:
 			ui.RunHelp()
+		case ui.MenuImport:
+			if err := ui.RunImport(client); err != nil {
+				fmt.Fprintf(os.Stderr, "Fel: %v\n", err)
+			}
 		case ui.MenuQuit:
 			fmt.Println("Hej då!")
 			return nil
