@@ -24,8 +24,9 @@ export interface TimeReportData {
 export interface Instructor {
   id: number;
   email: string;
-  swim_school_rate: number;
+  swim_school_rate: number | null;
   coach_rate: number | null;
+  travel_compensation: boolean;
 }
 
 export type TrainingGroupKey =

@@ -105,6 +105,8 @@ trailbase/            Trailbase backend service
 - Local config file at `$UserConfigDir/alvestass-admin/config.json` (permissions `0600`); no local database (003-admin-cli)
 - TypeScript 5.9 (strict mode); Astro 5.17.1 + Astro content collections, Alpine.js 3.15.3, Bulma 1.0.4 + Sass (004-frontend-mpa)
 - No new storage; all content from existing `src/content/` collections (004-frontend-mpa)
+- TypeScript 5.9 (strict mode), Astro 5.17.1 + Alpine.js 3.15.3, Bulma 1.0.4 + Sass, Trailbase 0.26.3 (005-time-report-wizard)
+- Trailbase SQLite on fly.io (arn) — schema migration required (005-time-report-wizard)
 
 ## Recent Changes
 - 002-time-report-trailbase: Added TypeScript 5.9 (strict mode) + Astro 5.17, @astrojs/cloudflare 12.6, Trailbase v0.26.3, Alpine.js 3.15, Bulma 1.0

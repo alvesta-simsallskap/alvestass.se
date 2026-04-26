@@ -73,6 +73,39 @@ See [`specs/003-admin-cli/quickstart.md`](specs/003-admin-cli/quickstart.md) for
 
 Static `.ics` files in `public/`, with a `_headers` file controlling `Content-Type`.
 
+## Trailbase backend
+
+The Trailbase instance runs on fly.io (region: `arn` / Stockholm) and is the sole persistence layer.
+
+### Deploying changes
+
+Any time you add or modify a migration file in `trailbase/migrations/`, redeploy the backend:
+
+```bash
+cd trailbase
+fly deploy
+```
+
+This rebuilds the Docker image with the updated migration files baked in, deploys it to fly.io, and Trailbase automatically applies any pending migrations on startup.
+
+### How migrations work
+
+- Migration files live in `trailbase/migrations/` and follow Trailbase's naming convention (`U{unix_timestamp}__{description}.sql`).
+- The Dockerfile copies them into the image at `/app/seed-migrations/`.
+- On startup, `docker-entrypoint.sh` copies any new files to `/app/traildepot/migrations/` (existing files are never overwritten), then Trailbase runs all pending migrations.
+- Never edit or rename an already-applied migration — add a new file instead.
+
+### Adding a schema change
+
+1. Create a new file: `trailbase/migrations/U{timestamp}__{description}.sql`
+2. Write the migration SQL (Trailbase uses SQLite; wrap destructive changes in a transaction).
+3. Run `cd trailbase && fly deploy`.
+4. Verify in the Trailbase admin UI that the migration was applied.
+
+### Admin UI
+
+The Trailbase admin UI is available at the fly.io app URL. Use it to inspect tables, manage instructor records, and verify migrations.
+
 ## Deployment
 
 Cloudflare Pages + Workers. Secrets are set via:

@@ -42,6 +42,7 @@ const instructorFull: Instructor = {
   email: 'test@example.com',
   swim_school_rate: 200,
   coach_rate: 150,
+  travel_compensation: false,
 };
 
 const instructorNoCoach: Instructor = {
@@ -49,6 +50,7 @@ const instructorNoCoach: Instructor = {
   email: 'nocoach@example.com',
   swim_school_rate: 180,
   coach_rate: null,
+  travel_compensation: false,
 };
 
 // ─── findTimeItem ─────────────────────────────────────────────────────────────

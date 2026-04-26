@@ -57,170 +57,48 @@ Astro.response.headers.set('Cache-Control', 'no-store');
         )}
 
         {!error && (
-        <form method="POST" action="/api/send-time-report" x-data="formHandler" x-on:submit.prevent="handleSubmit" @timereportupdate.window="updateTotalTime()">
-          <div class="box mt-5">
-            <div class="field">
-              <label class="label">Namn</label>
-              <div class="control">
-              <input class="input" type="text" placeholder="Namn" name="namn" required autocomplete="name" />
-              </div>
-            </div>
-            <div class="field">
-              <label class="label">E-post (kopia skickas hit)</label>
-              <div class="control">
-              <input class="input" type="email" placeholder="E-postadress" name="email" required autocomplete="email" />
-              </div>
-            </div>
-          </div>
+        <div x-data="{
+          step: 1,
+          email: '',
+          loading: false,
+          error: null,
+          role: null,
+          extraTimes: [{ id: Date.now(), date: '', h: '', m: '', desc: '' }],
+          files: [{ id: Date.now(), file: null, desc: '' }],
 
-          <div class="box mt-5" x-data="{ open: false }">
-            <h2 class="subtitle my-0" @click="open = !open" style="cursor:pointer;">
-              Simskola
-              <span x-text="open ? '▲' : '▼'" class="ml-2 is-size-6"></span>
-            </h2>
-            <div class="mt-4" x-show="open" x-transition>
-              <TimeReportCheckboxGroup section="simskola" items={mappedSessions.simskola} />
-              <p class="has-text-grey"><i>30 minuter för förberedelse och undanplockning läggs automatiskt till på varje simskoletillfälle.</i></p>
-            </div>
-          </div>
+          async lookupEmail() {
+            this.loading = true;
+            this.error = null;
+            try {
+              const res = await fetch('/api/lookup-instructor', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: this.email }),
+              });
+              if (res.status === 404) {
+                this.error = 'Din e-postadress hittades inte. Kontrollera att du angav rätt adress.';
+              } else if (!res.ok) {
+                this.error = 'Det gick inte att kontrollera e-postadressen just nu. Försök igen om en stund.';
+              } else {
+                this.role = await res.json();
+                this.step = 2;
+              }
+            } catch {
+              this.error = 'Det gick inte att kontrollera e-postadressen just nu. Försök igen om en stund.';
+            } finally {
+              this.loading = false;
+            }
+          },
 
-          <div class="box mt-5" x-data="{ open: false }">
-            <h2 class="subtitle my-0" @click="open = !open" style="cursor:pointer;">
-              Träningsgrupper
-              <span x-text="open ? '▲' : '▼'" class="ml-2 is-size-6"></span>
-            </h2>
-            <div x-show="open" x-transition>
-              <div class="columns mt-2">
-                <div class="column">
-                  <TimeReportCheckboxGroup section="tavling-a" items={mappedSessions.tavlingA} label="Tävling A" />
-                </div>
-                <div class="column">
-                  <TimeReportCheckboxGroup section="tavling-b" items={mappedSessions.tavlingB} label="Tävling B" />
-                </div>
-                <div class="column">
-                  <TimeReportCheckboxGroup section="teknik" items={mappedSessions.teknik} label="Teknik" />
-                </div>
-                <div class="column">
-                  <TimeReportCheckboxGroup section="masters" items={mappedSessions.masters} label="Masters" />
-                </div>
-                <div class="column">
-                  <TimeReportCheckboxGroup section="vuxencrawl" items={mappedSessions.vuxencrawl} label="Vuxencrawl" />
-                </div>
-              </div>
-              <p class="has-text-grey"><i>15 minuter för förberedelse och undanplockning läggs automatiskt till på varje träning.</i></p>
-            </div>
-          </div>
-          <div class="box mt-5" x-data="{ open: false, extraTimes: [{ id: Date.now(), date: '', h: '', m: '', desc: '' }] }">
-            <h2 class="subtitle my-0" @click="open = !open" style="cursor:pointer;">
-              Övrig tid
-              <span x-text="open ? '▲' : '▼'" class="ml-2 is-size-6"></span>
-            </h2>
-            <div class="mt-4" x-show="open" x-transition>
-              <template x-for="(item, idx) in extraTimes" :key="item.id">
-                <div class="box mb-3">
-                  <div class="field is-horizontal is-align-items-center">
-                    <div class="field-body">
-                      <div class="field has-addons">
-                        <div class="control">
-                          <input type="date" class="input" :name="`extratid_date_${item.id}`" x-model="item.date" />
-                        </div>
-                        <div class="control">
-                          <input type="number" class="input" min="0" max="24" :name="`extratid_h_${item.id}`" x-model="item.h" style="max-width: 80px;" />
-                        </div>
-                        <p class="control"><a class="button is-static">h</a></p>
-                        <div class="control">
-                          <input type="number" class="input" min="0" max="59" :name="`extratid_m_${item.id}`" x-model="item.m" style="max-width: 80px;" />
-                        </div>
-                        <p class="control"><a class="button is-static">m</a></p>
-                        <div class="control is-expanded">
-                          <input type="text" class="input" :name="`extratid_desc_${item.id}`" x-model="item.desc" placeholder="Kort beskrivning" />
-                        </div>
-                        <p class="control">
-                          <a class="button is-danger" type="button" @click="extraTimes.splice(idx, 1)" x-show="extraTimes.length > 1">x</a>
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </template>
-              <button class="button is-link is-light" type="button" @click="extraTimes.push({ id: Date.now() + Math.random(), date: '', h: '', m: '', desc: '' })">Lägg till rad</button>
-            </div>
-          </div>
-          <div class="box mt-5" x-data="{ open: false, files: [{ id: Date.now(), file: null, desc: '' }] }">
-            <h2 class="subtitle my-0" @click="open = !open" style="cursor:pointer;">
-              Utlägg
-              <span x-text="open ? '▲' : '▼'" class="ml-2 is-size-6"></span>
-            </h2>
-            <div class="mt-4" x-show="open" x-transition>
-              <template x-for="(item, idx) in files" :key="item.id">
-                <div class="box mb-3">
-                  <div class="field">
-                    <label class="label">Fil (pdf, jpg, png)</label>
-                    <div class="control">
-                      <input type="file" accept=".pdf,.png,.jpg,.jpeg" :name="`utlagg_file_${item.id}`" />
-                    </div>
-                  </div>
-                  <div class="field">
-                    <label class="label">Beskrivning</label>
-                    <div class="control">
-                      <input type="text" class="input" :name="`utlagg_desc_${item.id}`" placeholder="Beskrivning av utlägg" />
-                    </div>
-                  </div>
-                  <button class="button is-small is-danger mt-2" type="button" @click="files.splice(idx, 1)" x-show="files.length > 1">Ta bort</button>
-                </div>
-              </template>
-              <button class="button is-link is-light" type="button" @click="files.push({ id: Date.now() + Math.random(), file: null, desc: '' })">Lägg till fil</button>
-            </div>
-          </div>
-          <div class="box mt-5">
-            <div class="columns">
-              <div class="column">
-                <div class="field">
-                  <label class="label">Kommentarer</label>
-                  <div class="control">
-                    <textarea class="textarea" rows="3" placeholder="Eventuella kommentarer" name="kommentarer"></textarea>
-                  </div>
-                  <p class="help">Eventuella kommentarer för tillfällena ovan, annan extra arbetstid eller utlägg</p>
-                </div>
-              </div>
-              <div class="column">
-                <div class="field">
-                  <label class="label">Milersättning (km)</label>
-                  <div class="control">
-                    <input class="input" type="number" name="milersattning" min="1" max="1000" placeholder="Ange kilometer" style="max-width: 150px;" />
-                  </div>
-                  <p class="help">Ange antal kilometer. Till och från träning (2,50 kr/kilometer)</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          {!import.meta.env.DEV ? (
-          <div class="field">
-            <div class="cf-turnstile" data-sitekey="0x4AAAAAACV0HK5DAZEGpQip" data-theme="light" data-callback="onTurnstileSuccess"></div>
-          </div>
-          ) : null}
-          <div class="field">
-            <div class="control">
-                <button id="submitBtn" class="button is-link is-primary" type="submit" disabled={!import.meta.env.DEV}>Skicka in tidrapport</button>
-            </div>
-          </div>
-        </form>
-        )}
-      </div>
-    </section>
-    <script is:inline>
-      document.addEventListener('alpine:init', () => {
-        Alpine.data('formHandler', () => ({
           collectExtraTime(formData) {
-            const extraTimesEl = this.$root.querySelectorAll('[x-data]')[2];
-            const extraTimes = extraTimesEl ? (Alpine.$data(extraTimesEl).extraTimes || []) : [];
-            extraTimes.forEach((item, idx) => {
-              formData.append(`extratid[${idx}][date]`, item.date);
-              formData.append(`extratid[${idx}][h]`, item.h);
-              formData.append(`extratid[${idx}][m]`, item.m);
-              formData.append(`extratid[${idx}][desc]`, item.desc);
+            this.extraTimes.forEach((item, idx) => {
+              formData.append('extratid[' + idx + '][date]', item.date);
+              formData.append('extratid[' + idx + '][h]', item.h);
+              formData.append('extratid[' + idx + '][m]', item.m);
+              formData.append('extratid[' + idx + '][desc]', item.desc);
             });
           },
+
           async handleSubmit(e) {
             const form = e.target;
             const formData = new FormData(form);
@@ -236,7 +114,6 @@ Astro.response.headers.set('Cache-Control', 'no-store');
                   win.document.title = 'Tidrapport Preview';
                   win.document.body.innerHTML = html;
                 };
-                // Fallback: if already loaded
                 if (win.document.readyState === 'complete') {
                   win.document.title = 'Tidrapport Preview';
                   win.document.body.innerHTML = html;
@@ -248,16 +125,214 @@ Astro.response.headers.set('Cache-Control', 'no-store');
               alert('Något gick fel. Försök igen.');
             }
           }
-        }));
+        }">
 
-        // Initial calculation on page load
-        window.addEventListener('DOMContentLoaded', () => {
-          document.querySelector('form[x-data]')?.__x?.$data?.updateTotalTime?.();
-        });
-      });
-    </script>
+          <!-- Step 1: Email identification -->
+          <div x-show="step === 1">
+            <div class="box mt-5">
+              <div class="field">
+                <label class="label">E-postadress</label>
+                <div class="control">
+                  <input
+                    class="input"
+                    type="email"
+                    placeholder="din@epost.se"
+                    x-model="email"
+                    autocomplete="email"
+                    required
+                    @keydown.enter.prevent="if (email) lookupEmail()"
+                  />
+                </div>
+                <p class="help">Ange din registrerade e-postadress för att fortsätta.</p>
+              </div>
+              <div x-show="error" class="notification is-danger mt-3 py-2 px-4" x-text="error"></div>
+              <div class="field mt-4">
+                <div class="control">
+                  <button
+                    class="button is-link is-primary"
+                    type="button"
+                    :disabled="loading || !email"
+                    @click="lookupEmail()"
+                    x-text="loading ? 'Söker...' : 'Fortsätt'"
+                  ></button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2: Role-specific time report form -->
+          <div x-show="step === 2">
+            <form method="POST" action="/api/send-time-report" @submit.prevent="handleSubmit($event)" @timereportupdate.window="void 0">
+
+              <input type="hidden" name="email" :value="email" />
+
+              <div class="box mt-5">
+                <div class="field">
+                  <label class="label">Namn</label>
+                  <div class="control">
+                    <input class="input" type="text" placeholder="Namn" name="namn" required autocomplete="name" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Simskola — only for swim school instructors (swim_school_rate set) -->
+              <template x-if="role?.swimSchool">
+                <div class="box mt-5" x-data="{ open: false }">
+                  <h2 class="subtitle my-0" @click="open = !open" style="cursor:pointer;">
+                    Simskola
+                    <span x-text="open ? '▲' : '▼'" class="ml-2 is-size-6"></span>
+                  </h2>
+                  <div class="mt-4" x-show="open" x-transition>
+                    <TimeReportCheckboxGroup section="simskola" items={mappedSessions.simskola} />
+                    <p class="has-text-grey"><i>30 minuter för förberedelse och undanplockning läggs automatiskt till på varje simskoletillfälle.</i></p>
+                  </div>
+                </div>
+              </template>
+
+              <!-- Träningsgrupper — only for coaches (coach_rate set) -->
+              <template x-if="role?.coach">
+                <div class="box mt-5" x-data="{ open: false }">
+                  <h2 class="subtitle my-0" @click="open = !open" style="cursor:pointer;">
+                    Träningsgrupper
+                    <span x-text="open ? '▲' : '▼'" class="ml-2 is-size-6"></span>
+                  </h2>
+                  <div x-show="open" x-transition>
+                    <div class="columns mt-2">
+                      <div class="column">
+                        <TimeReportCheckboxGroup section="tavling-a" items={mappedSessions.tavlingA} label="Tävling A" />
+                      </div>
+                      <div class="column">
+                        <TimeReportCheckboxGroup section="tavling-b" items={mappedSessions.tavlingB} label="Tävling B" />
+                      </div>
+                      <div class="column">
+                        <TimeReportCheckboxGroup section="teknik" items={mappedSessions.teknik} label="Teknik" />
+                      </div>
+                      <div class="column">
+                        <TimeReportCheckboxGroup section="masters" items={mappedSessions.masters} label="Masters" />
+                      </div>
+                      <div class="column">
+                        <TimeReportCheckboxGroup section="vuxencrawl" items={mappedSessions.vuxencrawl} label="Vuxencrawl" />
+                      </div>
+                    </div>
+                    <p class="has-text-grey"><i>15 minuter för förberedelse och undanplockning läggs automatiskt till på varje träning.</i></p>
+                  </div>
+                </div>
+              </template>
+
+              <!-- Övrig tid — always visible -->
+              <div class="box mt-5" x-data="{ open: false }">
+                <h2 class="subtitle my-0" @click="open = !open" style="cursor:pointer;">
+                  Övrig tid
+                  <span x-text="open ? '▲' : '▼'" class="ml-2 is-size-6"></span>
+                </h2>
+                <div class="mt-4" x-show="open" x-transition>
+                  <template x-for="(item, idx) in extraTimes" :key="item.id">
+                    <div class="box mb-3">
+                      <div class="field is-horizontal is-align-items-center">
+                        <div class="field-body">
+                          <div class="field has-addons">
+                            <div class="control">
+                              <input type="date" class="input" :name="`extratid_date_${item.id}`" x-model="item.date" />
+                            </div>
+                            <div class="control">
+                              <input type="number" class="input" min="0" max="24" :name="`extratid_h_${item.id}`" x-model="item.h" style="max-width: 80px;" />
+                            </div>
+                            <p class="control"><a class="button is-static">h</a></p>
+                            <div class="control">
+                              <input type="number" class="input" min="0" max="59" :name="`extratid_m_${item.id}`" x-model="item.m" style="max-width: 80px;" />
+                            </div>
+                            <p class="control"><a class="button is-static">m</a></p>
+                            <div class="control is-expanded">
+                              <input type="text" class="input" :name="`extratid_desc_${item.id}`" x-model="item.desc" placeholder="Kort beskrivning" />
+                            </div>
+                            <p class="control">
+                              <a class="button is-danger" type="button" @click="extraTimes.splice(idx, 1)" x-show="extraTimes.length > 1">x</a>
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </template>
+                  <button class="button is-link is-light" type="button" @click="extraTimes.push({ id: Date.now() + Math.random(), date: '', h: '', m: '', desc: '' })">Lägg till rad</button>
+                </div>
+              </div>
+
+              <!-- Utlägg — only for coaches (coach_rate set) -->
+              <template x-if="role?.coach">
+                <div class="box mt-5" x-data="{ open: false }">
+                  <h2 class="subtitle my-0" @click="open = !open" style="cursor:pointer;">
+                    Utlägg
+                    <span x-text="open ? '▲' : '▼'" class="ml-2 is-size-6"></span>
+                  </h2>
+                  <div class="mt-4" x-show="open" x-transition>
+                    <template x-for="(item, idx) in files" :key="item.id">
+                      <div class="box mb-3">
+                        <div class="field">
+                          <label class="label">Fil (pdf, jpg, png)</label>
+                          <div class="control">
+                            <input type="file" accept=".pdf,.png,.jpg,.jpeg" :name="`utlagg_file_${item.id}`" />
+                          </div>
+                        </div>
+                        <div class="field">
+                          <label class="label">Beskrivning</label>
+                          <div class="control">
+                            <input type="text" class="input" :name="`utlagg_desc_${item.id}`" placeholder="Beskrivning av utlägg" />
+                          </div>
+                        </div>
+                        <button class="button is-small is-danger mt-2" type="button" @click="files.splice(idx, 1)" x-show="files.length > 1">Ta bort</button>
+                      </div>
+                    </template>
+                    <button class="button is-link is-light" type="button" @click="files.push({ id: Date.now() + Math.random(), file: null, desc: '' })">Lägg till fil</button>
+                  </div>
+                </div>
+              </template>
+
+              <!-- Kommentarer + Milersättning — always visible / conditional -->
+              <div class="box mt-5">
+                <div class="columns">
+                  <div class="column">
+                    <div class="field">
+                      <label class="label">Kommentarer</label>
+                      <div class="control">
+                        <textarea class="textarea" rows="3" placeholder="Eventuella kommentarer" name="kommentarer"></textarea>
+                      </div>
+                      <p class="help">Eventuella kommentarer för tillfällena ovan, annan extra arbetstid eller utlägg</p>
+                    </div>
+                  </div>
+                  <!-- Milersättning — only for instructors with travel_compensation = true -->
+                  <template x-if="role?.travelCompensation">
+                    <div class="column">
+                      <div class="field">
+                        <label class="label">Milersättning (km)</label>
+                        <div class="control">
+                          <input class="input" type="number" name="milersattning" min="1" max="1000" placeholder="Ange kilometer" style="max-width: 150px;" />
+                        </div>
+                        <p class="help">Ange antal kilometer. Till och från träning (2,50 kr/kilometer)</p>
+                      </div>
+                    </div>
+                  </template>
+                </div>
+              </div>
+
+              {!import.meta.env.DEV ? (
+              <div class="field">
+                <div class="cf-turnstile" data-sitekey="0x4AAAAAACV0HK5DAZEGpQip" data-theme="light" data-callback="onTurnstileSuccess"></div>
+              </div>
+              ) : null}
+              <div class="field">
+                <div class="control">
+                  <button id="submitBtn" class="button is-link is-primary" type="submit" disabled={!import.meta.env.DEV}>Skicka in tidrapport</button>
+                </div>
+              </div>
+
+            </form>
+          </div>
+
+        </div>
+        )}
+      </div>
+    </section>
     <script is:inline>
-      // Enable submit button when Turnstile is solved
       window.onTurnstileSuccess = function() {
         document.getElementById('submitBtn').disabled = false;
       };
