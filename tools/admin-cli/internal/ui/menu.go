@@ -14,6 +14,7 @@ const (
 	MenuUpdate MenuChoice = iota + 1
 	MenuCheck
 	MenuHelp
+	MenuImport
 	MenuQuit
 )
 
@@ -26,6 +27,7 @@ var menuItems = []string{
 	"Uppdatera kontaktuppgifter",
 	"Kontrollera data",
 	"Hjälp",
+	"Importera tidrapportpass",
 	"Avsluta",
 }
 
@@ -59,6 +61,9 @@ func (m menuModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.choice = MenuHelp
 			return m, tea.Quit
 		case "4":
+			m.choice = MenuImport
+			return m, tea.Quit
+		case "5":
 			m.choice = MenuQuit
 			return m, tea.Quit
 		}
