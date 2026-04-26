@@ -107,7 +107,7 @@ export async function fetchTimeReportSessions(
   monthKey: string,
   authToken: string,
 ): Promise<TrailbaseSession[]> {
-  const url = `${baseUrl}/api/records/v1/time_report_sessions?filter[month_key][$eq]=${encodeURIComponent(monthKey)}&limit=500`;
+  const url = `${baseUrl}/api/records/v1/time_report_sessions?filter[month_key][$eq]=${encodeURIComponent(monthKey)}&order=date&limit=500`;
   const response = await fetch(url, {
     headers: { Authorization: `Bearer ${authToken}` },
   });
