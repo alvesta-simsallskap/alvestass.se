@@ -98,7 +98,7 @@
 - [x] T00 Update `tools/admin-cli/internal/ui/help.go` to include a description of the "Importera tidrapportpass" option, explaining the CSV format and the upsert key
 - [x] T020 [P] Run `go vet ./...` from `tools/admin-cli/` and resolve any reported issues
 - [x] T021 Run `go test ./internal/importer/...` and confirm all unit tests pass with no failures or skips
-- [ ] T022 Manual end-to-end validation per `specs/006-import-sessions-csv/quickstart.md`: (a) fresh import → all inserts, (b) re-import unchanged → all skips, (c) change one row → one update, (d) invalid CSV → validation errors displayed, no backend changes
+- [x] T022 Manual end-to-end validation per `specs/006-import-sessions-csv/quickstart.md`: (a) fresh import → all inserts, (b) re-import unchanged → all skips, (c) change one row → one update, (d) invalid CSV → validation errors displayed, no backend changes
 
 ---
 
