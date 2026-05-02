@@ -53,8 +53,8 @@
 ## Phase 4: Polish & Cross-Cutting Concerns
 
 - [x] T005 [P] Run `pnpm build` and confirm zero TypeScript errors and zero `astro check` warnings after all changes
-- [ ] T006 Manual end-to-end browser test: submit a time report with (a) empty minutes, (b) empty hours, (c) both set to 0, (d) a fully blank row — verify correct email output for each case using `pnpm dev` debug mode
-- [ ] T007 [P] Verify the Övrig tid UI at mobile (≤768 px), tablet, and desktop — confirm number inputs with default `0` render correctly at all breakpoints
+- [x] T006 Manual end-to-end browser test: submit a time report with (a) empty minutes, (b) empty hours, (c) both set to 0, (d) a fully blank row — verify correct email output for each case using `pnpm dev` debug mode
+- [x] T007 [P] Verify the Övrig tid UI at mobile (≤768 px), tablet, and desktop — confirm number inputs with default `0` render correctly at all breakpoints
 
 ---
 
