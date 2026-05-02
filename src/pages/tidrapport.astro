@@ -63,7 +63,9 @@ Astro.response.headers.set('Cache-Control', 'no-store');
           loading: false,
           error: null,
           role: null,
-          extraTimes: [{ id: Date.now(), date: '', h: '', m: '', desc: '' }],
+          extraTimes: [{ id: Date.now(), date: '', h: 0, m: 0, desc: '' }],
+          ovrigTidOpen: false,
+          ovrigTidError: null,
           files: [{ id: Date.now(), file: null, desc: '' }],
 
           async lookupEmail() {
@@ -100,6 +102,18 @@ Astro.response.headers.set('Cache-Control', 'no-store');
           },
 
           async handleSubmit(e) {
+            this.ovrigTidError = null;
+            const touchedRows = this.extraTimes.filter(item =>
+              item.date || String(item.desc).trim() || Number(item.h) > 0 || Number(item.m) > 0
+            );
+            const invalidRows = touchedRows.filter(item =>
+              !String(item.desc).trim() || (Number(item.h) === 0 && Number(item.m) === 0)
+            );
+            if (invalidRows.length > 0) {
+              this.ovrigTidError = 'Varje rad i Övrig tid måste ha en beskrivning och tid angiven.';
+              this.ovrigTidOpen = true;
+              return;
+            }
             const form = e.target;
             const formData = new FormData(form);
             this.collectExtraTime(formData);
@@ -220,12 +234,13 @@ Astro.response.headers.set('Cache-Control', 'no-store');
               </template>
 
               <!-- Övrig tid — always visible -->
-              <div class="box mt-5" x-data="{ open: false }">
-                <h2 class="subtitle my-0" @click="open = !open" style="cursor:pointer;">
+              <div class="box mt-5">
+                <h2 class="subtitle my-0" @click="ovrigTidOpen = !ovrigTidOpen" style="cursor:pointer;">
                   Övrig tid
-                  <span x-text="open ? '▲' : '▼'" class="ml-2 is-size-6"></span>
+                  <span x-text="ovrigTidOpen ? '▲' : '▼'" class="ml-2 is-size-6"></span>
                 </h2>
-                <div class="mt-4" x-show="open" x-transition>
+                <div class="mt-4" x-show="ovrigTidOpen" x-transition>
+                  <div x-show="ovrigTidError" class="notification is-danger py-2 px-4 mb-3" x-text="ovrigTidError"></div>
                   <template x-for="(item, idx) in extraTimes" :key="item.id">
                     <div class="box mb-3">
                       <div class="field is-horizontal is-align-items-center">
@@ -253,7 +268,7 @@ Astro.response.headers.set('Cache-Control', 'no-store');
                       </div>
                     </div>
                   </template>
-                  <button class="button is-link is-light" type="button" @click="extraTimes.push({ id: Date.now() + Math.random(), date: '', h: '', m: '', desc: '' })">Lägg till rad</button>
+                  <button class="button is-link is-light" type="button" @click="extraTimes.push({ id: Date.now() + Math.random(), date: '', h: 0, m: 0, desc: '' })">Lägg till rad</button>
                 </div>
               </div>
 
