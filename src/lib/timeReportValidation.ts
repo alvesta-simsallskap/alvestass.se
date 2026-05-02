@@ -11,8 +11,10 @@ export function parseTimeReportForm(formData: FormData): TimeReportData {
     const m = formData.get(`extratid[${idx}][m]`);
     const desc = formData.get(`extratid[${idx}][desc]`);
     if (date || h || m || desc) {
-      if (date && h && m && desc) {
-        extraRows.push({ date: String(date), h: String(h), m: String(m), desc: String(desc) });
+      if (date && desc) {
+        const hours = String(h || '0');
+        const minutes = String(m || '0');
+        extraRows.push({ date: String(date), h: hours, m: minutes, desc: String(desc) });
       }
       idx++;
     } else {
