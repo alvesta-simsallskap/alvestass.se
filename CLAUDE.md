@@ -114,3 +114,8 @@ trailbase/            Trailbase backend service
 
 ## Recent Changes
 - 002-time-report-trailbase: Added TypeScript 5.9 (strict mode) + Astro 5.17, @astrojs/cloudflare 12.6, Trailbase v0.26.3, Alpine.js 3.15, Bulma 1.0
+
+<!-- SPECKIT START -->
+For additional context about technologies to be used, project structure,
+shell commands, and other important information, read the current plan
+<!-- SPECKIT END -->
