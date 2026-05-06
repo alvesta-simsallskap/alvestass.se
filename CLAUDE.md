@@ -98,7 +98,7 @@ trailbase/            Trailbase backend service
 - `TODO(GDPR_REGISTER)`: `docs/gdpr-register.md` must be created before any personal data is stored
 
 ## Active Technologies
-- TypeScript 5.9 (strict mode) + Astro 5.17, @astrojs/cloudflare 12.6, Trailbase v0.26.3, Alpine.js 3.15, Bulma 1.0 (002-time-report-trailbase)
+- TypeScript 5.9 (strict mode) + Astro 5.17, @astrojs/cloudflare 12.6, Trailbase v0.26.8, Alpine.js 3.15, Bulma 1.0 (002-time-report-trailbase)
 - Trailbase SQLite on fly.io (arn); three new tables (002-time-report-trailbase)
 - Trailbase SQLite on fly.io (region: arn / Stockholm) — three new tables (002-time-report-trailbase)
 - Go 1.23+ + `github.com/charmbracelet/bubbletea`, `github.com/charmbracelet/bubbles`, `github.com/charmbracelet/lipgloss`, `github.com/stretchr/testify` (tests only) (003-admin-cli)
@@ -113,9 +113,11 @@ trailbase/            Trailbase backend service
 - N/A — pure client/worker logic change, no Trailbase interaction (008-fix-ovrig-tid-minutes)
 
 ## Recent Changes
+- 009-upgrade-trailbase: Trailbase upgraded v0.26.3 → v0.26.8; Go SDK updated to v0.0.0-20260501081523-08228bb11ccf
 - 002-time-report-trailbase: Added TypeScript 5.9 (strict mode) + Astro 5.17, @astrojs/cloudflare 12.6, Trailbase v0.26.3, Alpine.js 3.15, Bulma 1.0
 
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan
+at specs/009-upgrade-trailbase/plan.md
 <!-- SPECKIT END -->
