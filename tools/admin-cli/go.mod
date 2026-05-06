@@ -7,7 +7,7 @@ require (
 	github.com/charmbracelet/bubbletea v1.1.1
 	github.com/charmbracelet/lipgloss v1.0.0
 	github.com/stretchr/testify v1.9.0
-	github.com/trailbaseio/trailbase/client/go/trailbase v0.0.0-20260421205927-716548d63a07
+	github.com/trailbaseio/trailbase/client/go/trailbase v0.0.0-20260501081523-08228bb11ccf
 )
 
 require (
