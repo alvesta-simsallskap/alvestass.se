@@ -23,7 +23,7 @@ export function parseTimeReportForm(formData: FormData): TimeReportData {
   }
   return {
     name: String(formData.get('namn') || ''),
-    email: String(formData.get('email') || ''),
+    email: String(formData.get('email') || '').toLowerCase().trim(),
     milersattning: String(formData.get('milersattning') || ''),
     kommentarer: String(formData.get('kommentarer') || ''),
     simskola: formData.getAll('simskola_checked_dates[]').filter((v): v is string => typeof v === 'string'),
