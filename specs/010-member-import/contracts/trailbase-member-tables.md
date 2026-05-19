@@ -10,6 +10,14 @@ These tables are created by migration `U1779235200__create_member_register.sql`.
 
 Until a Trailbase authentication feature is implemented, the tables should have **no API access rules** (accessible only via the Trailbase admin UI and the admin CLI).
 
+### Applying Access Control (T003b — required before production import)
+
+After applying the migration, configure access control in the Trailbase admin UI:
+
+1. For each of the six tables (`members`, `guardians`, `training_groups`, `member_training_groups`, `families`, `family_members`): open **Table Settings → Access Rules** and ensure no public (unauthenticated) read or write rules are defined.
+2. The admin CLI uses a service-user token (stored in `config.json`) which bypasses table-level access rules.
+3. Record the completion of this step with a ✅ in the GDPR gate table in `specs/010-member-import/plan.md` before running the production import.
+
 ## Table Access Patterns
 
 ### `members`

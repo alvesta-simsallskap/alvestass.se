@@ -91,3 +91,13 @@ docs/
 ```
 
 **Structure Decision**: Single CLI binary extended with a new menu item and internal package. Follows the established pattern from `006-import-sessions-csv`.
+
+## Production Deployment Note
+
+Applying the migration and running the import in production requires all of the following to be completed first:
+
+1. **T003 (docs/gdpr-register.md)** — all six new tables documented ✅ done in this branch
+2. **T003b (Trailbase access control)** — all six tables configured as authenticated-only in Trailbase admin UI ⚠️ manual step; see `contracts/trailbase-member-tables.md`
+3. **`/integritetspolicy` page published** — tracked as `TODO(INTEGRITETSPOLICY)` in CLAUDE.md; must be live at `alvestass.se/integritetspolicy` before any personal data is stored in production
+
+Do not run `alvestass-admin → Importera memberregister` against the production Trailbase instance until all three gates above are ✅.

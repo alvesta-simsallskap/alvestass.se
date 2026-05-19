@@ -12,7 +12,7 @@
 - Use IdrottOnline `Medlem t.o.m.` (membership expiry) as the active filter: Rejected — the field is often blank for life members and unreliable for current-season filtering. WeUnite group enrolment is a more reliable signal.
 - Import all current-year members: Rejected — spec requires only actively engaged persons; historical/lapsed members must be excluded.
 
-**Implementation note**: The WeUnite file has `Start` and `Slut` date columns per group booking. A booking is current if `Slut` ≥ today (2026-05-19). Rows with a past `Slut` date are excluded.
+**Implementation note** *(updated after spec clarification)*: The `Slut` date in WeUnite is **ignored** for active-member determination. All rows where `Roll == "Deltagare"` in the export are included, regardless of the `Slut` date. The WeUnite export itself only contains currently active bookings — it is not a historical export — so filtering by `Slut` is unnecessary and was rejected to avoid silently excluding members whose season booking carries a past end date. References to `Член t.o.m.` (IdrottOnline membership expiry) as a filter have also been removed: that field is unreliable and is not used.
 
 ---
 

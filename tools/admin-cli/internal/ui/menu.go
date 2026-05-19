@@ -15,6 +15,7 @@ const (
 	MenuCheck
 	MenuHelp
 	MenuImport
+	MenuImportMembers
 	MenuQuit
 )
 
@@ -28,6 +29,7 @@ var menuItems = []string{
 	"Kontrollera data",
 	"Hjälp",
 	"Importera tidrapportpass",
+	"Importera memberregister",
 	"Avsluta",
 }
 
@@ -64,6 +66,9 @@ func (m menuModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.choice = MenuImport
 			return m, tea.Quit
 		case "5":
+			m.choice = MenuImportMembers
+			return m, tea.Quit
+		case "6":
 			m.choice = MenuQuit
 			return m, tea.Quit
 		}
