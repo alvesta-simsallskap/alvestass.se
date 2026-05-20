@@ -22,8 +22,6 @@ type MemberRow struct {
 	MemberSince   string `json:"member_since,omitempty"`
 	Email         string `json:"email,omitempty"`
 	Phone         string `json:"phone,omitempty"`
-	IsSwimmer     int    `json:"is_swimmer"`
-	IsInstructor  int    `json:"is_instructor"`
 	IsBoardMember int    `json:"is_board_member"`
 }
 
@@ -88,8 +86,6 @@ func (c *Client) UpsertMember(m memberimporter.ProcessedMember) error {
 		MemberSince:   m.MemberSince,
 		Email:         m.Email,
 		Phone:         m.Phone,
-		IsSwimmer:     boolToInt(m.IsSwimmer),
-		IsInstructor:  boolToInt(m.IsInstructor),
 		IsBoardMember: boolToInt(m.IsBoardMember),
 	}
 	_, err := api.Create(row)

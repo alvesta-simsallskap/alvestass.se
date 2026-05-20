@@ -14,6 +14,7 @@
 - Q: Which IdrottOnline roles qualify as "board member" for import into `members`? → A: Formal board positions only: Styrelseledamot, Ordförande, Vice ordförande, Kassör, Sekreterare. Administrative roles (Klubbadministratör, LOK-stödsansvarig, Kontakt dataskydd, Utbildningsansvarig) do not qualify.
 - Q: What defines an "active" member for import purposes? → A: A person must appear in the WeUnite Grupplista with role "Deltagare" in any group — regardless of the group's end date — OR hold a formal board position in IdrottOnline. IdrottOnline membership dates (`Член t.o.m.`) are not used as an import filter; WeUnite Deltagare presence is the definitive criterion for swimmers.
 - Q: Should the `members` table store the membership end date (`Член t.o.m.`)? → A: No — out of scope for this import.
+- Q: Should role flags (is_swimmer, is_instructor) be stored as columns in the `members` table? → A: No. `is_swimmer` is unnecessary because the default for any member is that they are a swimmer — there is no need to store it explicitly. `is_instructor` is also not stored: instructors are employees managed in the separate `instructors` table; if one happens to also be a Deltagare they are an ordinary member with no special flag. Only `is_board_member` is stored, because board membership is a distinct sub-role that needs to be distinguishable. WeUnite "Ledare" rows are not cross-referenced against the `instructors` table and do not produce any import warnings.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -32,7 +33,7 @@ An administrator needs to perform an initial import of all persons who appear in
 3. **Given** a person exists in both source systems, **When** the import runs, **Then** that person is created as a single record using the IID number as the identifier — no duplicate is created.
 4. **Given** a member is under 18 years old, **When** the import runs, **Then** their guardians are also imported with contact details.
 5. **Given** a training group is named "Baddaren 12.55–13.40" in the source data, **When** the import runs, **Then** the group is stored with only the name "Baddaren" — without the time slot.
-6. **Given** an instructor also appears as "Deltagare" in a training group (e.g. a Masters swimmer who also leads Simskola), **When** the import runs, **Then** that person is added to `members` AND is recognised as an existing `instructors` record.
+6. **Given** an instructor also appears as "Deltagare" in a training group (e.g. a Masters swimmer who also leads Simskola), **When** the import runs, **Then** that person is added to `members` as a regular member — no special flag is set and no cross-reference warning is produced.
 
 ---
 
@@ -68,20 +69,20 @@ After a completed import, the administrator needs to be able to verify that the 
 
 ### Edge Cases
 
-- What if a person is both a Deltagare and a board member? The person is stored as a single `members` record with both roles flagged.
+- What if a person is both a Deltagare and a board member? The person is stored as a single `members` record with `is_board_member = true`.
 - What if a guardian is also a Deltagare in WeUnite? The guardian's IID number is used and they are linked as a guardian without being duplicated.
 - What if a swim school group in the source data has no time slot in its name? The group is imported as-is.
 - What if the same IID number appears in both source files with conflicting personal data? The IID is the master key — IdrottOnline is the primary source for personal data; WeUnite is the primary source for group membership.
 - What if a Deltagare in WeUnite has no matching IdrottOnline entry (no IID)? The record is logged as a warning and skipped — an IID is required to create a `members` row.
 - What if an instructor (Ledare/Huvudledare) in WeUnite has no matching entry in the existing `instructors` table? The instructor is logged as a warning — they are not added to `members`; the administrator should verify manually.
-- What if an instructor also appears as "Deltagare" in a training group (dual swimmer-instructor role)? That person is imported into `members` as a swimmer, and their existing `instructors` entry is noted in the import report.
+- What if an instructor also appears as "Deltagare" in a training group (dual swimmer-instructor role)? That person is imported into `members` as a regular member; no special flag is set. Their `instructors` table entry is unaffected and no cross-reference warning is produced.
 
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
 
 - **FR-001**: The system MUST support a person register (`members` table) with the IID number (IdrottsID) as the unique identifier for each person.
-- **FR-002**: The `members` table stores swimmers (Deltagare in WeUnite) and formal board members. Instructors who do not also appear as Deltagare are stored in the separate, existing `instructors` table — not in `members`. A person who is both an instructor and a Deltagare MUST appear in both tables.
+- **FR-002**: The `members` table stores swimmers (Deltagare in WeUnite) and formal board members. The `is_board_member` flag distinguishes board members; no `is_swimmer` or `is_instructor` flags are stored — all members are swimmers by default, and instructor status is managed solely in the `instructors` table. A person who is both a Deltagare and an instructor is stored as a regular member with no special flag.
 - **FR-003**: The system MUST store guardians linked to the active members they are responsible for.
 - **FR-004**: A guardian MUST be able to have their own IID number if they are also registered in IdrottOnline, but IID is optional for guardians.
 - **FR-005**: The system MUST store training groups without time slots in their names — times are handled in a separate scheduling step.

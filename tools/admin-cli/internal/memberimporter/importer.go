@@ -6,35 +6,31 @@ import (
 )
 
 // BuildImportData parses and merges the two CSV sources into an ImportData value
-// ready for writing to Trailbase.  instructorEmails may be nil (disables the
-// IsInstructor flag).  rawGuardians may be nil.
+// ready for writing to Trailbase.
 func BuildImportData(
 	rawMembers []RawMember,
 	deltagare []RawGroup,
 	instructorGroups []RawGroup,
 	rawGuardians []RawGuardian,
 ) (ImportData, error) {
-	return BuildImportDataWithInstructors(rawMembers, deltagare, instructorGroups, rawGuardians, nil)
+	return BuildImportDataWithInstructors(rawMembers, deltagare, instructorGroups, rawGuardians)
 }
 
-// BuildImportDataWithInstructors is the full version of BuildImportData that also
-// accepts a pre-fetched set of known instructor email addresses.
+// BuildImportDataWithInstructors is an alias for BuildImportData kept for test compatibility.
 func BuildImportDataWithInstructors(
 	rawMembers []RawMember,
 	deltagare []RawGroup,
 	instructorGroups []RawGroup,
 	rawGuardians []RawGuardian,
-	instructorEmails map[string]bool,
+	_ ...map[string]bool, // deprecated: instructor email cross-reference removed
 ) (ImportData, error) {
-	// Build personnummer→RawMember and iid→RawMember indexes from IdrottOnline.
+	// Build personnummer→RawMember index from IdrottOnline.
 	pnIndex := make(map[string]*RawMember, len(rawMembers)) // YYYYMMDD prefix → member
-	iidIndex := make(map[string]*RawMember, len(rawMembers))
 	for i := range rawMembers {
 		m := &rawMembers[i]
 		if m.Personnummer != "" {
 			pnIndex[m.Personnummer] = m
 		}
-		iidIndex[m.IID] = m
 	}
 
 	var skipped []SkippedRecord
@@ -66,7 +62,7 @@ func BuildImportDataWithInstructors(
 		groupsSeen[normalName] = category
 
 		if _, exists := membersByIID[raw.IID]; !exists {
-			membersByIID[raw.IID] = processedFromRaw(raw, true, false, instructorEmails)
+			membersByIID[raw.IID] = processedFromRaw(raw, true, false)
 		}
 		if membershipsByIID[raw.IID] == nil {
 			membershipsByIID[raw.IID] = make(map[string]ProcessedMembership)
@@ -87,25 +83,20 @@ func BuildImportDataWithInstructors(
 		if existing, ok := membersByIID[m.IID]; ok {
 			existing.IsBoardMember = true
 		} else {
-			membersByIID[m.IID] = processedFromRaw(m, false, true, instructorEmails)
+			membersByIID[m.IID] = processedFromRaw(m, false, true)
 		}
 	}
 
-	// Step 3: Cross-reference Ledare/Hoofdledare against instructor emails and warn.
+	// Step 3: Mark Ledare/Hoofdledare who appear in IdrottOnline as instructors.
+	// We do not cross-reference against the instructors table — that table is managed
+	// independently and may use a different email address than IdrottOnline.
 	for _, ins := range instructorGroups {
 		pn8 := personnummerPrefix(ins.Personnummer)
 		raw, ok := pnIndex[pn8]
 		if !ok {
-			// Instructor not in IdrottOnline — cannot check email.
 			continue
 		}
-		if instructorEmails != nil && !instructorEmails[raw.Email] {
-			skipped = append(skipped, SkippedRecord{
-				SourceFile: "weunite",
-				Line:       ins.LineNum,
-				Reason:     fmt.Sprintf("Ledare %s %s finns inte i instruktörstabellen", raw.FirstName, raw.LastName),
-			})
-		}
+		_ = raw // Ledare recognised but no flag set — instructor status is managed in instructors table
 	}
 
 	// Step 4: Collect guardians for minor members only.
@@ -166,7 +157,7 @@ func BuildImportDataWithInstructors(
 	families := buildFamilyGroups(rawMembers, membersByIID)
 
 	// Build preview.
-	swimmerCount, boardCount, instructorCount := 0, 0, 0
+	swimmerCount, boardCount := 0, 0
 	for _, m := range processedMembers {
 		if m.IsSwimmer {
 			swimmerCount++
@@ -174,15 +165,11 @@ func BuildImportDataWithInstructors(
 		if m.IsBoardMember {
 			boardCount++
 		}
-		if m.IsInstructor {
-			instructorCount++
-		}
 	}
 
 	preview := ImportPreview{
 		SwimmerCount:     swimmerCount,
 		BoardMemberCount: boardCount,
-		InstructorCount:  instructorCount,
 		GuardianCount:    len(processedGuardians),
 		GroupCount:       len(processedGroups),
 		FamilyCount:      len(families),
@@ -201,8 +188,7 @@ func BuildImportDataWithInstructors(
 }
 
 // processedFromRaw converts a RawMember to a ProcessedMember.
-func processedFromRaw(m *RawMember, isSwimmer, isBoardMember bool, instructorEmails map[string]bool) *ProcessedMember {
-	isInstructor := instructorEmails != nil && instructorEmails[m.Email]
+func processedFromRaw(m *RawMember, isSwimmer, isBoardMember bool) *ProcessedMember {
 	return &ProcessedMember{
 		IID:           m.IID,
 		FirstName:     m.FirstName,
@@ -215,7 +201,6 @@ func processedFromRaw(m *RawMember, isSwimmer, isBoardMember bool, instructorEma
 		Phone:         m.Phone,
 		FamilyLabel:   m.FamilyLabel,
 		IsSwimmer:     isSwimmer,
-		IsInstructor:  isInstructor,
 		IsBoardMember: isBoardMember,
 	}
 }
@@ -240,7 +225,7 @@ func cleanPN(pn string) string {
 // Defined here so the UI layer can pass the real *trailbase.Client without creating
 // a circular import.
 type MemberClient interface {
-	ListInstructorEmails() (map[string]bool, error)
+
 	ListTrainingGroups() (map[string]int64, error)
 	EnsureTrainingGroup(name, category string, existingByName map[string]int64) (int64, error)
 	UpsertMember(m ProcessedMember) error
@@ -262,15 +247,9 @@ func RunImport(client MemberClient, idrottOnlinePath, weUnitePath string) (Membe
 		return MemberImportResult{}, err
 	}
 
-	// Fetch instructor emails for cross-reference.
-	instructorEmails, err := client.ListInstructorEmails()
-	if err != nil {
-		return MemberImportResult{}, fmt.Errorf("kunde inte hämta instruktörer: %w", err)
-	}
-
 	// Merge and process.
 	allSkipped := append(ioSkipped, wuSkipped...)
-	data, err := BuildImportDataWithInstructors(rawMembers, deltagare, instructorGroups, rawGuardians, instructorEmails)
+	data, err := BuildImportData(rawMembers, deltagare, instructorGroups, rawGuardians)
 	if err != nil {
 		return MemberImportResult{}, err
 	}
@@ -345,7 +324,6 @@ func ApplyImport(client MemberClient, data ImportData) (MemberImportResult, erro
 
 	return MemberImportResult{
 		MembersImported:      len(data.Members),
-		SwimmersImported:     swimmerCount,
 		BoardMembersImported: boardCount,
 		GuardiansImported:    guardianCount,
 		GroupsImported:       len(data.Groups),

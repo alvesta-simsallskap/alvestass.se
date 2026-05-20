@@ -204,7 +204,6 @@ func (m importMembersModel) View() string {
 		b.WriteString(green.Render("✓ Import klar!") + "\n\n")
 		b.WriteString(fmt.Sprintf("  Importerade poster:\n"))
 		b.WriteString(fmt.Sprintf("    Medlemmar totalt:    %d\n", m.result.MembersImported))
-		b.WriteString(fmt.Sprintf("      varav simmare:     %d\n", m.result.SwimmersImported))
 		b.WriteString(fmt.Sprintf("      varav styrelsen:   %d\n", m.result.BoardMembersImported))
 		b.WriteString(fmt.Sprintf("    Vårdnadshavare:      %d\n", m.result.GuardiansImported))
 		b.WriteString(fmt.Sprintf("    Träningsgrupper:     %d\n", m.result.GroupsImported))

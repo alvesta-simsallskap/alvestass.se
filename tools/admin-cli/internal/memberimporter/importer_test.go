@@ -142,9 +142,9 @@ func TestBuildImportData_DeltagareWithoutIdrottOnline(t *testing.T) {
 	assert.Equal(t, "weunite", data.Skipped[0].SourceFile)
 }
 
-// TestBuildImportData_InstructorFlagSet verifies that a Deltagare whose IdrottOnline email
-// is in the instructor set gets IsInstructor = true.
-func TestBuildImportData_InstructorFlagSet(t *testing.T) {
+// TestBuildImportData_InstructorIsRegularMember verifies that a person who appears as both
+// a Deltagare and a Ledare in WeUnite is imported as a regular member — no special flag.
+func TestBuildImportData_InstructorIsRegularMember(t *testing.T) {
 	members := []RawMember{{
 		IID:          "IID007",
 		FirstName:    "Instructor",
@@ -154,18 +154,11 @@ func TestBuildImportData_InstructorFlagSet(t *testing.T) {
 		Personnummer: "19900601",
 	}}
 	deltagare := []RawGroup{makeDeltagare("19900601-7777", "Masters")}
-	instructorEmails := map[string]bool{"instructor@example.com": true}
+	instructors := []RawGroup{makeLedare("19900601-7777", "Simskola A")}
 
-	data, err := BuildImportData(members, deltagare, nil, nil)
+	data, err := BuildImportData(members, deltagare, instructors, nil)
 	require.NoError(t, err)
 	require.Len(t, data.Members, 1)
-
-	// Without instructor email set: IsInstructor must be false.
-	assert.False(t, data.Members[0].IsInstructor)
-
-	// With instructor email set: IsInstructor must be true.
-	data2, err := BuildImportDataWithInstructors(members, deltagare, nil, nil, instructorEmails)
-	require.NoError(t, err)
-	require.Len(t, data2.Members, 1)
-	assert.True(t, data2.Members[0].IsInstructor)
+	assert.True(t, data.Members[0].IsSwimmer, "Deltagare+Ledare is still a member (IsSwimmer)")
+	assert.False(t, data.Members[0].IsBoardMember, "not a board member")
 }

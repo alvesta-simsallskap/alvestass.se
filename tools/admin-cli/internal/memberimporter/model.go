@@ -35,6 +35,7 @@ type RawGuardian struct {
 }
 
 // ProcessedMember is a member ready for Trailbase upsert.
+// IsSwimmer is a transient flag used for import counting only — not written to the DB.
 type ProcessedMember struct {
 	IID           string
 	FirstName     string
@@ -46,8 +47,7 @@ type ProcessedMember struct {
 	Email         string
 	Phone         string
 	FamilyLabel   string
-	IsSwimmer     bool
-	IsInstructor  bool
+	IsSwimmer     bool // transient: true if sourced from a WeUnite Deltagare row
 	IsBoardMember bool
 }
 
@@ -94,7 +94,6 @@ type ImportData struct {
 type ImportPreview struct {
 	SwimmerCount     int
 	BoardMemberCount int
-	InstructorCount  int // members who are also in the instructors table
 	GuardianCount    int
 	GroupCount       int
 	FamilyCount      int
@@ -104,7 +103,6 @@ type ImportPreview struct {
 // MemberImportResult is the final outcome of a completed import run.
 type MemberImportResult struct {
 	MembersImported      int
-	SwimmersImported     int
 	BoardMembersImported int
 	GuardiansImported    int
 	GroupsImported       int

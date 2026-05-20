@@ -21,8 +21,6 @@ CREATE TABLE IF NOT EXISTS members (
   member_since    TEXT,
   email           TEXT,
   phone           TEXT,
-  is_swimmer      INTEGER NOT NULL DEFAULT 0 CHECK(is_swimmer IN (0, 1)),
-  is_instructor   INTEGER NOT NULL DEFAULT 0 CHECK(is_instructor IN (0, 1)),
   is_board_member INTEGER NOT NULL DEFAULT 0 CHECK(is_board_member IN (0, 1))
 ) STRICT;
 
