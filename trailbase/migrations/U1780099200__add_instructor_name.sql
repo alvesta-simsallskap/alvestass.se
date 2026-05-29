@@ -1,0 +1,1 @@
+ALTER TABLE instructors ADD COLUMN name TEXT NOT NULL DEFAULT '';

@@ -40,6 +40,7 @@ const defaultSchedule: SessionSchedule = {
 const instructorFull: Instructor = {
   id: 1,
   email: 'test@example.com',
+  name: 'Test Testsson',
   swim_school_rate: 200,
   coach_rate: 150,
   travel_compensation: false,
@@ -48,6 +49,7 @@ const instructorFull: Instructor = {
 const instructorNoCoach: Instructor = {
   id: 2,
   email: 'nocoach@example.com',
+  name: 'Ingen Coach',
   swim_school_rate: 180,
   coach_rate: null,
   travel_compensation: false,

@@ -41,6 +41,7 @@ export const POST: APIRoute = async ({ request }) => {
 
   return new Response(
     JSON.stringify({
+      name: instructor.name,
       swimSchool: instructor.swim_school_rate !== null,
       coach: instructor.coach_rate !== null,
       travelCompensation: Boolean(instructor.travel_compensation),

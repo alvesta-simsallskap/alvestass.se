@@ -24,6 +24,7 @@ export interface TimeReportData {
 export interface Instructor {
   id: number;
   email: string;
+  name: string;
   swim_school_rate: number | null;
   coach_rate: number | null;
   travel_compensation: boolean;
