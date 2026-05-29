@@ -67,6 +67,8 @@ Astro.response.headers.set('Cache-Control', 'no-store');
           ovrigTidOpen: false,
           ovrigTidError: null,
           files: [{ id: Date.now(), file: null, desc: '' }],
+          previewHtml: '',
+          previewLoading: false,
 
           async lookupEmail() {
             this.loading = true;
@@ -101,7 +103,7 @@ Astro.response.headers.set('Cache-Control', 'no-store');
             });
           },
 
-          async handleSubmit(e) {
+          async showPreview() {
             this.ovrigTidError = null;
             const touchedRows = this.extraTimes.filter(item =>
               item.date || String(item.desc).trim() || Number(item.h) > 0 || Number(item.m) > 0
@@ -114,26 +116,29 @@ Astro.response.headers.set('Cache-Control', 'no-store');
               this.ovrigTidOpen = true;
               return;
             }
-            const form = e.target;
-            const formData = new FormData(form);
+            this.previewLoading = true;
+            const formData = new FormData(this.$refs.form);
             this.collectExtraTime(formData);
-            const res = await fetch(form.action, { method: 'POST', body: formData });
-            const isLocalhost = window.location.hostname === 'localhost';
-            const contentType = res.headers.get('content-type') || '';
-            if (isLocalhost && contentType.includes('text/html')) {
-              const html = await res.text();
-              const win = window.open('', '_blank');
-              if (win) {
-                win.onload = function() {
-                  win.document.title = 'Tidrapport Preview';
-                  win.document.body.innerHTML = html;
-                };
-                if (win.document.readyState === 'complete') {
-                  win.document.title = 'Tidrapport Preview';
-                  win.document.body.innerHTML = html;
-                }
+            try {
+              const res = await fetch('/api/preview-time-report', { method: 'POST', body: formData });
+              if (res.ok) {
+                this.previewHtml = await res.text();
+                this.step = 3;
+              } else {
+                alert('Det gick inte att förhandsgranska tidrapport. Försök igen.');
               }
-            } else if (res.ok) {
+            } catch {
+              alert('Det gick inte att förhandsgranska tidrapport. Försök igen.');
+            } finally {
+              this.previewLoading = false;
+            }
+          },
+
+          async handleSubmit() {
+            const formData = new FormData(this.$refs.form);
+            this.collectExtraTime(formData);
+            const res = await fetch('/api/send-time-report', { method: 'POST', body: formData });
+            if (res.ok) {
               window.location.href = '/tack';
             } else {
               alert('Något gick fel. Försök igen.');
@@ -176,7 +181,7 @@ Astro.response.headers.set('Cache-Control', 'no-store');
 
           <!-- Step 2: Role-specific time report form -->
           <div x-show="step === 2">
-            <form method="POST" action="/api/send-time-report" @submit.prevent="handleSubmit($event)" @timereportupdate.window="void 0">
+            <form x-ref="form" @timereportupdate.window="void 0">
 
               <input type="hidden" name="email" :value="email" />
 
@@ -336,11 +341,34 @@ Astro.response.headers.set('Cache-Control', 'no-store');
               ) : null}
               <div class="field">
                 <div class="control">
-                  <button id="submitBtn" class="button is-link is-primary" type="submit" disabled={!import.meta.env.DEV}>Skicka in tidrapport</button>
+                  {import.meta.env.DEV ? (
+                    <button id="submitBtn" class="button is-link is-primary" type="button" @click="showPreview()" :class="{'is-loading': previewLoading}">Förhandsgranska</button>
+                  ) : (
+                    <button id="submitBtn" class="button is-link is-primary" type="button" @click="showPreview()" :class="{'is-loading': previewLoading}" disabled>Förhandsgranska</button>
+                  )}
                 </div>
               </div>
 
             </form>
+          </div>
+
+          <!-- Step 3: Preview and confirm -->
+          <div x-show="step === 3">
+            <div class="box mt-5">
+              <h2 class="title is-5">Granska din tidrapport</h2>
+              <p class="mb-4 has-text-grey">Kontrollera att uppgifterna nedan stämmer innan du skickar in.</p>
+
+              <div x-show="previewLoading" class="has-text-centered py-5">
+                <span class="button is-loading is-white is-large"></span>
+              </div>
+
+              <div x-show="!previewLoading" class="content" x-html="previewHtml"></div>
+
+              <div class="buttons mt-5">
+                <button class="button" type="button" @click="step = 2">← Gå tillbaka och korrigera</button>
+                <button class="button is-primary" type="button" @click="handleSubmit()">Skicka in tidrapport</button>
+              </div>
+            </div>
           </div>
 
         </div>
