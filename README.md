@@ -16,8 +16,9 @@ Website for Alvesta Simsällskap (founded 1921). Content-driven Astro site on Cl
 ```bash
 pnpm install
 pnpm dev        # wrangler types && astro dev
-pnpm build      # wrangler types && astro check && astro build
-pnpm preview    # astro preview
+pnpm build      # astro check && astro build  (must pass before merge)
+pnpm preview    # wrangler types && astro preview
+pnpm test       # vitest run
 ```
 
 Local secrets go in `.dev.vars` (git-ignored). See `CLAUDE.md` for the full secret list.
