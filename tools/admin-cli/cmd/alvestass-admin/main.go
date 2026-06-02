@@ -52,14 +52,22 @@ func run(configPath string) error {
 		}
 	}
 
-	tokens := &trailbase.Tokens{
-		AuthToken:    cfg.AuthToken,
-		RefreshToken: cfg.RefreshToken,
-		CsrfToken:    cfg.CsrfToken,
+	buildClient := func() (*trailbase.Client, error) {
+		tokens := &trailbase.Tokens{
+			AuthToken:    cfg.AuthToken,
+			RefreshToken: cfg.RefreshToken,
+			CsrfToken:    cfg.CsrfToken,
+		}
+		c, err := trailbase.NewClientWithTokens(cfg.BackendURL, tokens)
+		if err != nil {
+			return nil, fmt.Errorf("anslutningsfel: %w", err)
+		}
+		return c, nil
 	}
-	client, err := trailbase.NewClientWithTokens(cfg.BackendURL, tokens)
+
+	client, err := buildClient()
 	if err != nil {
-		return fmt.Errorf("anslutningsfel: %w", err)
+		return err
 	}
 
 	// Startup connectivity check — also catches expired/invalid tokens.
@@ -72,6 +80,34 @@ func run(configPath string) error {
 		validate.NewClubInfoChecker(client),
 	}
 
+	handleOpErr := func(opErr error) error {
+		if opErr == nil {
+			return nil
+		}
+		if !trailbase.IsAuthError(opErr) {
+			fmt.Fprintf(os.Stderr, "Fel: %v\n", opErr)
+			return nil
+		}
+		fmt.Fprintln(os.Stderr, "Autentiseringsfel (403) — logga in igen.")
+		updated, err := ui.RunSetup(cfg)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Inloggning misslyckades: %v\n", err)
+			return nil
+		}
+		cfg = updated
+		if err := cfg.Save(configPath); err != nil {
+			fmt.Fprintf(os.Stderr, "Kunde inte spara konfiguration: %v\n", err)
+		}
+		newClient, err := buildClient()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Kunde inte skapa klient: %v\n", err)
+			return nil
+		}
+		client = newClient
+		checkers = []validate.Checker{validate.NewClubInfoChecker(client)}
+		return nil
+	}
+
 	// Main menu loop.
 	for {
 		choice, err := ui.RunMenu()
@@ -80,22 +116,22 @@ func run(configPath string) error {
 		}
 		switch choice {
 		case ui.MenuUpdate:
-			if err := ui.RunUpdate(client); err != nil {
-				fmt.Fprintf(os.Stderr, "Fel: %v\n", err)
+			if err := handleOpErr(ui.RunUpdate(client)); err != nil {
+				return err
 			}
 		case ui.MenuCheck:
-			if err := ui.RunCheck(checkers); err != nil {
-				fmt.Fprintf(os.Stderr, "Fel: %v\n", err)
+			if err := handleOpErr(ui.RunCheck(checkers)); err != nil {
+				return err
 			}
 		case ui.MenuHelp:
 			ui.RunHelp()
 		case ui.MenuImport:
-			if err := ui.RunImport(client); err != nil {
-				fmt.Fprintf(os.Stderr, "Fel: %v\n", err)
+			if err := handleOpErr(ui.RunImport(client)); err != nil {
+				return err
 			}
 		case ui.MenuImportMembers:
-			if err := ui.RunImportMembers(client); err != nil {
-				fmt.Fprintf(os.Stderr, "Fel: %v\n", err)
+			if err := handleOpErr(ui.RunImportMembers(client)); err != nil {
+				return err
 			}
 		case ui.MenuQuit:
 			fmt.Println("Hej då!")

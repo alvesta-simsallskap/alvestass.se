@@ -2,9 +2,16 @@ package trailbase
 
 import (
 	"fmt"
+	"strings"
 
 	tb "github.com/trailbaseio/trailbase/client/go/trailbase"
 )
+
+// IsAuthError returns true when err is a 403 Forbidden from Trailbase, which
+// typically means the session token is expired or the account lacks the required role.
+func IsAuthError(err error) bool {
+	return err != nil && strings.Contains(err.Error(), "403")
+}
 
 // ClubInfo mirrors the club_info table in Trailbase.
 type ClubInfo struct {
