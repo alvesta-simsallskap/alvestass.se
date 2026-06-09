@@ -28,6 +28,8 @@ export interface Instructor {
   swim_school_rate: number | null;
   coach_rate: number | null;
   travel_compensation: boolean;
+  addon_amount: number | null;
+  addon_description: string | null;
 }
 
 export type TrainingGroupKey =

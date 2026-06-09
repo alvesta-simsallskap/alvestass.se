@@ -115,7 +115,12 @@ export function buildTimeReportHtml(
     if (salaryOvrigTid.hours > 0 || salaryOvrigTid.minutes > 0) {
       html += `<tr><td>Övrig tid</td><td>${salaryOvrigTid.hours}</td><td>${salaryOvrigTid.minutes}</td><td>${salaryOvrigTid.salary ?? '-'}</td><td>${formatAmount(salaryOvrigTid.total)} kr</td></tr>`;
     }
-    html += `<tr style="font-weight:bold"><td>Totalt</td><td colspan="3"></td><td>${formatAmount(Math.round(totalSalary + fullDaySalary + halfDaySalary + overnightSalary))} kr</td></tr>`;
+    // Fixed monetary addon (e.g. travel compensation) — added on top of the total
+    const addonAmount = instructor.addon_amount && instructor.addon_description ? instructor.addon_amount : 0;
+    if (addonAmount > 0) {
+      html += `<tr><td>${escapeHtml(instructor.addon_description!)}</td><td colspan="3"></td><td>${formatAmount(addonAmount)} kr</td></tr>`;
+    }
+    html += `<tr style="font-weight:bold"><td>Totalt</td><td colspan="3"></td><td>${formatAmount(Math.round(totalSalary + fullDaySalary + halfDaySalary + overnightSalary + addonAmount))} kr</td></tr>`;
     html += `</tbody></table>`;
   }
 

@@ -44,6 +44,8 @@ const instructorFull: Instructor = {
   swim_school_rate: 200,
   coach_rate: 150,
   travel_compensation: false,
+  addon_amount: null,
+  addon_description: null,
 };
 
 const instructorNoCoach: Instructor = {
@@ -53,6 +55,8 @@ const instructorNoCoach: Instructor = {
   swim_school_rate: 180,
   coach_rate: null,
   travel_compensation: false,
+  addon_amount: null,
+  addon_description: null,
 };
 
 // ─── findTimeItem ─────────────────────────────────────────────────────────────
