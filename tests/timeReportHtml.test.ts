@@ -45,6 +45,8 @@ const baseInstructor: Instructor = {
   travel_compensation: false,
   addon_amount: null,
   addon_description: null,
+  fixed_salary: false,
+  time_bank: 0,
 };
 
 describe('buildTimeReportHtml — monetary addon', () => {
@@ -79,5 +81,49 @@ describe('buildTimeReportHtml — monetary addon', () => {
     const html = buildTimeReportHtml(baseData, schedule, config, instructor, 'april 2026');
     expect(html).toContain('&lt;b&gt;Tillägg&lt;/b&gt;');
     expect(html).not.toContain('<b>Tillägg</b>');
+  });
+});
+
+describe('buildTimeReportHtml — fixed salary', () => {
+  // time_bank 90 min (1:30); simskola 2h + 30 min prep = 150 min worked (2:30)
+  const fixedInstructor: Instructor = {
+    ...baseInstructor,
+    fixed_salary: true,
+    time_bank: 90,
+  };
+
+  it('shows "Fast lön" and no kr salary table', () => {
+    const html = buildTimeReportHtml(baseData, schedule, config, fixedInstructor, 'april 2026');
+    expect(html).toContain('Fast lön');
+    expect(html).not.toContain('Preliminär löneberäkning');
+    expect(html).not.toContain('kr');
+  });
+
+  it('renders the time-bank rows (current balance, reported time, estimated new balance)', () => {
+    const html = buildTimeReportHtml(baseData, schedule, config, fixedInstructor, 'april 2026');
+    expect(html).toContain('Tidbank');
+    expect(html).toContain('1:30');       // current balance
+    expect(html).toContain('+2:30');      // reported this month
+    expect(html).toContain('4:00');       // 90 + 150 = 240 min new balance
+  });
+
+  it('renders no monetary addon for a fixed-salary instructor', () => {
+    const html = buildTimeReportHtml(baseData, schedule, config, {
+      ...fixedInstructor,
+      addon_amount: 895,
+      addon_description: 'Reseersättning',
+    }, 'april 2026');
+    expect(html).not.toContain('Reseersättning');
+    expect(html).not.toContain('895');
+  });
+
+  it('formats a negative time-bank balance', () => {
+    const html = buildTimeReportHtml(baseData, schedule, config, {
+      ...fixedInstructor,
+      time_bank: -60,
+    }, 'april 2026');
+    expect(html).toContain('-1:00');      // current balance
+    // -60 + 150 = 90 min = 1:30 new balance
+    expect(html).toContain('1:30');
   });
 });

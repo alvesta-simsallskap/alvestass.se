@@ -1,5 +1,5 @@
 import type { TimeReportData, SessionSchedule, TimeReportConfig, Instructor } from './types';
-import { buildTable, buildAdditionalTimeTable, calcSalary, findTimeItem } from './salary';
+import { buildTable, buildAdditionalTimeTable, calcSalary, calcWorkedMinutes, findTimeItem, formatMinutes } from './salary';
 
 function escapeHtml(text: string): string {
   return text
@@ -52,7 +52,20 @@ export function buildTimeReportHtml(
   }
 
   // Salary estimate (only if instructor found)
-  if (instructor) {
+  if (instructor && instructor.fixed_salary) {
+    // Fixed monthly salary — no hourly estimate. Report time adjusts a personal time bank
+    // (balance in minutes), applied manually by the reviewer. No addon, no kr figures.
+    const worked = calcWorkedMinutes(data, schedule, config, instructor);
+    const newBalance = instructor.time_bank + worked;
+    html += `<h4>Tidbank</h4><p><b>Lön:</b> Fast lön</p>`;
+    html += `<table border="1" cellpadding="4" style="border-collapse:collapse;margin-bottom:1em;">
+      <tbody>
+      <tr><td>Nuvarande saldo</td><td>${formatMinutes(instructor.time_bank)}</td></tr>
+      <tr><td>Rapporterad tid denna månad</td><td>+${formatMinutes(worked)}</td></tr>
+      <tr style="font-weight:bold"><td>Nytt saldo (uppskattat)</td><td>${formatMinutes(newBalance)}</td></tr>
+      </tbody></table>`;
+    html += `<p><i>Tidbanken justeras manuellt vid granskning.</i></p>`;
+  } else if (instructor) {
     const salarySimskola = calcSalary('simskola', data.simskola, schedule, config, instructor);
     const salaryTavlingA = calcSalary('tavlingA', data.tavlingA, schedule, config, instructor);
     const salaryTavlingB = calcSalary('tavlingB', data.tavlingB, schedule, config, instructor);

@@ -30,6 +30,8 @@ export interface Instructor {
   travel_compensation: boolean;
   addon_amount: number | null;
   addon_description: string | null;
+  fixed_salary: boolean;
+  time_bank: number;
 }
 
 export type TrainingGroupKey =

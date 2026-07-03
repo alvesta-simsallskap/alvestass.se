@@ -2,7 +2,7 @@
 
 **Personuppgiftsansvarig**: Alvesta Simsällskap, 826001-1930  
 **Kontakt**: kansli@alvestass.se  
-**Senast uppdaterad**: 2026-06-09
+**Senast uppdaterad**: 2026-07-03
 
 ---
 
@@ -11,7 +11,7 @@
 | Fält | Innehåll |
 |------|----------|
 | **Ändamål** | Beräkna preliminär löneuppskattning i tidrapporter |
-| **Datakategorier** | Namn, e-postadress (identifierare), timlön simskola (SEK/h), timlön tävlingsträning (SEK/h, kan saknas), milersättningsberättigad (ja/nej), lönetillägg (belopp i SEK + beskrivning, t.ex. reseersättning – kan saknas) |
+| **Datakategorier** | Namn, e-postadress (identifierare), timlön simskola (SEK/h), timlön tävlingsträning (SEK/h, kan saknas), milersättningsberättigad (ja/nej), lönetillägg (belopp i SEK + beskrivning, t.ex. reseersättning – kan saknas), fast lön (ja/nej), tidbank (saldo i minuter) |
 | **Registrerade** | Instruktörer anställda av Alvesta Simsällskap |
 | **Rättslig grund** | Art. 6.1 b – avtalsnödvändighet (anställningsavtal) |
 | **Lagringstid** | Till och med anställningens upphörande + 1 år (bokföringsändamål) |

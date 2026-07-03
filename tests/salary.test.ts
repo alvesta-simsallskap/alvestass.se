@@ -1,7 +1,7 @@
 // Tests for src/lib/salary.ts — updated for refactored pure-function signatures
 import { describe, it, expect } from 'vitest';
-import { findTimeItem, buildTable, calcSalary } from '../src/lib/salary';
-import type { Instructor, SessionSchedule, TimeReportConfig } from '../src/lib/types';
+import { findTimeItem, buildTable, calcSalary, calcWorkedMinutes, formatMinutes } from '../src/lib/salary';
+import type { Instructor, SessionSchedule, TimeReportConfig, TimeReportData } from '../src/lib/types';
 
 // ─── Fixtures ────────────────────────────────────────────────────────────────
 
@@ -46,6 +46,8 @@ const instructorFull: Instructor = {
   travel_compensation: false,
   addon_amount: null,
   addon_description: null,
+  fixed_salary: false,
+  time_bank: 0,
 };
 
 const instructorNoCoach: Instructor = {
@@ -57,6 +59,8 @@ const instructorNoCoach: Instructor = {
   travel_compensation: false,
   addon_amount: null,
   addon_description: null,
+  fixed_salary: false,
+  time_bank: 0,
 };
 
 // ─── findTimeItem ─────────────────────────────────────────────────────────────
@@ -256,5 +260,85 @@ describe('calcSalary', () => {
     // 1h 45min + 20min prep = 2h 5min = 125 min
     expect(result.hours).toBe(2);
     expect(result.minutes).toBe(5);
+  });
+});
+
+// ─── formatMinutes ───────────────────────────────────────────────────────────
+
+describe('formatMinutes', () => {
+  it('formats a positive whole-hour value', () => {
+    expect(formatMinutes(120)).toBe('2:00');
+  });
+
+  it('formats a positive value with minutes', () => {
+    expect(formatMinutes(150)).toBe('2:30');
+  });
+
+  it('zero-pads minutes below 10', () => {
+    expect(formatMinutes(65)).toBe('1:05');
+  });
+
+  it('formats zero', () => {
+    expect(formatMinutes(0)).toBe('0:00');
+  });
+
+  it('formats a negative balance', () => {
+    expect(formatMinutes(-150)).toBe('-2:30');
+  });
+
+  it('zero-pads minutes of a negative balance', () => {
+    expect(formatMinutes(-65)).toBe('-1:05');
+  });
+});
+
+// ─── calcWorkedMinutes ───────────────────────────────────────────────────────
+
+function emptyData(overrides: Partial<TimeReportData> = {}): TimeReportData {
+  return {
+    name: 'Test Testsson',
+    email: 'test@example.com',
+    milersattning: '',
+    kommentarer: '',
+    simskola: [],
+    tavlingA: [],
+    tavlingB: [],
+    teknik: [],
+    masters: [],
+    vuxencrawl: [],
+    ...overrides,
+  };
+}
+
+describe('calcWorkedMinutes', () => {
+  it('returns 0 when nothing is reported', () => {
+    expect(calcWorkedMinutes(emptyData(), defaultSchedule, defaultConfig, instructorFull)).toBe(0);
+  });
+
+  it('sums a simskola session including prep time', () => {
+    const data = emptyData({ simskola: ['2026-04-01 Simskola'] });
+    // 5h 10min + 30min prep = 340 min
+    expect(calcWorkedMinutes(data, defaultSchedule, defaultConfig, instructorFull)).toBe(340);
+  });
+
+  it('sums across multiple groups plus övrig tid', () => {
+    const data = emptyData({
+      simskola: ['2026-04-01 Simskola'],       // 340 min
+      tavlingA: ['2026-04-02 Träning'],         // 105 + 15 prep = 120 min
+      extratid: [{ date: '2026-04-10', h: '1', m: '30', desc: 'Möte' }], // 90 min
+    });
+    expect(calcWorkedMinutes(data, defaultSchedule, defaultConfig, instructorFull)).toBe(340 + 120 + 90);
+  });
+
+  it('excludes flat-rate days (Heldag/Halvdag/Natt) from the total', () => {
+    const data = emptyData({
+      tavlingA: ['2026-04-14 ÖGP 2 Kalmar', '2026-04-14 ÖGP 2 Övernattning', '2026-04-15 Halvdag Linköping'],
+    });
+    expect(calcWorkedMinutes(data, defaultSchedule, defaultConfig, instructorFull)).toBe(0);
+  });
+
+  it('counts worked time even for an instructor with no coach rate', () => {
+    const data = emptyData({ simskola: ['2026-04-01 Simskola'] });
+    // time bank tracks time regardless of rate: 340 min
+    expect(calcWorkedMinutes(data, defaultSchedule, defaultConfig, instructorNoCoach)).toBe(340);
   });
 });

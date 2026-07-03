@@ -1,5 +1,7 @@
 // Salary and HTML helpers for time report API
-import type { ExtraTimeRow, Instructor, TrainingGroupKey, Session, SessionSchedule, TimeReportConfig } from './types';
+import type { ExtraTimeRow, Instructor, TimeReportData, TrainingGroupKey, Session, SessionSchedule, TimeReportConfig } from './types';
+
+const TRAINING_GROUPS: TrainingGroupKey[] = ['simskola', 'tavlingA', 'tavlingB', 'teknik', 'masters', 'vuxencrawl'];
 
 const TABLE_ATTRIBUTES = `border=\"1\" cellpadding=\"4\" style=\"border-collapse:collapse;margin-bottom:1em.\"`
 
@@ -103,4 +105,32 @@ export function calcSalary(
   minutes = totalMinutes % 60;
   const total = rate ? (totalMinutes / 60) * rate : 0;
   return { hours, minutes, salary: rate, total };
+}
+
+// Total reported minutes for a time report (six groups + övrig tid, incl. prep time).
+// Reuses calcSalary's hours/minutes, so flat-rate (10/15/20) days are excluded and rate is irrelevant.
+// Used for the fixed-salary time-bank estimate.
+export function calcWorkedMinutes(
+  data: TimeReportData,
+  schedule: SessionSchedule,
+  config: TimeReportConfig,
+  instructor?: Instructor,
+): number {
+  let total = 0;
+  for (const group of TRAINING_GROUPS) {
+    const r = calcSalary(group, data[group], schedule, config, instructor);
+    total += r.hours * 60 + r.minutes;
+  }
+  const extra = calcSalary('extratid', [], schedule, config, instructor, data.extratid);
+  total += extra.hours * 60 + extra.minutes;
+  return total;
+}
+
+// Formats a signed minute count as "h:mm" (e.g. 150 → "2:30", -65 → "-1:05").
+export function formatMinutes(min: number): string {
+  const sign = min < 0 ? '-' : '';
+  const abs = Math.abs(min);
+  const h = Math.floor(abs / 60);
+  const m = abs % 60;
+  return `${sign}${h}:${m < 10 ? '0' : ''}${m}`;
 }
